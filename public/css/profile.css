@@ -1,0 +1,538 @@
+/* =======================================================
+   TELKOM THEME — PROFILE PAGE
+   Konsisten dengan halaman "Data Revenue": merah-putih,
+   stripe merah di header, card rounded 2xl, shadow halus.
+   ======================================================= */
+
+/* ---------- TOKENS (fallback jika belum ada) ---------- */
+:root {
+  /* Color */
+  --telkom-red: #ea1d25;
+  --telkom-red-dark: #c6161e;
+  --telkom-red-light: #ff4d55;
+  --telkom-red-soft: #ffe6e7;
+  --telkom-red-subtle: rgba(234,29,37,0.1);
+
+  --white: #ffffff;
+  --black: #000000;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  --success: #0f9d58;
+  --warning: #eab308;
+  --warning-light: #fef9c3;
+  --error: #dc2626;
+
+  /* Typography & Radius & Shadow */
+  --font-sans: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-sm: 0 2px 6px rgba(0,0,0,.08);
+  --shadow-md: 0 6px 16px rgba(0,0,0,.10);
+  --shadow-lg: 0 12px 28px rgba(0,0,0,.12);
+  --shadow-card: 0 6px 18px rgba(17,24,39,.06);
+  --shadow-card-hover: 0 10px 28px rgba(17,24,39,.10);
+
+  /* Gradients */
+  --gradient-red: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
+}
+
+/* ---------- LAYOUT ---------- */
+.main-content {
+  padding: 2rem;
+  background: var(--gray-50);
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+@media (max-width: 768px) { .main-content { padding: 1rem; } }
+
+/* ---------- PAGE HERO (Stripe Merah) ---------- */
+.header-dashboard {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+.header-dashboard::before{
+  content:"";
+  position:absolute; inset:0 0 auto 0; height:6px;
+  background: var(--gradient-red);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+.header-content{ display:flex; align-items:center; gap:1.5rem; }
+.header-text{ flex:1; }
+.header-title{
+  margin:0 0 .5rem 0;
+  font: 800 2rem/1.2 var(--font-sans);
+  color: var(--gray-900);
+  letter-spacing:-.02em;
+}
+.header-subtitle{
+  margin:0; color:var(--gray-600); font-weight:400; font-size:.95rem;
+}
+@media (max-width: 768px){
+  .header-dashboard{ padding:1.25rem 1rem; }
+  .header-content{ flex-direction:column; align-items:flex-start; }
+  .header-title{ font-size:1.5rem; }
+  .header-subtitle{ font-size:.875rem; }
+}
+
+/* ---------- GRID (Bootstrap-like) ---------- */
+.row{ 
+  display:flex; 
+  flex-wrap:wrap; 
+  margin:0 -.75rem; 
+}
+.row.g-4{ row-gap:1.5rem; }
+
+/* ROW STRETCH: Buat semua kolom & card sama tinggi */
+.row-stretch { 
+  align-items: stretch; 
+}
+.row-stretch > [class^="col-"] { 
+  display: flex; 
+}
+
+[class^="col-"]{ padding:0 .75rem; }
+.col-lg-7{ width:58.333333%; flex:0 0 auto;}
+.col-lg-5{ width:41.666667%; flex:0 0 auto;}
+@media (max-width: 992px){ .col-lg-7,.col-lg-5{ width:100%; }}
+
+/* ---------- CARD ---------- */
+.dashboard-card{
+  background: var(--white);
+  border:1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  overflow:hidden; 
+  transition: box-shadow .2s ease, transform .2s ease;
+  
+  /* PENTING: Buat card flexbox agar bisa stretch */
+  display: flex; 
+  flex-direction: column; 
+  width: 100%;
+  position: relative;
+}
+.dashboard-card:hover{ 
+  box-shadow: var(--shadow-card-hover); 
+  transform: translateY(-1px); 
+}
+
+/* Stripe merah di atas card */
+.dashboard-card::before{
+  content:""; 
+  position:absolute; 
+  inset:0 0 auto 0; 
+  height:3px;
+  background: var(--telkom-red); 
+  opacity:.9; 
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  z-index: 1;
+}
+
+/* === CARD HEADER: flat white === */
+.card-header{
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--gray-200);
+  background: var(--white);
+  flex-shrink: 0;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+.card-header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+/* === CARD BODY: flex-grow agar mengisi ruang === */
+.card-body{ 
+  padding:1.5rem; 
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px){ 
+  .card-header,.card-body{ padding:1rem 1.125rem; } 
+}
+
+/* ---------- PROFILE GRID ---------- */
+.profile-form{ 
+  width:100%; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.profile-grid{
+  display:grid; 
+  grid-template-columns: 240px 1fr; 
+  gap:2rem; 
+  margin-bottom:1rem;
+  flex: 1;
+}
+@media (max-width: 768px){ 
+  .profile-grid{ 
+    grid-template-columns:1fr; 
+    gap:1.25rem; 
+  } 
+}
+
+/* ---------- AVATAR ---------- */
+.profile-image-section{
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  gap:1rem;
+  padding:1.25rem; 
+  background:var(--white);
+  border:1px solid var(--gray-200); 
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+.profile-image-container{ 
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  gap:1rem; 
+}
+.profile-image-wrapper{
+  width:148px; 
+  height:148px; 
+  border-radius:50%; 
+  overflow:hidden;
+  border:4px solid var(--white); 
+  box-shadow: var(--shadow-lg);
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  position:relative;
+  background:var(--white); 
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.profile-image-wrapper:hover{ 
+  transform:scale(1.02); 
+  box-shadow: 0 12px 32px rgba(0,0,0,.12); 
+}
+.profile-image{ 
+  width:100%; 
+  height:100%; 
+  object-fit:cover; 
+}
+.profile-image-placeholder{
+  width:100%; 
+  height:100%; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  background: radial-gradient(circle at 50% 50%, var(--telkom-red-soft) 0%, var(--white) 100%);
+}
+.initial{ 
+  font-size:3.4rem; 
+  font-weight:700; 
+  color:var(--gray-700); 
+  letter-spacing:-.02em; 
+}
+
+/* Edit FAB - Ikon benar-benar center */
+.edit-icon-wrapper{
+  position:absolute; 
+  right:10px; 
+  bottom:10px; 
+  z-index:2; 
+  cursor:pointer;
+  width:44px; 
+  height:44px; 
+  border-radius:50%;
+  background: var(--gradient-red);
+  border:3px solid var(--white);
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  box-shadow: var(--shadow-md);
+  transition: transform .12s ease, filter .12s ease;
+}
+.edit-icon-wrapper:hover{ 
+  filter:brightness(1.03); 
+  transform:scale(1.05); 
+}
+.edit-icon-wrapper:active{ 
+  transform:scale(.95); 
+}
+
+/* SVG ikon */
+.edit-icon{
+  width:20px; 
+  height:20px;
+  display:block;
+  stroke: #fff; 
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round; 
+  stroke-linejoin: round;
+}
+
+/* Remove button */
+.btn-outline{
+  padding:.5rem 1rem; 
+  font-size:.875rem; 
+  font-weight:600;
+  color:var(--telkom-red); 
+  background:transparent;
+  border:1.5px solid var(--telkom-red); 
+  border-radius: var(--radius-md);
+  cursor:pointer; 
+  transition: all .15s ease; 
+  font-family:var(--font-sans);
+}
+.btn-outline:hover{ 
+  background: var(--telkom-red-soft); 
+  border-color: var(--telkom-red-dark); 
+  color: var(--telkom-red-dark); 
+}
+.btn-outline:active{ 
+  transform:scale(.98); 
+}
+.btn-outline.small{ 
+  padding:.375rem .875rem; 
+  font-size:.8125rem; 
+}
+
+/* ---------- FORM ELEMENTS ---------- */
+.profile-info-section{ 
+  display:flex; 
+  flex-direction:column;
+}
+.form-group{ 
+  margin-bottom:1.1rem; 
+}
+.form-label{
+  display:block; 
+  margin-bottom:.5rem; 
+  font-weight:600;
+  font-size:.875rem; 
+  color:var(--gray-700); 
+  letter-spacing:-.01em;
+}
+.form-input{
+  width:100%; 
+  padding:.75rem 1rem; 
+  font-size:.9375rem; 
+  line-height:1.5;
+  color:var(--gray-900); 
+  background:var(--white);
+  border:1.5px solid var(--gray-300); 
+  border-radius: var(--radius-md);
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.form-input:hover{ 
+  border-color: var(--gray-400); 
+}
+.form-input:focus{
+  border-color: var(--telkom-red);
+  box-shadow: 0 0 0 3px var(--telkom-red-subtle);
+  outline:0; 
+  background:var(--white);
+}
+.form-input::placeholder{ 
+  color:var(--gray-400); 
+}
+
+/* Password with eye */
+.password-form{ 
+  width:100%; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.password-field{ 
+  position:relative; 
+  display:flex; 
+  align-items:center; 
+}
+.password-field .form-input{ 
+  padding-right:3rem; 
+}
+.toggle-eye{
+  position:absolute; 
+  right:.75rem; 
+  top:50%; 
+  transform:translateY(-50%);
+  background:transparent; 
+  border:none; 
+  font-size:1.2rem; 
+  color:var(--gray-500);
+  cursor:pointer; 
+  padding:.25rem; 
+  border-radius: var(--radius-sm);
+  transition: color .15s ease, background-color .15s ease, transform .12s ease;
+}
+.toggle-eye:hover{ 
+  color:var(--gray-700); 
+  background:var(--gray-100); 
+}
+.toggle-eye:active{ 
+  transform: translateY(-50%) scale(.95); 
+}
+
+/* ---------- ACTIONS (Primary Red) ---------- */
+.form-actions{ 
+  margin-top:1.25rem; 
+  display:flex; 
+  align-items:center; 
+  gap:1rem; 
+  flex-wrap:wrap; 
+}
+.save-button{
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  gap:.5rem;
+  padding:.75rem 1.5rem; 
+  font-size:.9375rem; 
+  font-weight:700; 
+  letter-spacing:-.01em;
+  color:var(--white); 
+  background: var(--gradient-red);
+  border:none; 
+  border-radius:14px; 
+  box-shadow: var(--shadow-sm);
+  cursor:pointer; 
+  transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+}
+.save-button:hover{ 
+  filter:brightness(1.03); 
+  box-shadow: var(--shadow-md); 
+  transform: translateY(-1px); 
+}
+.save-button:active{ 
+  transform: translateY(0); 
+  box-shadow: var(--shadow-xs); 
+}
+.save-button:focus{ 
+  outline:none; 
+  box-shadow: 0 0 0 3px var(--telkom-red-subtle), var(--shadow-md); 
+}
+
+/* ---------- MESSAGES ---------- */
+.error-text{ 
+  color:var(--error); 
+  font-size:.8125rem; 
+  margin-top:.375rem; 
+  font-weight:500; 
+  display:flex; 
+  align-items:center; 
+  gap:.375rem; 
+}
+.success-text{ 
+  color:var(--success); 
+  font-size:.8125rem; 
+  font-weight:700; 
+  display:inline-flex; 
+  align-items:center; 
+  gap:.375rem; 
+  animation: fadeInUp .25s ease; 
+}
+@keyframes fadeInUp{ 
+  from{ 
+    opacity:0; 
+    transform:translateY(4px);
+  } 
+  to{ 
+    opacity:1; 
+    transform:translateY(0);
+  } 
+}
+
+/* ---------- VERIFY NOTICE ---------- */
+.verification-notice{
+  margin-top:.75rem; 
+  padding:.875rem 1rem; 
+  background:var(--warning-light);
+  border-left:3px solid var(--warning); 
+  border-radius: var(--radius-md);
+}
+.text-verify{ 
+  color:var(--gray-700); 
+  font-size:.875rem; 
+  margin:0; 
+  line-height:1.5; 
+}
+.verify-link{
+  background:none; 
+  border:none; 
+  color:var(--telkom-red); 
+  font-weight:700;
+  cursor:pointer; 
+  padding:0; 
+  border-bottom:1px solid transparent; 
+  transition: color .12s ease, border-color .12s ease;
+}
+.verify-link:hover{ 
+  color:var(--telkom-red-dark); 
+  border-bottom-color: var(--telkom-red); 
+}
+
+/* ---------- UTILITIES ---------- */
+.text-muted{ 
+  color:var(--gray-600); 
+}
+.d-none{ 
+  display:none !important; 
+}
+.mt-2{ 
+  margin-top:.5rem; 
+} 
+.mb-0{ 
+  margin-bottom:0; 
+}
+
+/* ---------- RESPONSIVE TWEAKS ---------- */
+@media (max-width: 768px){
+  .profile-image-wrapper{ 
+    width:120px; 
+    height:120px; 
+  }
+  .initial{ 
+    font-size:3rem; 
+  }
+  .edit-icon-wrapper{ 
+    width:36px; 
+    height:36px; 
+  }
+  .edit-icon{ 
+    width:16px; 
+    height:16px; 
+  }
+  .form-actions{ 
+    flex-direction:column; 
+    align-items:stretch; 
+  }
+  .save-button{ 
+    width:100%; 
+  }
+}

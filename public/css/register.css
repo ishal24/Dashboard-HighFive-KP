@@ -1,0 +1,33 @@
+
+.register-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("/img/bg-telkom2.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px);
+  transform: scale(1.06);
+  z-index: -2;
+}
+
+.register-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.44) 0%, rgba(165, 170, 212, 0.301) 40%, rgba(182, 183, 191, 0.1) 100%);
+  z-index: -1;
+}
+
+.glass-card{
+  background: rgba(255,255,255,.16);         /* was via Tailwind; this overrides */
+  border: 1px solid rgba(255,255,255,.28);   /* softer border */
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+}
+
+input:focus, select:focus {
+  outline: none;
+}
+
+html { scroll-behavior: smooth; }

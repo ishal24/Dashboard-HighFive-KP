@@ -1,0 +1,669 @@
+/* ================================
+   EDIT PROFILE - MATCHING LEADERBOARD STYLE
+   ================================ */
+
+:root {
+  /* Telkom Brand Colors - Refined */
+  --telkom-red: #ea1d25;
+  --telkom-red-light: #f04851;
+  --telkom-red-dark: #c41e24;
+  --telkom-red-subtle: rgba(234, 29, 37, 0.08);
+  --telkom-red-soft: rgba(234, 29, 37, 0.04);
+  --telkom-red-ultra-soft: rgba(234, 29, 37, 0.02);
+
+  /* Enhanced Neutral Palette */
+  --white: #ffffff;
+  --gray-25: #fdfdfd;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Soft Backgrounds */
+  --background-primary: transparent;
+  --background-card: var(--white);
+
+  /* Status Colors */
+  --success: #059669;
+  --success-light: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-light: rgba(217, 119, 6, 0.1);
+  --error: #dc2626;
+  --error-light: rgba(220, 38, 38, 0.1);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 16px -4px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 6px 12px -4px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* Transitions */
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main Content Layout - Match Leaderboard */
+.main-content {
+  padding: 0 20px;
+  margin-left: 65px;
+  width: calc(100% - 65px);
+  background: transparent;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.header-section {
+  background: var(--white);
+  color: var(--gray-800);
+  padding: 30px;
+  border-radius: var(--radius-xl);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.header-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--telkom-red), #f04851, var(--telkom-red));
+}
+
+.header-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  color: var(--gray-800);
+}
+
+.header-title i {
+  color: var(--telkom-red);
+  margin-right: 16px;
+}
+
+.header-subtitle {
+  font-size: 1rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+/* Profile Container - Two Column Layout */
+.profile-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card Styling */
+.section-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--gray-300);
+}
+
+.section-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--telkom-red), #f04851);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.section-card:hover::before {
+  opacity: 1;
+}
+
+.info-card {
+  background: linear-gradient(135deg, rgba(234, 29, 37, 0.05) 0%, rgba(234, 29, 37, 0.02) 100%);
+  border: 1px solid rgba(234, 29, 37, 0.1);
+}
+
+.info-card:hover::before {
+  opacity: 0;
+}
+
+/* Section Header */
+.section-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+.section-description {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  font-weight: 400;
+}
+
+/* Photo Upload Section */
+.photo-upload-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+@media (max-width: 640px) {
+  .photo-upload-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+.photo-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+.photo-wrapper:hover {
+  border-color: var(--telkom-red-subtle);
+  transform: scale(1.02);
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-700) 100%);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 3.5rem;
+}
+
+.placeholder-initial {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-edit-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--telkom-red);
+  border: 3px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.photo-edit-btn:hover {
+  background: var(--telkom-red-dark);
+  transform: scale(1.1);
+}
+
+.photo-edit-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+.photo-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.photo-info-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.photo-info-hint {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.photo-info-size {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+/* Form Fields */
+.form-fields {
+  margin-bottom: 28px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  color: var(--gray-900);
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.form-input::placeholder {
+  color: var(--gray-400);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--telkom-red);
+  box-shadow: 0 0 0 3px var(--telkom-red-soft);
+}
+
+.form-input:disabled {
+  background: var(--gray-50);
+  color: var(--gray-500);
+  cursor: not-allowed;
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--gray-500);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  border-radius: var(--radius-sm);
+}
+
+.password-toggle:hover {
+  color: var(--telkom-red);
+  background: var(--telkom-red-soft);
+}
+
+.password-toggle:focus {
+  outline: none;
+  color: var(--telkom-red);
+  box-shadow: 0 0 0 3px var(--telkom-red-soft);
+}
+
+.password-toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2;
+}
+
+.password-hint {
+  font-size: 0.8rem;
+  color: var(--gray-600);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 20px 0;
+}
+
+/* Action Buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--gray-200);
+}
+
+@media (max-width: 640px) {
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(234, 29, 37, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--telkom-red-dark) 0%, #b01e24 100%);
+  box-shadow: 0 4px 12px rgba(234, 29, 37, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-primary:focus:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--telkom-red-soft), 0 2px 8px rgba(234, 29, 37, 0.25);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: var(--gray-100);
+  color: var(--gray-900);
+  border: 1px solid var(--gray-300);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-400);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+}
+
+/* Info Card */
+.info-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.info-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--telkom-red);
+  flex-shrink: 0;
+  margin-top: 2px;
+  stroke-width: 2;
+}
+
+.info-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.info-text {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+.me-3 {
+  margin-right: 12px;
+}
+
+.mt-24 {
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 65px;
+    width: calc(100% - 65px);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 0 15px;
+  }
+
+  .header-section {
+    margin-top: 15px;
+    padding: 20px;
+  }
+
+  .header-title {
+    font-size: 1.75rem;
+  }
+
+  .profile-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .section-card {
+    padding: 20px;
+  }
+
+  .section-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .photo-upload-section {
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
+
+  .photo-wrapper {
+    width: 120px;
+    height: 120px;
+  }
+
+  .placeholder-initial {
+    font-size: 3rem;
+  }
+
+  .form-actions {
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0 12px;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+  }
+
+  .header-title i {
+    margin-right: 10px;
+    font-size: 1.8rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .photo-info-label,
+  .photo-info-hint,
+  .photo-info-size {
+    font-size: 0.8rem;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+  }
+
+  .form-input {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 9px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .form-actions {
+    display: none;
+  }
+}

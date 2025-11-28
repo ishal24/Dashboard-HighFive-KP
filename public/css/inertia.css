@@ -1,0 +1,156 @@
+/* ===================================
+   ENHANCED PROFESSIONAL DASHBOARD STYLES
+   Modern Clean Design with Professional Layout
+   =================================== */
+
+/* ===== ROOT VARIABLES ===== */
+:root {
+    /* Telkom Brand Colors */
+    --telkom-red: #ea1d25;
+    --telkom-red-light: #ff4b52;
+    --telkom-red-dark: #c41e24;
+    --telkom-red-subtle: rgba(234, 29, 37, 0.06);
+    --telkom-red-soft: rgba(234, 29, 37, 0.03);
+
+    /* Division Brand Colors */
+    --dgs-primary: #bf8f00;
+    --dgs-subtle: rgba(191, 143, 0, 0.08);
+    --dgs-soft: rgba(191, 143, 0, 0.04);
+
+    --dps-primary: #0070c0;
+    --dps-light: #3d8dd6;
+    --dps-dark: #005a9e;
+    --dps-subtle: rgba(0, 112, 192, 0.08);
+    --dps-soft: rgba(0, 112, 192, 0.04);
+
+    --dss-primary: #203764;
+    --dss-light: #3d507a;
+    --dss-dark: #182949;
+    --dss-subtle: rgba(32, 55, 100, 0.08);
+    --dss-soft: rgba(32, 55, 100, 0.04);
+
+    --des-primary: #0d5adb;
+    --des-light: #3d7aed;
+    --des-dark: #0a4bb8;
+    --des-subtle: rgba(13, 90, 219, 0.08);
+    --des-soft: rgba(13, 90, 219, 0.04);
+
+    /* Corporate Colors */
+    --dark-azure: #08355f;
+    --light-blue: #f5f7fa;
+
+    /* Status Colors */
+    --success: #10b981;
+    --success-light: rgba(16, 185, 129, 0.08);
+    --success-dark: #047857;
+    --warning: #f59e0b;
+    --warning-light: rgba(245, 158, 11, 0.08);
+    --warning-dark: #d97706;
+    --error: #ef4444;
+    --error-light: rgba(239, 68, 68, 0.08);
+    --error-dark: #dc2626;
+
+    /* Enhanced Neutral Palette */
+    --white: #ffffff;
+    --gray-25: #fdfdfd;
+    --gray-50: #fafbfc;
+    --gray-100: #f4f6f8;
+    --gray-200: #e1e7ef;
+    --gray-300: #cbd5e0;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4a5568;
+    --gray-700: #2d3748;
+    --gray-800: #1a202c;
+    --gray-900: #171923;
+
+    /* Premium Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.04);
+    --shadow-sm: 0 1px 3px 0 rgba(16, 24, 40, 0.06), 0 1px 2px -1px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.06), 0 2px 4px -2px rgba(16, 24, 40, 0.04);
+    --shadow-lg: 0 8px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.04);
+    --shadow-xl: 0 12px 24px -6px rgba(16, 24, 40, 0.12), 0 6px 12px -4px rgba(16, 24, 40, 0.06);
+    --shadow-2xl: 0 24px 48px -12px rgba(16, 24, 40, 0.18);
+    --shadow-card: 0 1px 3px 0 rgba(16, 24, 40, 0.04), 0 1px 2px -1px rgba(16, 24, 40, 0.04);
+    --shadow-card-hover: 0 4px 16px -2px rgba(16, 24, 40, 0.08), 0 2px 8px -2px rgba(16, 24, 40, 0.04);
+
+    /* Modern Gradients */
+    --gradient-red: linear-gradient(135deg, var(--telkom-red) 0%, #d61921 100%);
+    --gradient-blue: linear-gradient(135deg, var(--dps-primary) 0%, var(--dps-dark) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--dgs-primary) 0%, #a67800 100%);
+    --gradient-navy: linear-gradient(135deg, var(--dss-primary) 0%, var(--dss-dark) 100%);
+    --gradient-sky: linear-gradient(135deg, var(--des-primary) 0%, var(--des-dark) 100%);
+    --gradient-subtle: linear-gradient(135deg, var(--gray-25) 0%, var(--gray-50) 100%);
+
+    /* Border Radius */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-3xl: 24px;
+
+    /* Modern Transitions */
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+.section-block { border-radius: var(--radius-xl); box-shadow:  var(--shadow-card); min-height: auto; padding: 0; }
+.section-block:hover { box-shadow:  var(--shadow-card-hover); transform: none; }
+
+/* NOTE: New Stuff */
+
+/* General font for the example */
+body {
+    background-color: #ffffff; /* Light grey background to make the white card pop */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 2rem;
+}
+
+/* Flexbox container to align items */
+.header-content {
+    display: flex;
+    justify-content: space-between; /* Pushes text and button to opposite ends */
+    align-items: center; /* Vertically aligns them in the middle */
+}
+
+/* Text styling */
+.header-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #212529; /* Dark text color */
+}
+
+.header-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #6c757d; /* Lighter, secondary text color */
+}
+
+/* Button styling */
+.export-btn {
+    background-color: #d90429; /* Matching red background */
+    color: #ffffff; /* White text */
+    border: none;
+    border-radius: 6px; /* Slightly rounded corners for the button */
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between the icon and the text */
+    transition: background-color 0.2s ease-in-out; /* Smooth hover effect */
+}
+
+.export-btn:hover {
+    background-color: #b50321; /* A slightly darker red for hover */
+}

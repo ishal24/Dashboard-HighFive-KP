@@ -1,0 +1,128 @@
+/* ================================
+   Global Typography for RLEGS
+   - Konsistenkan font, weight, sizes
+   - Tidak mengubah layout (safe)
+   ================================ */
+
+:root{
+  --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+
+  /* Skala heading (responsif ringan) */
+  --fz-h1: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+  --fz-h2: clamp(1.5rem, 1.05rem + 1.8vw, 2rem);
+  --fz-h3: clamp(1.25rem, 0.95rem + 1.2vw, 1.5rem);
+
+  --lh-tight: 1.15;
+  --lh-snug:  1.25;
+  --lh-base:  1.5;
+
+  --c-title:  #0f172a; /* gray-900 */
+  --c-text:   #1f2937; /* gray-800 */
+  --c-muted:  #4b5563; /* gray-600 */
+}
+
+/* Base reset tipografi */
+html, body, button, input, select, textarea {
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Body default */
+body{
+  color: var(--c-text);
+  line-height: var(--lh-base);
+  font-weight: 400;
+}
+
+/* =========================================
+   Header blocks (berlaku di semua halaman)
+   Struktur yang didukung:
+   - .page-header .page-title h1 + p
+   - .header-dashboard .header-text h1 + p
+   ========================================= */
+
+.page-title h1,
+.header-dashboard .header-text .header-title,
+.header-title{
+  font-family: var(--font-main);
+  font-weight: 800;                 /* 700→800 untuk tegas & konsisten */
+  font-size: var(--fz-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  color: var(--c-title);
+  margin: 0;
+}
+
+.page-title p,
+.header-dashboard .header-text .header-subtitle,
+.header-subtitle{
+  font-family: var(--font-main);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: var(--lh-snug);
+  color: var(--c-muted);
+  margin: .25rem 0 0 0;            /* jarak seragam title→subtitle */
+}
+
+/* Kicker kecil (opsional) */
+.page-kicker{
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* =========================================
+   Buttons & Nav text: satu suara tipografi
+   ========================================= */
+.btn,
+.navbar,
+.sidebar-link,
+.dropdown-item{
+  font-family: var(--font-main) !important;
+}
+
+.btn{
+  font-weight: 700;                 /* konsisten tombol tebal */
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+/* Pastikan badge/label di header konsisten */
+.badge,
+.badge-role-am,
+.badge-role-hotda,
+.badge-status-registered,
+.badge-status-not-registered{
+  font-family: var(--font-main);
+  font-weight: 700;
+}
+
+/* =========================================
+   Utilities untuk dipakai bila perlu
+   ========================================= */
+.h1-display{ font-size: var(--fz-h1); font-weight: 800; line-height: var(--lh-tight); }
+.h2-display{ font-size: var(--fz-h2); font-weight: 800; line-height: var(--lh-snug);  }
+.h3-display{ font-size: var(--fz-h3); font-weight: 700; line-height: var(--lh-snug);  }
+
+.text-muted-600{ color: var(--c-muted) !important; }
+
+/* =========================================
+   Proteksi dari override tak sengaja
+   (hindari font different di komponen lain)
+   ========================================= */
+.table, .card, .dropdown-menu, .modal,
+.form-control, .form-select, .pagination,
+.tabs, .tab-btn{
+  font-family: var(--font-main);
+}
+
+/* Small screens finetune */
+@media (max-width: 640px){
+  .page-title p,
+  .header-subtitle{ font-size: .95rem; }
+}

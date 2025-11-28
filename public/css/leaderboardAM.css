@@ -1,0 +1,1212 @@
+:root {
+    /* Telkom Brand Colors - Refined */
+    --telkom-red: #ea1d25;
+    --telkom-red-light: #f04851;
+    --telkom-red-dark: #c41e24;
+    --telkom-red-subtle: rgba(234, 29, 37, 0.08);
+    --telkom-red-soft: rgba(234, 29, 37, 0.04);
+    --telkom-red-ultra-soft: rgba(234, 29, 37, 0.02);
+
+    /* Enhanced Neutral Palette */
+    --white: #ffffff;
+    --gray-25: #fdfdfd;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+
+    /* Soft Backgrounds - Made Transparent */
+    --background-primary: transparent;
+    --background-card: transparent;
+    --background-card-hover: rgba(255, 255, 255, 0.5);
+
+    /* Status Colors - Muted */
+    --success: #059669;
+    --success-light: rgba(5, 150, 105, 0.1);
+    --warning: #d97706;
+    --warning-light: rgba(217, 119, 6, 0.1);
+    --error: #dc2626;
+    --error-light: rgba(220, 38, 38, 0.1);
+
+    /* Subtle Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 8px 16px -4px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 6px 12px -4px rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+    --shadow-card-hover: 0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+
+    /* Subtle Gradients */
+    --gradient-red-soft: linear-gradient(135deg, rgba(234, 29, 37, 0.9) 0%, rgba(196, 30, 36, 0.95) 100%);
+    --gradient-background: transparent;
+    --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+
+    /* Border Radius */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+
+    /* Smooth Transitions */
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --rank-gold:   #F5C542;
+    --rank-silver: #9FA6B2;
+    --rank-bronze: #C07A2B;
+
+    /* Control heights */
+    --ctrl-h: 44px;
+    --ctrl-fs: 13.5px;
+    --ctrl-radius: 10px;
+}
+
+/* taruh di stylesheet global yang dipakai semua halaman */
+.navbar,
+.navbar.bg-light { background: #fff !important; }
+
+/* CSS untuk konten utama */
+.main-content {
+    padding: 0 20px;
+    margin-left: 65px;
+    width: calc(100% - 65px);
+    background: transparent;
+    min-height: 100vh;
+}
+
+/* Header leaderboard - More Subtle */
+.header-leaderboard {
+    background: var(--white);
+    color: var(--gray-800);
+    padding: 30px;
+    border-radius: var(--radius-xl);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.header-leaderboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--telkom-red), #f04851, var(--telkom-red));
+}
+
+.header-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    color: var(--gray-800);
+}
+
+.header-title i {
+    color: var(--telkom-red);
+    margin-right: 16px;
+}
+
+.header-subtitle {
+    font-size: 1rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+/* Modern Date & Period Filter */
+.date-period-container {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    position: relative;
+    z-index: 100;
+}
+
+.date-filter-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* Flatpickr calendar positioning */
+.flatpickr-calendar {
+    margin-top: 5px !important;
+    box-shadow: var(--shadow-xl) !important;
+    border-radius: var(--radius-xl) !important;
+    border: 1px solid var(--gray-200) !important;
+    background: var(--white) !important;
+    z-index: 99999 !important;
+}
+
+.flatpickr-calendar.open {
+    z-index: 99999 !important;
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--white);
+    color: var(--gray-700);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-xs);
+    transition: var(--transition);
+    width: 100%;
+    text-align: left;
+    outline: none;
+}
+
+.date-filter:hover {
+    border-color: var(--telkom-red);
+    box-shadow: 0 0 0 3px var(--telkom-red-soft);
+    transform: translateY(-1px);
+}
+
+.date-filter i {
+    margin-right: 10px;
+    color: var(--telkom-red);
+}
+
+.date-filter i.fa-chevron-down {
+    margin-left: auto;
+    margin-right: 0;
+    transition: var(--transition);
+    color: var(--gray-400);
+}
+
+/* Modern Period Tabs - Subtle */
+.period-tabs {
+    display: flex;
+    background: rgba(249, 250, 251, 0.8);
+    border-radius: var(--radius-xl);
+    padding: 4px;
+    gap: 2px;
+    border: 1px solid var(--gray-200);
+}
+
+.period-tab {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
+    background: transparent;
+    border: none;
+    color: var(--gray-600);
+}
+
+.period-tab.active {
+    background: var(--white) !important;
+    color: var(--telkom-red) !important;
+    box-shadow: var(--shadow-sm);
+    font-weight: 600;
+}
+
+.period-tab.active i {
+    color: var(--telkom-red) !important;
+}
+
+.period-tab:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--gray-700);
+}
+
+.period-display {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gray-500);
+}
+
+.period-display strong {
+    color: var(--telkom-red);
+    font-weight: 600;
+}
+
+/* Filter info section - Subtle */
+.filter-info {
+    background: var(--telkom-red-ultra-soft);
+    border: 1px solid var(--telkom-red-subtle);
+    border-radius: var(--radius-xl);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-xs);
+    position: relative;
+    z-index: 5;
+}
+
+.filter-info-icon {
+    color: var(--telkom-red);
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.filter-info-text {
+    flex-grow: 1;
+    font-size: 14px;
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+.filter-info-reset {
+    margin-left: 15px;
+}
+
+.reset-btn {
+    background: var(--white);
+    color: var(--telkom-red);
+    border: 1px solid var(--telkom-red-subtle);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.reset-btn:hover {
+    background: var(--telkom-red-soft);
+    border-color: var(--telkom-red);
+    transform: translateY(-1px);
+}
+
+.reset-btn i {
+    margin-right: 6px;
+}
+
+/* =====================================================
+   FIXED: Search & Filter Container - Always 1 Row
+   ===================================================== */
+
+.search-filter-container {
+    display: flex !important;
+    flex-wrap: nowrap !important;  /* KUNCI: jangan wrap */
+    gap: 10px !important;
+    margin-bottom: 25px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--white) 0%, rgba(249, 250, 251, 0.95) 100%);
+    padding: 18px 20px;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    position: relative;
+    z-index: 50;
+    overflow: visible;
+}
+
+.search-filter-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--telkom-red), #f04851, var(--telkom-red));
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+/* Search box - flexible tapi tidak terlalu besar */
+.search-box {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;  /* PENTING: biarkan menyusut */
+    max-width: 280px !important;
+    display: flex;
+    align-items: stretch;
+}
+
+.search-input {
+    width: 100%;
+    display: flex;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--gray-300);
+    transition: var(--transition);
+    height: var(--ctrl-h);
+}
+
+.search-input:focus-within {
+    border-color: var(--telkom-red);
+    box-shadow: 0 0 0 3px var(--telkom-red-soft);
+}
+
+.search-input input {
+    border: none;
+    padding: 10px 14px;
+    font-size: var(--ctrl-fs);
+    flex-grow: 1;
+    min-width: 0;  /* biarkan menyusut */
+    transition: var(--transition);
+    background: var(--white);
+    font-weight: 500;
+    color: var(--gray-700);
+    height: var(--ctrl-h);
+}
+
+.search-input input:focus {
+    outline: none;
+}
+
+.search-input input::placeholder {
+    color: var(--gray-500);
+}
+
+.search-input button {
+    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
+    color: var(--white);
+    border: none;
+    padding: 10px 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    font-size: var(--ctrl-fs);
+    white-space: nowrap;
+    height: var(--ctrl-h);
+}
+
+.search-input button:hover {
+    background: linear-gradient(135deg, var(--telkom-red-dark) 0%, #b01e24 100%);
+    transform: scale(1.02);
+}
+
+/* Filter area wrapper - jangan wrap */
+.filter-area {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+}
+
+.filter-selects {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;  /* KUNCI: jangan wrap */
+}
+
+/* Setiap filter - flexible dan bisa menyusut */
+.filter-group {
+    flex: 1 1 0 !important;  /* KUNCI: equal width, bisa menyusut */
+    min-width: 0 !important;  /* PENTING: izinkan menyusut di bawah content */
+    max-width: none !important;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.filter-group .bootstrap-select {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+}
+
+/* Enhanced Filter Card Styling */
+.filter-group::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--telkom-red-ultra-soft), transparent, var(--telkom-red-ultra-soft));
+    border-radius: var(--radius-lg);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: -1;
+}
+
+.filter-group:hover::before {
+    opacity: 1;
+}
+
+/* Revolutionary Bootstrap Select Styling */
+.bootstrap-select {
+    position: relative !important;
+    z-index: 1050 !important;
+    width: 100% !important;
+}
+
+.bootstrap-select > .dropdown-toggle {
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    height: var(--ctrl-h) !important;
+    width: 100% !important;
+    background: linear-gradient(135deg, var(--white) 0%, rgba(249, 250, 251, 0.9) 100%) !important;
+    color: var(--gray-700) !important;
+    border: 2px solid var(--gray-300) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 0 38px 0 14px !important;
+    font-size: var(--ctrl-fs) !important;
+    font-weight: 500 !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
+    justify-content: flex-start !important;
+    transition: var(--transition) !important;
+    box-shadow: var(--shadow-xs) !important;
+    position: relative !important;
+    text-align: left !important;
+    line-height: 1.3 !important;
+}
+
+.bootstrap-select > .dropdown-toggle:hover,
+.bootstrap-select > .dropdown-toggle:focus {
+    border-color: var(--telkom-red) !important;
+    background: var(--white) !important;
+    box-shadow: 0 0 0 3px var(--telkom-red-soft), var(--shadow-sm) !important;
+    outline: none !important;
+    color: var(--gray-700) !important;
+    transform: translateY(-2px) !important;
+}
+
+.bootstrap-select .dropdown-toggle .filter-option {
+    position: absolute !important;
+    top: 50% !important;
+    left: 14px !important;
+    right: 38px !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bootstrap-select .filter-option-inner,
+.bootstrap-select .filter-option-inner-inner {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: var(--gray-700) !important;
+    font-size: var(--ctrl-fs) !important;
+}
+
+/* Placeholder State Enhancement */
+.bootstrap-select.bs-placeholder .filter-option,
+.bootstrap-select.bs-placeholder .filter-option-inner,
+.bootstrap-select.bs-placeholder .filter-option-inner-inner {
+    color: var(--gray-500) !important;
+    font-style: italic !important;
+}
+
+.bootstrap-select .dropdown-toggle::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border-left: 0.35em solid transparent !important;
+    border-right: 0.35em solid transparent !important;
+    border-top: 0.35em solid var(--gray-600) !important;
+    pointer-events: none !important;
+}
+
+/* Hide default caret */
+.bootstrap-select .caret {
+    display: none !important;
+}
+
+/* Enhanced Dropdown Menu */
+.bootstrap-select .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    z-index: 9999 !important;
+    display: none !important;
+    float: left !important;
+    min-width: 100% !important;
+    padding: 8px 0 !important;
+    margin: 4px 0 0 !important;
+    list-style: none !important;
+    font-size: 14px !important;
+    text-align: left !important;
+    background: linear-gradient(135deg, var(--white) 0%, rgba(249, 250, 251, 0.95) 100%) !important;
+    border: 1px solid var(--gray-200) !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-xl) !important;
+    background-clip: padding-box !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.bootstrap-select .dropdown-menu.show,
+.bootstrap-select.show .dropdown-menu,
+.bootstrap-select.open .dropdown-menu {
+    display: block !important;
+    z-index: 9999 !important;
+}
+
+/* Enhanced Dropdown Items */
+.bootstrap-select .dropdown-menu > li {
+    position: relative !important;
+}
+
+.bootstrap-select .dropdown-menu > li > a {
+    display: block !important;
+    padding: 10px 18px !important;
+    clear: both !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    color: var(--gray-700) !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: var(--radius-md) !important;
+    margin: 2px 8px !important;
+    transition: var(--transition) !important;
+}
+
+.bootstrap-select .dropdown-menu > li > a:hover,
+.bootstrap-select .dropdown-menu > li > a:focus {
+    color: var(--telkom-red) !important;
+    background: linear-gradient(135deg, var(--telkom-red-soft) 0%, var(--telkom-red-ultra-soft) 100%) !important;
+    text-decoration: none !important;
+    outline: none !important;
+    transform: translateX(3px) !important;
+}
+
+.bootstrap-select .dropdown-menu > .active > a,
+.bootstrap-select .dropdown-menu > .selected > a {
+    color: var(--white) !important;
+    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%) !important;
+    outline: none !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.bootstrap-select .dropdown-menu > .active > a:hover,
+.bootstrap-select .dropdown-menu > .active > a:focus,
+.bootstrap-select .dropdown-menu > .selected > a:hover,
+.bootstrap-select .dropdown-menu > .selected > a:focus {
+    color: var(--white) !important;
+    background: linear-gradient(135deg, var(--telkom-red-dark) 0%, #b01e24 100%) !important;
+    transform: translateX(3px) !important;
+}
+
+/* Enhanced Search Box */
+.bootstrap-select .bs-searchbox .form-control {
+    margin: 8px 0 4px 0 !important;
+    width: 100% !important;
+    float: none !important;
+    border: 2px solid var(--gray-300) !important;
+    border-radius: var(--radius-md) !important;
+    background: var(--white) !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: var(--transition) !important;
+    box-shadow: var(--shadow-xs) !important;
+}
+
+.bootstrap-select .bs-searchbox .form-control:focus {
+    border-color: var(--telkom-red) !important;
+    box-shadow: 0 0 0 3px var(--telkom-red-soft) !important;
+    outline: none !important;
+}
+
+/* Enhanced AM Cards - Clean & Professional */
+.am-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    transition: var(--transition-slow);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.am-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--telkom-red), #f04851);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.am-card:hover {
+    background: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--telkom-red-subtle);
+    z-index: 2;
+}
+
+.am-card:hover::before {
+    opacity: 1;
+}
+
+.am-card-body {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.am-rank {
+    font-size: 1.6rem;
+    font-weight: 700;
+    min-width: 50px;
+    text-align: center;
+    padding: 8px;
+    border-radius: var(--radius-lg);
+    background: var(--gray-100);
+    transition: var(--transition);
+    color: var(--gray-600);
+}
+
+.am-card:hover .am-rank {
+    background: var(--telkom-red-soft);
+    color: var(--telkom-red);
+}
+
+.am-profile-pic {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gray-200);
+}
+
+.am-card:hover .am-profile-pic {
+    border-color: var(--telkom-red-subtle);
+    transform: scale(1.02);
+}
+
+.am-info {
+    flex: 1;
+}
+
+.am-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--gray-800);
+    transition: var(--transition);
+}
+
+.am-card:hover .am-name {
+    color: var(--telkom-red);
+}
+
+.am-detail {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.am-detail i {
+    font-size: 12px;
+    color: var(--gray-400);
+}
+
+.am-category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+}
+
+.am-category-badge.enterprise {
+    background: var(--telkom-red-soft);
+    color: var(--telkom-red);
+    border: 1px solid var(--telkom-red-subtle);
+}
+
+.am-category-badge.government {
+    background: var(--warning-light);
+    color: var(--warning);
+    border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.am-category-badge.multi {
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.am-stats {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 24px;
+    min-width: 400px;
+}
+
+.am-card:hover .am-name,
+.am-card:hover .revenue-value {
+    color: var(--gray-800) !important;
+}
+
+.am-avatar {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    display: inline-block;
+}
+
+.rank-crown {
+    position: absolute;
+    left: 50%;
+    top: -22px;
+    transform: translateX(-50%);
+    font-size: 30px;
+    line-height: 1;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    z-index: 1;
+}
+
+.rank-crown i {
+    -webkit-text-stroke: 1px rgba(0,0,0,.08);
+    text-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+.rank-1 i { color: var(--rank-gold); }
+.rank-2 i { color: var(--rank-silver); }
+.rank-3 i { color: var(--rank-bronze); }
+
+.am-rank.text-gold { color: var(--rank-gold) !important; }
+.am-rank.text-silver { color: var(--rank-silver) !important; }
+.am-rank.text-bronze { color: var(--rank-bronze) !important; }
+
+.am-card:hover .am-rank.text-gold { color: var(--rank-gold) !important; }
+.am-card:hover .am-rank.text-silver { color: var(--rank-silver) !important; }
+.am-card:hover .am-rank.text-bronze { color: var(--rank-bronze) !important; }
+
+.rank-crown::after,
+.rank-number { display: none !important; }
+
+.revenue-stat, .achievement-stat {
+    text-align: right;
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    background: rgba(249, 250, 251, 0.7);
+    transition: var(--transition);
+    border: 1px solid var(--gray-200);
+}
+
+.am-card:hover .revenue-stat,
+.am-card:hover .achievement-stat {
+    background: var(--white);
+    border-color: var(--telkom-red-subtle);
+}
+
+.revenue-label, .achievement-label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.revenue-value, .achievement-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.am-card:hover .revenue-value {
+    color: var(--telkom-red);
+}
+
+.achievement-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.achievement-icon i {
+    font-size: 14px;
+}
+
+/* Warna ranking - Subtle */
+.text-gold {
+    color: #d4af37 !important;
+    background: linear-gradient(135deg, #fef9e7, #fef3c7) !important;
+}
+.text-silver {
+    color: #8c9297 !important;
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200)) !important;
+}
+.text-bronze {
+    color: #b8860b !important;
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    position: relative;
+    z-index: 1;
+}
+
+.empty-state i {
+    font-size: 3.5rem;
+    color: var(--gray-300);
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: var(--gray-600);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+}
+
+/* Pagination Styles */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid #e5e7eb;
+    position: relative;
+}
+
+.pagination-info {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+}
+
+.pagination-controls .page-link {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.pagination-controls .page-link:hover:not(.active):not(.disabled) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.pagination-controls .page-link.active {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+.pagination-controls .page-link.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.per-page-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 10;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.per-page-section label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.per-page-section select,
+#perPage,
+.per-page-select {
+    -webkit-appearance: menulist !important;
+    -moz-appearance: menulist !important;
+    appearance: menulist !important;
+    padding: 8px 28px 8px 12px !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    background: white !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    color: #374151 !important;
+    height: 40px !important;
+    min-width: 89px !important;
+    text-align-last: center !important;
+    line-height: normal !important;
+    text-indent: 0 !important;
+    text-shadow: none !important;
+    overflow: visible !important;
+}
+
+.per-page-section select option,
+#perPage option {
+    color: #374151 !important;
+}
+
+.pagination-wrapper > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Force Proper Rendering - Additional Fixes */
+body {
+    position: relative;
+}
+
+.bootstrap-select .dropdown-menu {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* === PATCH: Centering teks di dalam kartu filter === */
+
+/* Matikan positioning absolute yg bikin teks offset */
+.bootstrap-select .dropdown-toggle .filter-option{
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+
+  /* Jadikan flex agar isi benar2 center vertikal */
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  pointer-events: none; /* tetap non-interaktif seperti sebelumnya */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  height: 100% !important; /* ikut tinggi tombol */
+  padding-left: 0 !important; /* padding sudah di tombol */
+  padding-right: 0 !important;
+}
+
+/* Pastikan tombol select punya tinggi dan layout yang stabil */
+.bootstrap-select > .dropdown-toggle{
+  display: flex !important;
+  align-items: center !important;
+  height: var(--ctrl-h) !important;
+  line-height: var(--ctrl-h) !important; /* fallback untuk UA lama */
+  padding: 0 38px 0 14px !important;
+}
+
+/* Teks internal: hindari line-height yang bikin tampak “naik” */
+.bootstrap-select .filter-option-inner,
+.bootstrap-select .filter-option-inner-inner{
+  line-height: 1 !important;
+  display: block !important;
+}
+
+/* Input pencarian juga distabilkan pusat vertikalnya */
+.search-input{
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important; /* center vertikal untuk konten grid */
+  height: var(--ctrl-h) !important;
+}
+
+.search-input input{
+  height: 100% !important;
+  line-height: 1 !important; /* cegah optik “naik” */
+  padding: 0 14px !important; /* biar benar2 center, hilangkan padding vertikal */
+}
+
+.search-input button{
+  height: 100% !important;
+  line-height: 1 !important;
+}
+
+/* Sedikit kompensasi untuk border supaya optik pas */
+.bootstrap-select > .dropdown-toggle{
+  line-height: calc(var(--ctrl-h) - 2px) !important; /* border 2px */
+}
+
+/* Samakan tampilan item terpilih dengan list biasa (tanpa bar merah) */
+.bootstrap-select .dropdown-menu > .active > a,
+.bootstrap-select .dropdown-menu > .selected > a {
+  background: transparent !important;
+  color: var(--gray-700) !important;
+  font-weight: 500 !important;
+}
+
+/* Tetap kasih efek saat hover/focus */
+.bootstrap-select .dropdown-menu > li > a:hover,
+.bootstrap-select .dropdown-menu > li > a:focus,
+.bootstrap-select .dropdown-menu > .active > a:hover,
+.bootstrap-select .dropdown-menu > .selected > a:hover {
+  color: var(--telkom-red) !important;
+  background: linear-gradient(135deg, var(--telkom-red-soft) 0%, var(--telkom-red-ultra-soft) 100%) !important;
+  transform: translateX(3px) !important;
+}
+
+
+/* Responsive - HANYA untuk mobile/tablet kecil */
+@media (max-width: 1200px) {
+    .search-filter-container {
+        flex-wrap: wrap !important;  /* Baru wrap di tablet */
+    }
+    
+    .search-box {
+        flex: 1 1 calc(50% - 5px) !important;
+        max-width: none !important;
+    }
+    
+    .filter-group {
+        flex: 1 1 calc(33.333% - 7px) !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .filter-group {
+        flex: 1 1 calc(50% - 5px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 0 15px;
+    }
+
+    .search-filter-container {
+        padding: 20px;
+        gap: 12px;
+    }
+
+    .search-box,
+    .filter-group {
+        flex: 1 1 100% !important;
+        max-width: none !important;
+    }
+
+    .am-card-body {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+
+    .am-stats {
+        width: 100%;
+        justify-content: space-around;
+        min-width: 0;
+    }
+
+    .period-tabs {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .period-tab {
+        padding: 12px;
+    }
+}
+
+/* ZOOM OVERRIDE: Paksa tetap 1 baris di zoom 80-125% */
+@media (min-width: 1201px) {
+    .search-filter-container {
+        flex-wrap: nowrap !important;  /* KUNCI: paksa jangan wrap */
+    }
+    
+    /* Izinkan semua elemen menyusut proporsional */
+    .search-box,
+    .filter-group {
+        min-width: 140px !important;  /* Minimum absolut */
+        flex-shrink: 1 !important;  /* Bisa menyusut */
+    }
+    
+    /* Teks di dalam bisa ellipsis */
+    .search-input input,
+    .bootstrap-select .filter-option-inner-inner {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+}
+

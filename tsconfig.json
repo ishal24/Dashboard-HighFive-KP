@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./resources/js",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": [
+    "resources/js/**/*.ts",
+    "resources/js/**/*.tsx"
+, "resources/js/lib/SupabaseClient.js", "resources/js/components/ui/card.jsx", "resources/js/components/ui/formatIDRCompact.js", "resources/js/components/ui/progress.jsx", "resources/js/components/ui/badge.jsx", "resources/js/components/ui/tabs.jsx", "resources/js/components/ui/scroll-area.jsx", "resources/js/components/ui/command.jsx", "resources/js/components/ui/separator.jsx", "resources/js/components/ui/popover.jsx"  ],
+  "exclude": ["node_modules", "vendor"]
+}

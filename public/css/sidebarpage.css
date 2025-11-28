@@ -1,0 +1,750 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
+:root{
+  /* Brand Reds */
+  --red-950:#7f1d1d;
+  --red-900:#991b1b;
+  --red-800:#b91c1c;
+  --red-700:#c81e1e;
+  --red-600:#dc2626;
+  --red-500:#ef4444;
+  --red-400:#f87171;
+  --red-300:#fca5a5;
+  --red-200:#fecaca;
+
+
+  /* Neutrals (Putih dominan) */
+  --bg:#f8fafc;
+  --surface:#ffffff;
+  --ink-900:#0f172a;
+  --ink-800:#1e293b;
+  --ink-700:#334155;
+  --ink-600:#475569;
+  --ink-500:#64748b;
+  --ink-400:#94a3b8;
+
+
+  /* Borders & Shadows */
+  --brd:#e2e8f0;
+  --brd-soft:#f1f5f9;
+  --shadow-1:0 1px 3px rgba(2,6,23,.06);
+  --shadow-2:0 6px 18px rgba(2,6,23,.08);
+  --shadow-3:0 20px 48px rgba(2,6,23,.12);
+
+  /* Font */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  /* Radii */
+  --r6:6px; --r8:8px; --r10:10px; --r12:12px; --r16:16px; --r20:20px;
+
+
+  /* Sidebar sizing */
+  --sb-collapsed:70px;     /* width saat tertutup */
+  --sb-expanded:260px;     /* width saat terbuka */
+
+
+  /* Navbar height */
+  --nav-h:70px;
+
+
+  /* Timing */
+  --ease:cubic-bezier(.4,0,.2,1);
+  --tfast:.18s var(--ease);
+  --tnorm:.30s var(--ease);
+}
+
+/* GOOD: only the chart scales */
+#treg3-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Safety belt for icons (Lucide) */
+.lucide,
+svg.lucide,
+[data-lucide] {
+  width: 1rem !important;   /* 16px */
+  height: 1rem !important;
+  display: inline-block;
+  vertical-align: middle;
+  flex: none;
+}
+
+/* =========================
+   RESET & BASE
+   ========================= */
+*,
+*::before,
+*::after{ box-sizing:border-box; }
+html,body{ height:100%; }
+a{ color:inherit; text-decoration:none; }
+li{ list-style:none; }
+img{ max-width:100%; display:block; }
+h1,h2,h3,h4,h5{ color:var(--ink-900); margin:0; }
+h1{ font-weight:600; font-size:1.5rem; }
+
+
+body{
+  font-family:var(--font-sans);
+  background:var(--surface);
+  color:var(--ink-800);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+
+/* Untuk anchor/scroll agar tidak ketutup navbar */
+html{ scroll-padding-top: calc(var(--nav-h) + 24px); }
+
+
+/* =========================
+   LAYOUT
+   ========================= */
+.wrapper{
+  display:flex;
+  min-height:100vh;
+  background:var(--surface);
+}
+
+
+/* MAIN CONTENT — default mengikuti lebar sidebar collapsed */
+.main {
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  padding: calc(var(--nav-h) + 24px) 20px 20px 20px;   /* ruang aman di bawah navbar */
+  margin-left:var(--sb-collapsed);
+  overflow-x:hidden;
+  transition:margin-left var(--tnorm);
+}
+
+
+/* Saat sidebar terbuka (push page) */
+#sidebar.expand ~ .main{ margin-left:var(--sb-expanded); }
+
+
+/* =========================
+   NAVBAR (putih, aksen merah tipis)
+   ========================= */
+.navbar{
+  position:fixed;
+  top:0; left:var(--sb-collapsed); right:0;
+  height:var(--nav-h);
+  display:flex; align-items:center; gap:16px;
+  padding:0 24px;
+  background:rgba(255,255,255,.98);
+  border-bottom:1px solid rgba(220,38,38,.12);
+  backdrop-filter:saturate(140%) blur(8px);
+  box-shadow:var(--shadow-1);
+  z-index:1050;
+  transition:left var(--tnorm), width var(--tnorm), height var(--tnorm);
+}
+#sidebar.expand ~ .navbar{
+  left:var(--sb-expanded);
+}
+
+
+/* Avatar kecil di pojok kanan */
+.avatar-container{
+  width:36px; height:36px; border-radius:50%; overflow:hidden;
+  border:2px solid rgba(220,38,38,.18);
+  transition:border-color var(--tfast), transform var(--tfast);
+}
+.avatar-container:hover{ border-color:var(--red-600); transform:scale(1.05); }
+.avatar-container img{ width:100%; height:100%; object-fit:cover; }
+
+
+/* =========================
+   SIDEBAR (WHITE + RED)
+   ========================= */
+#sidebar{
+  position:fixed; inset:0 auto 0 0;
+  width:var(--sb-collapsed); min-width:var(--sb-collapsed);
+  height:100vh;
+  display:flex; flex-direction:column;
+  background:#fff;                        /* putih */
+  border-right:1px solid var(--brd);
+  box-shadow:4px 0 20px rgba(2,6,23,.04);
+  z-index:1100;
+  transition:width var(--tnorm), box-shadow var(--tnorm);
+}
+#sidebar.expand{
+  width:var(--sb-expanded);
+  min-width:var(--sb-expanded);
+}
+
+
+/* BRAND / LOGO */
+.sidebar-logo{
+  display:flex; align-items:center; gap:12px;
+  padding:16px 16px 14px 16px;
+  border-bottom:1px solid var(--brd-soft);
+  min-height: var(--nav-h);
+}
+
+
+/* — Logo Mark (ikon/gambar) SELALU tampil, baik collapsed maupun expanded
+   (gunakan salah satu selector yang cocok dengan markup Anda:
+    img di dalam .sidebar-logo, atau .logo-mark/.logo-avatar jika ada) */
+.sidebar-logo img,
+.sidebar-logo .logo-mark,
+.sidebar-logo .logo-avatar{
+  width:44px; height:44px;
+  border-radius:12px;
+  box-shadow:0 4px 14px rgba(220,38,38,.15);
+  border:2px solid rgba(220,38,38,.12);
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+
+/* — Brand Text (RLEGS) disembunyikan saat collapsed */
+.sidebar-logo .brand-name,
+.sidebar-logo a{
+  color:var(--red-600);
+  font-weight:700;
+  font-size:1.25rem;
+  letter-spacing:-.3px;
+  transition:opacity var(--tfast);
+}
+#sidebar:not(.expand) .sidebar-logo .brand-name,
+#sidebar:not(.expand) .sidebar-logo a{
+  display:none;
+}
+
+/* 35px = lebar logo; var(--sb-collapsed)=70px */
+#sidebar:not(.expand) .avatar.rounded-circle{
+  display:block;
+  margin-left: calc((var(--sb-collapsed) - 55px) / 2) !important;
+}
+
+/* saat expanded, kembalikan sesuai kebutuhan */
+#sidebar.expand .avatar.rounded-circle{
+  margin-left: 0 !important;   /* atau 16px kalau mau ada inset */
+}
+
+
+
+
+/* — Saat collapsed, pusatkan logo */
+#sidebar:not(.expand) .sidebar-logo{
+  justify-content:center;
+  padding:12px 0;
+}
+
+
+/* TOGGLE BUTTON (pakai gambar/avatar kecil aman) */
+#toggle-btn{
+  border:0; background:transparent; cursor:pointer;
+  padding:12px; border-radius:10px; margin-left:2px;
+  transition:background var(--tfast);
+}
+/* HAPUS hover pink */
+#toggle-btn:hover{ background:transparent; }
+#toggle-btn img{
+  width:34px; height:34px; border-radius:50%;
+  border:2px solid #ffe1e1;
+  transition:transform var(--tfast), border-color var(--tfast);
+}
+#toggle-btn:hover img{ transform:scale(1.05); border-color:var(--red-400); }
+
+
+/* NAV ITEMS */
+.sidebar-nav{
+  flex:1 1 auto;
+  overflow:auto;
+  padding:10px 6px 10px 6px;
+}
+.sidebar-nav::-webkit-scrollbar{ width:6px; }
+.sidebar-nav::-webkit-scrollbar-thumb{ background:#ffe0e0; border-radius:6px; }
+.sidebar-nav::-webkit-scrollbar-track{ background:transparent; }
+
+
+.sidebar-section-title{
+  font-size:.75rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-500); padding:10px 18px 6px 18px;
+}
+
+
+.sidebar-item{ position:relative; margin:2px 0; }
+
+
+.sidebar-link{
+  display:flex; align-items:center; gap:14px;
+  padding:12px 14px; margin:2px 8px;
+  color:var(--ink-800);
+  border-left: 3px solid var(--red-200);
+  border-radius:12px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:background var(--tfast), transform var(--tfast),
+             color var(--tfast), border-color var(--tfast), box-shadow var(--tfast);
+}
+.sidebar-link i{
+  width:24px; text-align:center; font-size:1.1rem; flex:0 0 24px;
+  color:var(--red-600);
+  transition:transform var(--tfast), color var(--tfast), opacity var(--tfast);
+}
+/* HAPUS hover pink di sidebar */
+.sidebar-link:hover{
+  border-left-color: var(--red-500);
+  background: transparent;
+  color:var(--ink-900);
+  transform:translateX(2px);
+  box-shadow:0 1px 0 rgba(220,38,38,.08) inset;
+}
+.sidebar-link.active{
+  background:#ffe8e8; color:var(--ink-900);
+  border-left-color: var(--red-600);
+  font-weight:600;
+}
+
+
+/* Label tersembunyi saat collapsed (ikon tetap) */
+#sidebar:not(.expand) .sidebar-item .sidebar-dropdown .sidebar-link span{
+  display:inline-block !important;
+}
+#sidebar.expand a.sidebar-link span{ display:inline-block; }
+
+
+/* Tooltip kecil di mode collapsed (untuk akses cepat) */
+#sidebar:not(.expand) .sidebar-link:hover::after{
+  content:attr(data-title);
+  position:fixed; left:calc(var(--sb-collapsed) + 8px);
+  padding:6px 10px; background:#ffffff; color:var(--ink-900);
+  border:1px solid var(--brd); border-radius:8px; box-shadow:var(--shadow-2);
+  font-size:.8rem; font-weight:600; white-space:nowrap; z-index:1200;
+}
+
+
+/* Divider & Footer */
+.sidebar-divider{ height:1px; margin:10px 14px; background:var(--brd); }
+
+
+/* Footer sticky di bawah */
+.sidebar-footer{
+  margin-top:auto;
+  border-top:1px solid var(--brd-soft);
+  padding:8px 0 12px;
+  background:#fff;
+}
+.sidebar-footer .sidebar-link{ margin:2px 8px; }
+/* HAPUS hover pink di footer */
+.sidebar-footer .sidebar-link:hover{
+  background:transparent; color:var(--red-700);
+}
+
+
+/* Dropdown arrow */
+.sidebar-link.has-dropdown{ cursor:pointer; }
+#sidebar.expand .sidebar-link.has-dropdown::after{
+  content:""; position:absolute; right:18px; top:50%; transform:translateY(-50%);
+  width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
+  border-top:6px solid var(--ink-700);
+  transition:transform var(--tfast);
+}
+.sidebar-link.has-dropdown[aria-expanded="true"]::after{
+  transform:translateY(-50%) rotate(180deg);
+}
+
+
+/* =========================
+   SIDEBAR DROPDOWN (white)
+   ========================= */
+/* Expanded: di bawah parent */
+.sidebar-dropdown{
+  display:none; max-height:0; opacity:0; overflow:hidden;
+  background:#fff; border:1px solid var(--brd); border-radius:10px; margin:4px 12px;
+  transition:max-height var(--tnorm), opacity var(--tnorm);
+}
+.sidebar-item .sidebar-link.has-dropdown[aria-expanded="true"] + .sidebar-dropdown{
+  display:block; max-height:420px; opacity:1; padding:8px 0;
+}
+#sidebar.expand .sidebar-item .sidebar-dropdown.show{
+  display:block; max-height:420px; opacity:1; padding:8px 0;
+}
+.sidebar-dropdown .sidebar-link{
+  margin:0 6px; padding:10px 16px 10px 44px; font-size:.9rem;
+  color:var(--ink-800); border-radius:8px;
+}
+/* HAPUS hover pink di dropdown */
+.sidebar-dropdown .sidebar-link:hover{ background:transparent; color:var(--ink-900); }
+
+
+/* Collapsed: floating ke kanan */
+#sidebar:not(.expand) .sidebar-item .sidebar-dropdown{
+  position:fixed; left:var(--sb-collapsed); min-width:220px; z-index:1200;
+  background:#fff; border:1px solid var(--brd); border-radius:12px;
+  box-shadow:var(--shadow-3); padding:8px 0; display:none;
+}
+#sidebar:not(.expand) .sidebar-item:hover .has-dropdown + .sidebar-dropdown{ display:block; }
+/* Ensure click-to-toggle also works in collapsed mode */
+#sidebar:not(.expand) .sidebar-item .sidebar-link.has-dropdown[aria-expanded="true"] + .sidebar-dropdown{
+  display:block;
+  max-height:420px;
+  opacity:1;
+  padding:8px 0;
+}
+#sidebar:not(.expand) .sidebar-item .sidebar-dropdown.show{
+  display:block;
+  max-height:420px;
+  opacity:1;
+  padding:8px 0;
+}
+
+
+/* =========================
+   CARDS & ELEMENTS
+   ========================= */
+.card{
+  background:#fff; border:1px solid var(--brd); border-radius:16px;
+  box-shadow:var(--shadow-1);
+  transition:transform var(--tfast), box-shadow var(--tfast), border-color var(--tfast);
+}
+.card:hover{ transform:translateY(-2px); box-shadow:var(--shadow-2); border-color:#ffd6d6; }
+.card-body{ padding:24px; }
+
+
+/* Stat tile interaktif */
+.card-body.align-items-center.gap-3:hover{
+  background:linear-gradient(135deg, var(--red-600), var(--red-500) 55%, var(--red-400));
+  color:#fff; border-radius:12px; transform:scale(1.015);
+}
+
+
+/* Hero/gradient block */
+.bg-custom{
+  background:linear-gradient(135deg, var(--red-600), var(--red-500) 55%, var(--red-400));
+  padding:30px; border-radius:16px; box-shadow:0 10px 26px rgba(220,38,38,.20);
+}
+
+
+/* =========================
+   BUTTONS
+   ========================= */
+.gradient-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:linear-gradient(135deg, var(--red-600), var(--red-500));
+  color:#fff; border:0; border-radius:10px; padding:10px 20px; font-weight:600;
+  box-shadow:0 6px 18px rgba(220,38,38,.28); transition:var(--tfast);
+}
+.gradient-btn:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(220,38,38,.32); }
+
+
+.btn-primary{
+  background:linear-gradient(135deg, var(--red-600), var(--red-500));
+  border:none; border-radius:10px; padding:10px 20px; font-weight:600;
+  box-shadow:0 6px 18px rgba(220,38,38,.28); transition:var(--tfast);
+}
+.btn-primary:hover{ background:linear-gradient(135deg, var(--red-800), var(--red-600)); transform:translateY(-2px); }
+
+
+.export-btn{
+  background:var(--red-600); color:#fff; border:none; border-radius:10px;
+  padding:12px 18px; font-weight:700; box-shadow:var(--shadow-1); transition:var(--tfast);
+}
+.export-btn:hover{ background:var(--red-800); transform:translateY(-2px); box-shadow:var(--shadow-2); }
+
+
+/* =========================
+   FORM CONTROLS
+   ========================= */
+.form-control,.form-select{
+  border:1px solid #f2c7c7; background:#fff; color:var(--ink-800);
+  border-radius:10px; padding:12px 14px; transition:var(--tfast);
+}
+.form-control:focus,.form-select:focus{
+  border-color:var(--red-600); box-shadow:0 0 0 3px rgba(220,38,38,.12); outline:none;
+}
+
+
+/* Custom select header */
+.gradient-box{
+  background:linear-gradient(135deg, var(--red-600), var(--red-500));
+  color:#fff; border:0; padding:12px; border-radius:10px; box-shadow:0 2px 8px rgba(220,38,38,.18);
+}
+.gradient-box option{ color:#1e293b; background:#fff; }
+
+
+/* =========================
+   TABLES
+   ========================= */
+.table{
+  width:100%; border-radius:12px; overflow:hidden;
+  border-collapse:separate; border-spacing:0; box-shadow:0 4px 16px rgba(2,6,23,.06);
+}
+.table th{
+  background:linear-gradient(135deg, rgba(220,38,38,.06), rgba(239,68,68,.03));
+  color:var(--red-600); font-weight:600; font-size:14px; padding:16px;
+  border-bottom:1px solid #f6cfcf; text-align:left;
+}
+.table td{
+  padding:16px; font-size:14px; color:var(--ink-700);
+  border-bottom:1px solid #f2f4f7;
+}
+.table tbody tr:hover{ background:#fff7f7; }
+
+
+/* =========================
+   TAGS / BADGES / LISTS
+   ========================= */
+.tag{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:999px; font-size:.75rem; font-weight:600;
+  background:#fff1f1; color:var(--red-700); border:1px solid #ffe1e1;
+}
+.badge-soft{
+  padding:4px 10px; border-radius:10px; font-size:.7rem; font-weight:700;
+  border:1px solid var(--brd-soft); background:#fff; color:var(--ink-700);
+}
+
+
+.status-badge{
+  padding:6px 12px; border-radius:10px; font-size:.75rem; font-weight:700;
+  min-width:60px; text-align:center;
+}
+.bg-success-soft{ background:rgba(5,150,105,.14); color:#059669; }
+.bg-warning-soft{ background:rgba(217,119,6,.14); color:#d97706; }
+.bg-danger-soft{  background:rgba(220,38,38,.14); color:#dc2626; }
+
+
+/* =========================
+   DROPDOWN (umum)
+   ========================= */
+.dropdown-menu{
+  border:1px solid var(--brd);
+  background:rgba(255,255,255,.98);
+  backdrop-filter:blur(8px);
+  box-shadow:var(--shadow-2);
+  border-radius:12px; padding:8px; margin-top:8px;
+}
+.dropdown-item{
+  border-radius:8px; padding:10px 16px; font-size:14px; font-weight:500;
+  color:var(--ink-800);
+  transition:transform var(--tfast), background var(--tfast), color var(--tfast);
+}
+/* HAPUS hover pink di menu dropdown */
+.dropdown-item:hover{
+  background:transparent; color:var(--red-600); transform:translateX(2px);
+}
+.dropdown-item.text-danger:hover{
+  background:transparent; color:var(--red-800);
+}
+
+
+/* =========================
+   ANIMATIONS
+   ========================= */
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.5} }
+.loading{ animation:pulse 2s var(--ease) infinite; }
+
+
+@keyframes fadeInUp{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.fade-in{ animation:fadeInUp .6s var(--ease); }
+
+
+/* =========================
+   SCROLLBAR (merah muda)
+   ========================= */
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-track{ background:#f1f5f9; border-radius:4px; }
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(135deg, var(--red-600), var(--red-500));
+  border-radius:4px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(135deg, var(--red-800), var(--red-600));
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+
+/* 1280↓ — sedikit rapat */
+@media (max-width:1280px){
+  .main{ padding: calc(var(--nav-h) + 20px) 18px 18px 18px; }
+}
+
+
+/* 1200↓ — grid ringkas */
+@media (max-width:1200px){
+  .main{ padding: calc(var(--nav-h) + 20px) 16px 16px 16px; }
+}
+
+
+/* 992↓ — sidebar jadi off-canvas, gunakan backdrop */
+@media (max-width:992px){
+  /* Sidebar off-canvas */
+  #sidebar{
+    transform:translateX(-100%);
+    width:var(--sb-expanded);
+    min-width:var(--sb-expanded);
+    box-shadow:0 24px 48px rgba(0,0,0,.24);
+  }
+  #sidebar.expand{ transform:translateX(0); }
+
+
+  /* Backdrop opsional (buat div.sidebar-backdrop di HTML) */
+  .sidebar-backdrop{
+    position:fixed; inset:0;
+    background:rgba(15,23,42,.35);
+    backdrop-filter:blur(2px);
+    z-index:1090;
+    opacity:0; pointer-events:none; transition:opacity var(--tnorm);
+  }
+  .sidebar-backdrop.show{ opacity:1; pointer-events:auto; }
+
+
+  /* Navbar & main full width */
+  .navbar{ left:0; }
+  .main{ margin-left:0; padding: calc(var(--nav-h) + 18px) 16px 16px 16px; }
+
+
+  /* Saat sidebar dibuka di mobile, biarkan konten tetap tidak tertutup */
+  #sidebar.expand ~ .main{ transform:none; }
+  #sidebar.expand ~ .navbar{ left:0; }
+}
+
+
+/* 576↓ — satu kolom */
+@media (max-width:576px){
+  .main{ padding: calc(var(--nav-h) + 14px) 12px 12px 12px; }
+}
+
+
+/* =========================
+   ACCESSIBILITY (focus)
+   ========================= */
+.sidebar-link:focus-visible,
+.btn-primary:focus-visible,
+.gradient-btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible{
+  outline:2px solid rgba(220,38,38,.45);
+  outline-offset:2px;
+  box-shadow:0 0 0 3px rgba(220,38,38,.12);
+}
+
+
+/* =========================
+   TEXT / HEADINGS (bersih)
+   ========================= */
+h1, h2{ text-shadow:none; color:var(--ink-900); }
+
+
+/* =========================
+   LEGACY COMPAT (opsional)
+   — kalau masih ada container-leaderboard lama
+   ========================= */
+.container-leaderboard{ width:100%; display:flex; flex-direction:column; align-items:center; }
+#sidebar.expand ~ .container-leaderboard{ left:170px; width:calc(90% - 65px); }
+
+
+/* =========================
+   LAST-MILE FIXES (jaga card tidak terpotong)
+   ========================= */
+
+
+/* Pastikan tinggi navbar konsisten dan konten tidak tertutup */
+.navbar{ height: var(--nav-h) !important; }
+.main{ padding-top: calc(var(--nav-h) + 24px) !important; }
+
+
+/* Saat sidebar expand di desktop, navbar ikut geser */
+#sidebar.expand ~ .navbar{ left: var(--sb-expanded) !important; }
+
+
+/* Tambahan margin kecil untuk section di atas agar lega */
+.section-top-gap{ margin-top: 8px; }
+
+
+/* smooth scroll */
+html { scroll-behavior: smooth; }
+/* make main content shift like main.blade.php but keep our markup */
+#content-wrapper { margin-left: var(--sb-collapsed); transition: margin-left var(--tnorm); }
+#sidebar.expand ~ #content-wrapper { margin-left: var(--sb-expanded); }
+
+
+/* ===== Center icons when sidebar is collapsed ===== */
+#sidebar:not(.expand) .sidebar-link {
+  justify-content: center;     /* center the icon horizontally */
+  align-items: center;          /* keep it vertically centered */
+  padding: 12px 0;              /* equal top/bottom, no side bias */
+  margin: 6px 10px;             /* even inset on both sides */
+  border-left: 0;               /* remove left accent so it's truly centered */
+  gap: 0;                       /* no gap since the label is hidden */
+}
+
+
+#sidebar:not(.expand) .sidebar-link i {
+  flex: 0 0 auto;               /* don't reserve 24px column on the left */
+  width: 24px;                  /* icon size stays consistent */
+  text-align: center;           /* center the glyph inside its box */
+  margin: 0;                    /* remove any leftover offsets */
+}
+
+
+#sidebar:not(.expand) .sidebar-link span {
+  display: none !important;     /* hide labels in collapsed mode */
+}
+
+/* === Top navbar hover styles === */
+header#top .nav-link {
+  border-radius: 8px;              /* slightly rounded */
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+/* HAPUS hover pink di top navbar */
+header#top .nav-link:hover {
+  background: transparent;
+  color: var(--red-700);
+  transform: translateY(-1px);
+}
+
+header#top .nav-link i {
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+header#top .nav-link:hover i {
+  color: var(--red-600);           /* icon matches hover color */
+  transform: scale(1.1);           /* slight grow */
+}
+
+/* Topbar that shifts with the sidebar */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: var(--sb-collapsed);  /* align with collapsed sidebar */
+  right: 0;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid var(--brd);
+  padding-inline: 24px;        /* same L/R padding */
+  z-index: 1200;               /* above the sidebar (1100) */
+  transition: left var(--tnorm);
+}
+
+/* When sidebar expands, move the topbar to the right too */
+#sidebar.expand ~ #content-wrapper .topbar {
+  left: var(--sb-expanded);
+}
+
+/* Make sure page content clears the fixed topbar */
+#content-wrapper {
+  margin-left: var(--sb-collapsed);
+  padding-top: var(--nav-h);   /* space under fixed topbar */
+  transition: margin-left var(--tnorm);
+}
+#sidebar.expand ~ #content-wrapper {
+  margin-left: var(--sb-expanded);
+}
+
