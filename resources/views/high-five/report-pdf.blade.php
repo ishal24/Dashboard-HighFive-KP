@@ -284,30 +284,30 @@
         </div>
         <div class="meta-row">
             <span class="meta-label">Dataset Pertama:</span>
-            <span class="meta-value">{{ $dataset_1['name'] }} ({{ $dataset_1['date'] }})</span>
+            <span class="meta-value">{{ $snapshot_1['name'] }} ({{ $snapshot_1['date'] }})</span>
         </div>
         <div class="meta-row">
             <span class="meta-label">Dataset Kedua:</span>
-            <span class="meta-value">{{ $dataset_2['name'] }} ({{ $dataset_2['date'] }})</span>
+            <span class="meta-value">{{ $snapshot_2['name'] }} ({{ $snapshot_2['date'] }})</span>
         </div>
     </div>
 
     <div class="section-title">PERFORMA ACCOUNT MANAGER (AM LEVEL)</div>
 
     <div class="analysis-cards">
-        @if(isset($am_performance['analysis']['most_progress']))
+        @if(isset($am_performance['witel_analysis']['cards']['dataset_2']['most_progress']))
         <div class="analysis-card">
             <h4>Most Progress</h4>
-            <div class="value">{{ $am_performance['analysis']['most_progress']['witel'] }}</div>
-            <div class="label">{{ number_format($am_performance['analysis']['most_progress']['avg_progress'], 2) }}%</div>
+            <div class="value">{{ $am_performance['witel_analysis']['cards']['dataset_2']['most_progress']['witel'] }}</div>
+            <div class="label">{{ number_format($am_performance['witel_analysis']['cards']['dataset_2']['most_progress']['avg_progress'], 2) }}%</div>
         </div>
         @endif
 
-        @if(isset($am_performance['analysis']['least_progress']))
+        @if(isset($am_performance['witel_analysis']['cards']['dataset_2']['least_progress']))
         <div class="analysis-card">
             <h4>Least Progress</h4>
-            <div class="value">{{ $am_performance['analysis']['least_progress']['witel'] }}</div>
-            <div class="label">{{ number_format($am_performance['analysis']['least_progress']['avg_progress'], 2) }}%</div>
+            <div class="value">{{ $am_performance['witel_analysis']['cards']['dataset_2']['least_progress']['witel'] }}</div>
+            <div class="label">{{ number_format($am_performance['witel_analysis']['cards']['dataset_2']['least_progress']['avg_progress'], 2) }}%</div>
         </div>
         @endif
     </div>
@@ -317,10 +317,10 @@
             <tr>
                 <th>Witel</th>
                 <th>Account Manager</th>
-                <th>Avg Progress<br>({{ $dataset_1['date'] }})</th>
-                <th>Avg Progress<br>({{ $dataset_2['date'] }})</th>
-                <th>Avg Result<br>({{ $dataset_1['date'] }})</th>
-                <th>Avg Result<br>({{ $dataset_2['date'] }})</th>
+                <th>Avg Progress<br>({{ $snapshot_1['date'] }})</th>
+                <th>Avg Progress<br>({{ $snapshot_2['date'] }})</th>
+                <th>Avg Result<br>({{ $snapshot_1['date'] }})</th>
+                <th>Avg Result<br>({{ $snapshot_2['date'] }})</th>
                 <th>Change</th>
             </tr>
         </thead>
@@ -329,12 +329,12 @@
             <tr>
                 <td>{{ $row['witel'] }}</td>
                 <td><strong>{{ $row['am'] }}</strong></td>
-                <td>{{ number_format($row['avg_progress_1'], 2) }}%</td>
-                <td>{{ number_format($row['avg_progress_2'], 2) }}%</td>
-                <td>{{ number_format($row['avg_result_1'], 2) }}%</td>
-                <td>{{ number_format($row['avg_result_2'], 2) }}%</td>
-                <td class="{{ $row['progress_change'] >= 0 ? 'change-positive' : 'change-negative' }}">
-                    {{ $row['progress_change'] >= 0 ? '+' : '' }}{{ number_format($row['progress_change'], 2) }}%
+                <td>{{ number_format($row['progress_1'], 2) }}%</td>
+                <td>{{ number_format($row['progress_2'], 2) }}%</td>
+                <td>{{ number_format($row['result_1'], 2) }}%</td>
+                <td>{{ number_format($row['result_2'], 2) }}%</td>
+                <td class="{{ $row['change_progress'] >= 0 ? 'change-positive' : 'change-negative' }}">
+                    {{ $row['change_progress'] >= 0 ? '+' : '' }}{{ number_format($row['change_progress'], 2) }}%
                 </td>
             </tr>
             @endforeach
@@ -354,7 +354,7 @@
             <div class="leaderboard-name">{{ $am['am'] }}</div>
             <div class="leaderboard-detail">{{ $am['witel'] }}</div>
         </div>
-        <div class="leaderboard-score">{{ number_format($am['avg_progress_2'], 2) }}%</div>
+        <div class="leaderboard-score">{{ number_format($am['progress_2'], 2) }}%</div>
     </div>
     @endforeach
 
@@ -369,17 +369,33 @@
     <div class="section-title">PERFORMA PER PRODUK (PRODUCT LEVEL)</div>
 
     <div class="analysis-cards">
+        @if(isset($product_performance['statistics']['coverage']))
         <div class="analysis-card">
             <h4>Corporate Customer Visited</h4>
-            <div class="value">{{ $product_performance['analysis']['visited_cc'] }}/{{ $product_performance['analysis']['total_cc'] }}</div>
-            <div class="label">{{ number_format($product_performance['analysis']['visited_ratio'], 2) }}% Coverage</div>
+            <div class="value">{{ $product_performance['statistics']['coverage']['visited'] }}/{{ $product_performance['statistics']['coverage']['total'] }}</div>
+            <div class="label">{{ number_format($product_performance['statistics']['coverage']['percentage'], 2) }}% Coverage</div>
         </div>
+        @else
+        <div class="analysis-card">
+            <h4>Corporate Customer Visited</h4>
+            <div class="value">-</div>
+            <div class="label">-</div>
+        </div>
+        @endif
 
+        @if(isset($product_performance['statistics']['am_without_progress']))
         <div class="analysis-card">
             <h4>AM Tanpa Progress</h4>
-            <div class="value">{{ $product_performance['analysis']['am_without_progress'] }}</div>
+            <div class="value">{{ $product_performance['statistics']['am_without_progress'] }}</div>
             <div class="label">Account Manager</div>
         </div>
+        @else
+        <div class="analysis-card">
+            <h4>AM Tanpa Progress</h4>
+            <div class="value">-</div>
+            <div class="label">Account Manager</div>
+        </div>
+        @endif
     </div>
 
     <table>
@@ -388,34 +404,34 @@
                 <th>AM</th>
                 <th>Customer</th>
                 <th>Product</th>
-                <th>Progress<br>({{ $dataset_1['date'] }})</th>
-                <th>Progress<br>({{ $dataset_2['date'] }})</th>
-                <th>Result<br>({{ $dataset_1['date'] }})</th>
-                <th>Result<br>({{ $dataset_2['date'] }})</th>
+                <th>Progress<br>({{ $snapshot_1['date'] }})</th>
+                <th>Progress<br>({{ $snapshot_2['date'] }})</th>
+                <th>Result<br>({{ $snapshot_1['date'] }})</th>
+                <th>Result<br>({{ $snapshot_2['date'] }})</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(array_slice($product_performance['benchmarking'], 0, 30) as $row)
+            @foreach(array_slice($product_performance['products'], 0, 30) as $row)
             <tr>
                 <td>{{ $row['am'] }}</td>
-                <td>{{ $row['customer_name'] }}</td>
+                <td>{{ $row['customer'] ?? '-' }}</td>
                 <td>{{ $row['product'] }}</td>
-                <td>{{ $row['progress_percentage_1'] }}%</td>
-                <td>{{ $row['progress_percentage_2'] }}%</td>
-                <td>{{ $row['result_percentage_1'] }}%</td>
-                <td>{{ $row['result_percentage_2'] }}%</td>
+                <td>{{ $row['progress_1'] }}%</td>
+                <td>{{ $row['progress_2'] }}%</td>
+                <td>{{ $row['result_1'] }}%</td>
+                <td>{{ $row['result_2'] }}%</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    @if(count($product_performance['benchmarking']) > 30)
-    <p class="text-center mt-10"><em>Menampilkan 30 dari {{ count($product_performance['benchmarking']) }} data. Data lengkap dapat diakses di dashboard.</em></p>
+    @if(count($product_performance['products']) > 30)
+    <p class="text-center mt-10"><em>Menampilkan 30 dari {{ count($product_performance['products']) }} data. Data lengkap dapat diakses di dashboard.</em></p>
     @endif
 
     <div class="section-title mt-10">LEADERBOARD PRODUK (TOP 10)</div>
 
-    @foreach(array_slice($product_performance['leaderboard'], 0, 10) as $index => $product)
+    @foreach(array_slice($product_performance['product_leaderboard']['top_10'] ?? [], 0, 10) as $index => $product)
     @php
         $rank = $index + 1;
         $class = $rank === 1 ? 'gold' : ($rank === 2 ? 'silver' : ($rank === 3 ? 'bronze' : ''));
@@ -424,9 +440,9 @@
         <div class="leaderboard-rank">{{ $rank }}</div>
         <div class="leaderboard-info">
             <div class="leaderboard-name">{{ $product['product'] }}</div>
-            <div class="leaderboard-detail">{{ $product['offer_count'] }} penawaran</div>
+            <div class="leaderboard-detail">{{ $product['total_offerings'] ?? 0 }} penawaran</div>
         </div>
-        <div class="leaderboard-score">{{ number_format($product['avg_progress'], 2) }}%</div>
+        <div class="leaderboard-score">{{ number_format($product['avg_progress'] ?? 0, 2) }}%</div>
     </div>
     @endforeach
 
