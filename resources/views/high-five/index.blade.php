@@ -25,19 +25,16 @@
 
 <!-- Section 1: Kelola Dataset High Five (UPDATED TITLE & BUTTON) -->
 <div class="toolkit-container">
-    <!-- Header (Clickable) with Kelola Link Button -->
-    <div class="toolkit-header" onclick="toggleManualFetch()">
+    <!-- Header -->
+    <div class="toolkit-header">
         <h4>
             <i class="fas fa-database"></i>
             Kelola Dataset High Five
         </h4>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <button type="button" class="btn-kelola-link" onclick="event.stopPropagation(); openLinkModal()">
-                <i class="fas fa-cog"></i>
-                Kelola Link Spreadsheet
-            </button>
-            <i class="fas fa-chevron-down toolkit-toggle" id="manualFetchToggle"></i>
-        </div>
+        <button type="button" class="btn-kelola-link" onclick="openLinkModal()">
+            <i class="fas fa-cog"></i>
+            Kelola Link Spreadsheet
+        </button>
     </div>
 
     <!-- Subtitle -->
@@ -45,8 +42,8 @@
         Rekap link dan update data performa mingguan
     </p>
 
-    <!-- Body (Collapsible) -->
-    <div class="toolkit-body" id="manualFetchBody">
+    <!-- Body (Always Visible) -->
+    <div class="toolkit-body" id="manualFetchBody" style="display: block;">
         <!-- Info Banner (UPDATED COPYWRITING) -->
         <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 14px 18px; border-radius: var(--radius-lg); border: 1px solid #fcd34d; margin-bottom: 16px;">
             <div style="display: flex; align-items: start; gap: 10px;">
