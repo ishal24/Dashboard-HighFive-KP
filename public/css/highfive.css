@@ -1704,16 +1704,44 @@ main.main-content,
     overflow-x: hidden;
 }
 
+.table-header-fixed {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.table-header-fixed table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.table-header-fixed thead th {
+    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
+    color: var(--white);
+    font-weight: 700;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    border: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 .table-scrollable-wrapper table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
 }
 
 .table-scrollable-wrapper thead th {
     position: sticky;
     top: 0;
-    z-index: 6;
-    background: var(--white);
+    z-index: 10;
+    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
+    color: var(--white);
+    font-weight: 700;
 }
 
 .table-scrollable-wrapper thead th:first-child {

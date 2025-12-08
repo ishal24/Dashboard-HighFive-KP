@@ -278,7 +278,7 @@
                 <!-- Sub-Tabs Navigation -->
                 <div class="am-tabs-navigation">
                     <button class="am-tab-btn active" data-am-tab="benchmarking">
-                        <i class="fas fa-table"></i> Benchmarking Performa Per Produk
+                        <i class="fas fa-table"></i> Benchmarking Performa Account Manager
                     </button>
                     <button class="am-tab-btn" data-am-tab="leaderboard">
                         <i class="fas fa-medal"></i> Leaderboard AM (Top Performers)
@@ -291,9 +291,8 @@
                         <div class="table-header">
                             <h4><i class="fas fa-table"></i> Benchmarking Performa Account Manager</h4>
                         </div>
-                        <div class="table-scrollable-wrapper">
-                            <div class="table-responsive">
-                                <table class="benchmark-table">
+                        <div class="table-header-fixed">
+                            <table class="benchmark-table">
                                 <thead>
                                     <tr>
                                         <th>Witel</th>
@@ -305,6 +304,12 @@
                                         <th>Perubahan</th>
                                     </tr>
                                 </thead>
+                            </table>
+                        </div>
+                        <div class="table-scrollable-wrapper">
+                            <div class="table-responsive">
+                                <table class="benchmark-table">
+                                <thead style="display: none;"></thead>
                                 <tbody id="amBenchmarkTableBody">
                                     <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
                                 </tbody>
@@ -422,21 +427,26 @@
                         <div class="table-header">
                             <h4><i class="fas fa-table"></i> Benchmarking Performa Per Produk</h4>
                         </div>
+                        <div class="table-header-fixed">
+                            <table class="benchmark-table">
+                                <thead>
+                                    <tr>
+                                        <th>AM</th>
+                                        <th>Customer</th>
+                                        <th>Product</th>
+                                        <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
+                                        <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
+                                        <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
+                                        <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
+                                        <th>Perubahan</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                         <div class="table-scrollable-wrapper">
                             <div class="table-responsive">
                                 <table class="benchmark-table">
-                                    <thead>
-                                        <tr>
-                                            <th>AM</th>
-                                            <th>Customer</th>
-                                            <th>Product</th>
-                                            <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
-                                            <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
-                                            <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
-                                            <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
-                                            <th>Perubahan</th>
-                                        </tr>
-                                    </thead>
+                                    <thead style="display: none;"></thead>
                                     <tbody id="productBenchmarkTableBody">
                                         <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
                                     </tbody>
