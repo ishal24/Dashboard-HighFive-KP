@@ -224,15 +224,24 @@ class HighFiveProductPerformanceController extends Controller
         $customerStartIndex = 0;
 
         foreach ($data as $index => $row) {
+            // Cek apakah AM berubah
             if ($row['am'] !== $currentAM) {
                 if ($currentAM !== null) {
+                    // Finalize AM sebelumnya
                     $this->finalizeAMGroup($result, $amStartIndex, $index);
+                    
+                    // 🔥 FIX BUG DISINI: 
+                    // Saat AM berubah, grup customer terakhir milik AM tersebut juga harus ditutup!
+                    $this->finalizeCustomerGroup($result, $customerStartIndex, $index);
                 }
+                
+                // Reset trackers untuk AM baru
                 $currentAM = $row['am'];
                 $currentCustomer = $row['customer'];
                 $amStartIndex = $index;
                 $customerStartIndex = $index;
             }
+            // Jika AM sama, cek apakah Customer berubah
             elseif ($row['customer'] !== $currentCustomer) {
                 if ($currentCustomer !== null) {
                     $this->finalizeCustomerGroup($result, $customerStartIndex, $index);
@@ -244,6 +253,7 @@ class HighFiveProductPerformanceController extends Controller
             $result[] = $row;
         }
 
+        // Handle item terakhir setelah loop selesai
         if (!empty($result)) {
             $this->finalizeCustomerGroup($result, $customerStartIndex, count($result));
             $this->finalizeAMGroup($result, $amStartIndex, count($result));

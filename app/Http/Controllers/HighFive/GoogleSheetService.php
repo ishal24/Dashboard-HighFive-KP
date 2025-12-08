@@ -98,39 +98,41 @@ class GoogleSheetService
     {
         // Ensure URL has output=csv parameter
         if (strpos($publishedUrl, 'output=csv') === false) {
-            // Try to add it
             $publishedUrl .= (strpos($publishedUrl, '?') !== false ? '&' : '?') . 'output=csv';
         }
 
-        // Fetch CSV data using file_get_contents
+        // Fetch CSV content
         $csvData = @file_get_contents($publishedUrl);
 
         if ($csvData === false) {
-            throw new \Exception('Tidak dapat mengakses published spreadsheet. Pastikan: 1) Spreadsheet sudah dipublikasikan sebagai CSV, 2) Link berakhiran &output=csv, 3) Sharing diset "Anyone with the link"');
+            throw new \Exception('Tidak dapat mengakses published spreadsheet.');
         }
 
-        // Parse CSV
-        $lines = explode("\n", $csvData);
+        // ✅ FIX: Parse CSV aman menggunakan temporary stream
+        // Ini mencegah error jika ada "Enter" (newline) di dalam isi cell Excel
         $values = [];
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $csvData);
+        rewind($stream);
 
-        foreach ($lines as $line) {
-            if (trim($line) !== '') {
-                $values[] = str_getcsv($line);
+        while (($row = fgetcsv($stream)) !== false) {
+            // Hapus karakter invisible BOM jika ada di awal file
+            if (empty($values) && isset($row[0])) {
+                $row[0] = preg_replace('/^\xEF\xBB\xBF/', '', $row[0]); 
+            }
+            
+            // Filter baris yang benar-benar kosong
+            if (!empty(array_filter($row, function($val) { return trim($val) !== ''; }))) {
+                $values[] = $row;
             }
         }
-
-        // Remove empty rows
-        $values = array_filter($values, function($row) {
-            return !empty(array_filter($row, function($cell) {
-                return trim($cell) !== '';
-            }));
-        });
+        fclose($stream);
 
         if (empty($values)) {
             throw new \Exception('Spreadsheet kosong atau tidak ada data');
         }
 
-        return $this->parseSpreadsheetData(array_values($values));
+        return $this->parseSpreadsheetData($values);
     }
 
     /**
@@ -188,10 +190,16 @@ class GoogleSheetService
 
         foreach (self::REQUIRED_COLUMNS as $requiredColumn) {
             $found = false;
+            
+            // Normalisasi kolom yang dicari (hapus spasi & underscore, lowercase)
+            $normalizedRequired = strtolower(str_replace(['_', ' '], '', $requiredColumn));
 
             foreach ($headers as $index => $header) {
-                // Trim and case-insensitive comparison
-                if (strcasecmp(trim($header), trim($requiredColumn)) === 0) {
+                // Normalisasi header dari Excel
+                $normalizedHeader = strtolower(str_replace(['_', ' '], '', trim($header)));
+
+                // Bandingkan versi normalisasi
+                if ($normalizedHeader === $normalizedRequired) {
                     $indexes[$requiredColumn] = $index;
                     $found = true;
                     break;

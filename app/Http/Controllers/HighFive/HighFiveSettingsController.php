@@ -452,6 +452,7 @@ class HighFiveSettingsController extends Controller
     private function fetchAndStoreSnapshot(DatasetLink $link, $customDate = null)
     {
         try {
+            $this->googleSheetService->clearCache($link->link_spreadsheet);
             // 1. Fetch data from Google Sheets
             $parsedData = $this->googleSheetService->fetchSpreadsheetData($link->link_spreadsheet);
 
