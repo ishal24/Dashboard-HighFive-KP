@@ -1694,3 +1694,147 @@ main.main-content,
 .flatpickr-current-month .flatpickr-monthDropdown-months {
     background: var(--telkom-red-soft);
 }
+
+/* =====================================================
+   TABLE SCROLLABLE WRAPPER
+   ===================================================== */
+.table-scrollable-wrapper {
+    max-height: 560px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.table-scrollable-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-scrollable-wrapper thead th {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: var(--white);
+}
+
+.table-scrollable-wrapper thead th:first-child {
+    /* keep first column header visually consistent */
+}
+
+.table-scrollable-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-scrollable-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 8px;
+}
+
+/* Firefox */
+.table-scrollable-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+
+    /* Product tabs reuse visual style from AM nested tabs but keep selectors scoped */
+    .product-tabs-navigation {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--gray-200);
+        padding-top: 6px;
+    }
+
+    .product-tab-btn {
+        padding: 12px 18px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--gray-600);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .product-tab-btn:hover {
+        color: var(--telkom-red);
+        background: var(--telkom-red-ultra-soft);
+    }
+
+    .product-tab-btn.active {
+        color: var(--telkom-red);
+        border-bottom-color: var(--telkom-red);
+    }
+
+/* =====================================================
+   AM LEVEL NESTED TABS - Benchmarking & Leaderboard
+   ===================================================== */
+
+.am-tabs-container {
+    margin-bottom: 25px;
+}
+
+.am-tabs-navigation {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--gray-200);
+    padding-bottom: 0;
+}
+
+.am-tab-btn {
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--gray-600);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.am-tab-btn:hover {
+    color: var(--telkom-red);
+    background: var(--telkom-red-ultra-soft);
+    border-bottom-color: var(--telkom-red-light);
+}
+
+.am-tab-btn.active {
+    color: var(--telkom-red);
+    border-bottom-color: var(--telkom-red);
+    background: transparent;
+}
+
+.am-tab-btn i {
+    font-size: 14px;
+}
+
+.am-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.am-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

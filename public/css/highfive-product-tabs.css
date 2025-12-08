@@ -1,0 +1,8 @@
+/* Product Tab Content Visibility Rules */
+.product-tab-content {
+    display: none;
+}
+
+.product-tab-content.active {
+    display: block;
+}

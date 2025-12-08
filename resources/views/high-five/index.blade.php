@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ asset('css/highfive.css') }}">
+<link rel="stylesheet" href="{{ asset('css/highfive-product-tabs.css') }}">
 @endsection
 
 @section('content')
@@ -272,52 +273,71 @@
                 </div>
             </div>
 
-            <!-- AM Benchmarking Table (REMOVED DATASET LABELS, UPDATED HEADERS) -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h4><i class="fas fa-table"></i> Benchmarking Performa Account Manager</h4>
+            <!-- AM Sub-Tabs: Benchmarking & Leaderboard -->
+            <div class="am-tabs-container">
+                <!-- Sub-Tabs Navigation -->
+                <div class="am-tabs-navigation">
+                    <button class="am-tab-btn active" data-am-tab="benchmarking">
+                        <i class="fas fa-table"></i> Benchmarking Performa Per Produk
+                    </button>
+                    <button class="am-tab-btn" data-am-tab="leaderboard">
+                        <i class="fas fa-medal"></i> Leaderboard AM (Top Performers)
+                    </button>
                 </div>
-                <div class="table-responsive">
-                    <table class="benchmark-table">
-                        <thead>
-                            <tr>
-                                <th>Witel</th>
-                                <th>Account Manager</th>
-                                <th>Avg % Progress<br><small id="dataset1DateAM">-</small></th>
-                                <th>Avg % Progress<br><small id="dataset2DateAM">-</small></th>
-                                <th>Avg % Result<br><small id="dataset1ResultAM">-</small></th>
-                                <th>Avg % Result<br><small id="dataset2ResultAM">-</small></th>
-                                <th>Perubahan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="amBenchmarkTableBody">
-                            <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- AM Leaderboard -->
-            <div class="table-container leaderboard-container">
-                <div class="table-header">
-                    <h4><i class="fas fa-medal"></i> Leaderboard AM (Top Performers)</h4>
+                <!-- Sub-Tab Content: Benchmarking -->
+                <div class="am-tab-content active" id="amBenchmarkingTab">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h4><i class="fas fa-table"></i> Benchmarking Performa Account Manager</h4>
+                        </div>
+                        <div class="table-scrollable-wrapper">
+                            <div class="table-responsive">
+                                <table class="benchmark-table">
+                                <thead>
+                                    <tr>
+                                        <th>Witel</th>
+                                        <th>Account Manager</th>
+                                        <th>Avg % Progress<br><small id="dataset1DateAM">-</small></th>
+                                        <th>Avg % Progress<br><small id="dataset2DateAM">-</small></th>
+                                        <th>Avg % Result<br><small id="dataset1ResultAM">-</small></th>
+                                        <th>Avg % Result<br><small id="dataset2ResultAM">-</small></th>
+                                        <th>Perubahan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="amBenchmarkTableBody">
+                                    <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="benchmark-table leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th width="100">Rank</th>
-                                <th>Account Manager</th>
-                                <th>Witel</th>
-                                <th width="150">Improvement</th>
-                            </tr>
-                        </thead>
-                        <tbody id="amLeaderboardTableBody">
-                            <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                        </tbody>
-                    </table>
+
+                <!-- Sub-Tab Content: Leaderboard -->
+                <div class="am-tab-content" id="amLeaderboardTab">
+                    <div class="table-container leaderboard-container">
+                        <div class="table-header">
+                            <h4><i class="fas fa-medal"></i> Leaderboard AM (Top Performers)</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="benchmark-table leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th width="100">Rank</th>
+                                        <th>Account Manager</th>
+                                        <th>Witel</th>
+                                        <th width="150">Improvement</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="amLeaderboardTableBody">
+                                    <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="amLeaderboardPagination" class="pagination-wrapper"></div>
+                    </div>
                 </div>
-                <div id="amLeaderboardPagination" class="pagination-wrapper"></div>
             </div>
 
             <!-- Download Report Button -->
@@ -382,88 +402,99 @@
                 </select>
             </div>
 
-            <!-- Product Benchmarking Table (REMOVED DATASET LABELS) -->
-            <div class="table-container">
-                <div class="table-header">
-                    <h4><i class="fas fa-table"></i> Benchmarking Performa Per Produk</h4>
+            <!-- Product Sub-Tabs: Benchmarking & Leaderboards -->
+            <div class="product-tabs-container">
+                <div class="product-tabs-navigation">
+                    <button class="product-tab-btn active" data-product-tab="benchmarking">
+                        <i class="fas fa-table"></i> Benchmarking Performa Per Produk
+                    </button>
+                    <button class="product-tab-btn" data-product-tab="improvement">
+                        <i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)
+                    </button>
+                    <button class="product-tab-btn" data-product-tab="product">
+                        <i class="fas fa-star"></i> Leaderboard Produk (Top 10)
+                    </button>
                 </div>
-                <div class="table-responsive">
-                    <table class="benchmark-table">
-                        <thead>
-                            <tr>
-                                <th>AM</th>
-                                <th>Customer</th>
-                                <th>Product</th>
-                                <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
-                                <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
-                                <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
-                                <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
-                                <th>Perubahan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productBenchmarkTableBody">
-                            <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Product Leaderboard (ACCORDION - COLLAPSED BY DEFAULT) -->
-            <div class="leaderboard-accordion">
-                <button class="accordion-trigger" onclick="toggleLeaderboard('product')">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-star"></i>
-                        <span>Leaderboard Produk (Top 10)</span>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon" id="productAccordionIcon"></i>
-                </button>
-                <div class="accordion-content" id="productLeaderboard" style="display: none;">
-                    <div class="table-responsive">
-                        <table class="benchmark-table leaderboard-table">
-                            <thead>
-                                <tr>
-                                    <th width="100">Rank</th>
-                                    <th>Produk</th>
-                                    <th>Avg Progress</th>
-                                    <th>Avg Result</th>
-                                    <th>Total Offerings</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productLeaderboardTableBody">
-                                <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                            </tbody>
-                        </table>
+                <!-- Product Benchmarking Content -->
+                <div class="product-tab-content active" id="productBenchmarkingTab">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h4><i class="fas fa-table"></i> Benchmarking Performa Per Produk</h4>
+                        </div>
+                        <div class="table-scrollable-wrapper">
+                            <div class="table-responsive">
+                                <table class="benchmark-table">
+                                    <thead>
+                                        <tr>
+                                            <th>AM</th>
+                                            <th>Customer</th>
+                                            <th>Product</th>
+                                            <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
+                                            <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
+                                            <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
+                                            <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
+                                            <th>Perubahan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productBenchmarkTableBody">
+                                        <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Improvement Leaderboard (ACCORDION - COLLAPSED BY DEFAULT) -->
-            <div class="leaderboard-accordion">
-                <button class="accordion-trigger" onclick="toggleLeaderboard('improvement')">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-medal"></i>
-                        <span>Leaderboard Improvement (Top 10)</span>
+                <!-- Product Improvement Leaderboard -->
+                <div class="product-tab-content" id="productImprovementTab">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h4><i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="benchmark-table leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th width="100">Rank</th>
+                                        <th>AM</th>
+                                        <th>Customer</th>
+                                        <th>Product</th>
+                                        <th width="150">Improvement</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="improvementLeaderboardTableBody">
+                                    <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="improvementLeaderboardPagination" class="pagination-wrapper"></div>
                     </div>
-                    <i class="fas fa-chevron-down accordion-icon" id="improvementAccordionIcon"></i>
-                </button>
-                <div class="accordion-content" id="improvementLeaderboard" style="display: none;">
-                    <div class="table-responsive">
-                        <table class="benchmark-table leaderboard-table">
-                            <thead>
-                                <tr>
-                                    <th width="100">Rank</th>
-                                    <th>AM</th>
-                                    <th>Customer</th>
-                                    <th>Product</th>
-                                    <th width="150">Improvement</th>
-                                </tr>
-                            </thead>
-                            <tbody id="improvementLeaderboardTableBody">
-                                <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                            </tbody>
-                        </table>
+                </div>
+
+                <!-- Product Leaderboard -->
+                <div class="product-tab-content" id="productLeaderboardTab">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h4><i class="fas fa-star"></i> Leaderboard Produk (Top 10)</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="benchmark-table leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th width="100">Rank</th>
+                                        <th>Produk</th>
+                                        <th>Avg Progress</th>
+                                        <th>Avg Result</th>
+                                        <th>Total Offerings</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productLeaderboardTableBody">
+                                    <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div id="improvementLeaderboardPagination" class="pagination-wrapper"></div>
                 </div>
             </div>
 
@@ -1530,6 +1561,47 @@ $(document).ready(function() {
         } else if (tab === 'product-level') {
             $('#productLevelContent').addClass('active');
         }
+    });
+
+    // ================================
+    // AM LEVEL NESTED TABS SWITCHING
+    // ================================
+
+    $('.am-tab-btn').on('click', function() {
+        const amTab = $(this).data('am-tab');
+
+        $('.am-tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        $('.am-tab-content').removeClass('active');
+        if (amTab === 'benchmarking') {
+            $('#amBenchmarkingTab').addClass('active');
+        } else if (amTab === 'leaderboard') {
+            $('#amLeaderboardTab').addClass('active');
+        }
+    });
+
+    // ================================
+    // PRODUCT LEVEL NESTED TABS SWITCHING (delegated)
+    // ================================
+
+    $(document).on('click', '.product-tab-btn', function(e) {
+        e.preventDefault();
+        const tab = $(this).data('product-tab');
+
+        $('.product-tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        $('.product-tab-content').removeClass('active');
+        if (tab === 'benchmarking') {
+            $('#productBenchmarkingTab').addClass('active');
+        } else if (tab === 'improvement') {
+            $('#productImprovementTab').addClass('active');
+        } else if (tab === 'product') {
+            $('#productLeaderboardTab').addClass('active');
+        }
+
+        return false;
     });
 
     // ================================
