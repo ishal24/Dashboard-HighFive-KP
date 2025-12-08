@@ -75,13 +75,8 @@ class GoogleSheetService
         try {
             $spreadsheetId = $this->extractSpreadsheetId($spreadsheetUrl);
 
-            // Cache key to avoid repeated fetches
-            $cacheKey = "spreadsheet_data_" . md5($spreadsheetUrl);
-
-            // Cache for 5 minutes
-            return Cache::remember($cacheKey, 300, function () use ($spreadsheetUrl) {
-                return $this->fetchPublishedSheet($spreadsheetUrl);
-            });
+            // Fetch fresh data from Google Sheets every time (no caching)
+            return $this->fetchPublishedSheet($spreadsheetUrl);
 
         } catch (\Exception $e) {
             throw new \Exception('Gagal mengambil data dari Google Sheets: ' . $e->getMessage());

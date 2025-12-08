@@ -419,6 +419,9 @@ class HighFiveSettingsController extends Controller
             // Update link stats
             $link->updateFetchStats('success');
 
+            // Clear cache so new data is displayed immediately
+            $this->googleSheetService->clearCache($link->link_spreadsheet);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Snapshot berhasil di-retry!',
@@ -486,6 +489,9 @@ class HighFiveSettingsController extends Controller
 
             // 4. Update link statistics
             $link->updateFetchStats('success');
+
+            // 5. Clear cache so new data is displayed immediately
+            $this->googleSheetService->clearCache($link->link_spreadsheet);
 
             return [
                 'success' => true,
