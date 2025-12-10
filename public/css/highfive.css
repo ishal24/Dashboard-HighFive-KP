@@ -23,6 +23,75 @@
     background: transparent;
     min-height: 100vh;
 }
+/* Style untuk Cell AM */
+.am-cell-dropdown {
+    vertical-align: top !important;
+    padding: 0 !important; /* Reset padding biar full width */
+}
+
+.am-header {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.am-header:hover {
+    background-color: #f8fafc;
+}
+
+.am-toggle-icon {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    transition: transform 0.3s ease;
+}
+
+.am-toggle-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* Style untuk Stats Container */
+.am-stats-container {
+    background-color: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+    padding: 10px 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    text-align: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 6px 4px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+
+.stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.stat-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.text-success { color: #10b981; }
+.text-danger { color: #ef4444; }
 
 /* Apply to any possible container wrapper */
 #app > .main-content,

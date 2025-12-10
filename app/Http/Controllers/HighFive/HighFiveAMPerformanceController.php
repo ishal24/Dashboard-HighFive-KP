@@ -10,22 +10,10 @@ use Illuminate\Support\Facades\Validator;
 class HighFiveAMPerformanceController extends Controller
 {
     /**
-     * 📄 REVISED: Get AM Level Performance Benchmarking
-     *
-     * INPUT CHANGES:
-     * - OLD: dataset_1_id, dataset_2_id
-     * - NEW: snapshot_1_id, snapshot_2_id
-     *
-     * DATA SOURCE CHANGES:
-     * - OLD: Fetch from Google Sheets API
-     * - NEW: Parse JSON from database
-     *
-     * ✅ PRESERVED: All calculation logic remains the same
-     * ✅ NEW: Added witel average calculation for summary rows
+     * Get AM Level Performance Benchmarking
      */
     public function getAMPerformance(Request $request)
     {
-        // 📄 CHANGED: Validation input
         $validator = Validator::make($request->all(), [
             'snapshot_1_id' => 'required|exists:spreadsheet_snapshots,id',
             'snapshot_2_id' => 'required|exists:spreadsheet_snapshots,id',
@@ -40,7 +28,6 @@ class HighFiveAMPerformanceController extends Controller
         }
 
         try {
-            // 📄 CHANGED: Get snapshots instead of datasets
             $snapshot1 = SpreadsheetSnapshot::with('divisi')->findOrFail($request->snapshot_1_id);
             $snapshot2 = SpreadsheetSnapshot::with('divisi')->findOrFail($request->snapshot_2_id);
 
@@ -52,7 +39,7 @@ class HighFiveAMPerformanceController extends Controller
                 ], 422);
             }
 
-            // Validate both snapshots are successful
+            // Validate status
             if ($snapshot1->fetch_status !== 'success' || $snapshot2->fetch_status !== 'success') {
                 return response()->json([
                     'success' => false,
@@ -60,26 +47,20 @@ class HighFiveAMPerformanceController extends Controller
                 ], 422);
             }
 
-            // 📄 CHANGED: Parse JSON data from database instead of fetching from Google Sheets
             $data1 = $snapshot1->parsed_data;
             $data2 = $snapshot2->parsed_data;
 
-            // ✅ PRESERVED: All calculation logic below remains the same
-
-            // Calculate AM-level averages per dataset
-            $amAvg1 = $this->calculateAMAverage($data1);
-            $amAvg2 = $this->calculateAMAverage($data2);
-
-            // Merge datasets for comparison
-            $mergedData = $this->mergeAMData($amAvg1, $amAvg2);
+            // 🔥 PERBAIKAN UTAMA:
+            // Panggil calculateAMPerformance yang menggunakan logika statistik baru
+            // Bukan lagi memanggil calculateAMAverage terpisah
+            $mergedData = $this->calculateAMPerformance($data1, $data2);
 
             // Calculate Witel-level analysis
             $witelAnalysis = $this->calculateWitelAnalysis($mergedData, $snapshot1, $snapshot2);
 
-            // Generate leaderboard by improvement
+            // Generate leaderboard
             $leaderboard = $this->generateLeaderboard($mergedData);
 
-            // 📄 CHANGED: Response structure with snapshot info
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -110,76 +91,42 @@ class HighFiveAMPerformanceController extends Controller
     }
 
     /**
-     * ✅ PRESERVED: Calculate AM average performance (unchanged)
+     * 🔥 CORE LOGIC: Merge & Calculate Stats
+     * Menggabungkan proses grouping dan merging menjadi satu alur
      */
-    private function calculateAMAverage($data)
+    private function calculateAMPerformance($data1, $data2)
     {
-        $amGrouped = [];
+        // 1. Grouping data menggunakan logika BARU yang menghitung stats
+        $grouped1 = $this->groupByWitelAM($data1);
+        $grouped2 = $this->groupByWitelAM($data2);
 
-        foreach ($data as $row) {
-            $am = trim($row['am']);
-            $witel = trim($row['witel']);
-
-            if (empty($am) || empty($witel)) {
-                continue;
-            }
-
-            $key = $am . '|' . $witel;
-
-            if (!isset($amGrouped[$key])) {
-                $amGrouped[$key] = [
-                    'am' => $am,
-                    'witel' => $witel,
-                    'total_progress' => 0,
-                    'total_result' => 0,
-                    'count' => 0,
-                ];
-            }
-
-            $amGrouped[$key]['total_progress'] += $row['progress_percentage'];
-            $amGrouped[$key]['total_result'] += $row['result_percentage'];
-            $amGrouped[$key]['count']++;
-        }
-
-        $amAverage = [];
-        foreach ($amGrouped as $key => $data) {
-            $avgProgress = $data['count'] > 0 ? round($data['total_progress'] / $data['count'], 2) : 0;
-            $avgResult = $data['count'] > 0 ? round($data['total_result'] / $data['count'], 2) : 0;
-
-            $amAverage[$key] = [
-                'am' => $data['am'],
-                'witel' => $data['witel'],
-                'avg_progress' => $avgProgress,
-                'avg_result' => $avgResult,
-            ];
-        }
-
-        return $amAverage;
-    }
-
-    /**
-     * ✅ PRESERVED: Merge AM data from two datasets (unchanged)
-     */
-    private function mergeAMData($amAvg1, $amAvg2)
-    {
         $merged = [];
         $allKeys = array_unique(array_merge(
-            array_keys($amAvg1),
-            array_keys($amAvg2)
+            array_keys($grouped1),
+            array_keys($grouped2)
         ));
 
         foreach ($allKeys as $key) {
-            $am1 = $amAvg1[$key] ?? null;
-            $am2 = $amAvg2[$key] ?? null;
+            $item1 = $grouped1[$key] ?? null;
+            $item2 = $grouped2[$key] ?? null;
 
-            $progress1 = $am1['avg_progress'] ?? 0;
-            $progress2 = $am2['avg_progress'] ?? 0;
-            $result1 = $am1['avg_result'] ?? 0;
-            $result2 = $am2['avg_result'] ?? 0;
+            // Ambil data statistik dari Snapshot TERBARU (Data 2)
+            $stats = $item2['stats'] ?? [
+                'offerings' => 0,
+                'total_customers' => 0,
+                'total_products' => 0,
+                'win' => 0,
+                'lose' => 0
+            ];
+
+            $progress1 = $item1['progress_percentage'] ?? 0;
+            $progress2 = $item2['progress_percentage'] ?? 0;
+            $result1 = $item1['result_percentage'] ?? 0;
+            $result2 = $item2['result_percentage'] ?? 0;
 
             $merged[$key] = [
-                'am' => $am2['am'] ?? $am1['am'],
-                'witel' => $am2['witel'] ?? $am1['witel'],
+                'witel' => $item2['witel'] ?? $item1['witel'],
+                'am' => $item2['am'] ?? $item1['am'],
                 'progress_1' => $progress1,
                 'progress_2' => $progress2,
                 'result_1' => $result1,
@@ -187,25 +134,104 @@ class HighFiveAMPerformanceController extends Controller
                 'change_progress' => $progress2 - $progress1,
                 'change_result' => $result2 - $result1,
                 'change_avg' => round((($progress2 - $progress1) + ($result2 - $result1)) / 2, 2),
+                
+                // 🔥 Stats dimasukkan ke hasil akhir agar terbaca di frontend
+                'stats' => $stats 
             ];
         }
 
-        // Sort by Witel, then AM
+        // Sorting: Witel ASC, lalu AM ASC
         usort($merged, function($a, $b) {
             $witelCompare = strcmp($a['witel'], $b['witel']);
             if ($witelCompare !== 0) return $witelCompare;
-
             return strcmp($a['am'], $b['am']);
         });
 
-        // Add rowspan info for witel grouping
-        return $this->addWitelRowspan($merged);
+        return $this->addRowspanInfo($merged);
     }
 
     /**
-     * ✅ PRESERVED: Add rowspan for witel grouping (unchanged)
+     * 🔥 GROUPING & STATS CALCULATION
+     * Menghitung Win, Lose, Offering, dan Unique Customer per AM
      */
-    private function addWitelRowspan($data)
+    private function groupByWitelAM($data)
+    {
+        $grouped = [];
+
+        foreach ($data as $row) {
+            $am = trim($row['am']);
+            $witel = trim($row['witel']);
+
+            if (empty($am)) continue;
+
+            $key = $witel . '|' . $am;
+
+            // Inisialisasi jika belum ada
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'witel' => $witel,
+                    'am' => $am,
+                    'progress_percentage' => 0,
+                    'result_percentage' => 0,
+                    // Init Stats Container
+                    'stats' => [
+                        'offerings' => 0,
+                        'customers_list' => [], // Array sementara
+                        'products_list' => [],
+                        'win' => 0,
+                        'lose' => 0
+                    ]
+                ];
+            }
+
+            // Logic "Best Row" (Untuk kolom % Progress agar ambil yang tertinggi)
+            if ($row['progress_percentage'] > $grouped[$key]['progress_percentage'] || 
+               ($row['progress_percentage'] == $grouped[$key]['progress_percentage'] && $row['result_percentage'] > $grouped[$key]['result_percentage'])) {
+                $grouped[$key]['progress_percentage'] = $row['progress_percentage'];
+                $grouped[$key]['result_percentage'] = $row['result_percentage'];
+            }
+
+            // Hitung Statistik
+            $stats = &$grouped[$key]['stats'];
+            
+            // 1. Count Offerings (Total Baris)
+            $stats['offerings']++;
+            
+            // 2. Collect Unique Names
+            if (!empty($row['customer_name'])) {
+                $stats['customers_list'][$row['customer_name']] = true;
+            }
+            if (!empty($row['product'])) {
+                $stats['products_list'][$row['product']] = true;
+            }
+
+            // 3. Hitung Win/Lose
+            $resultStatus = strtolower($row['result'] ?? ''); 
+            $resultPercent = $row['result_percentage'] ?? 0;
+
+            // Kriteria WIN: Ada kata "win" ATAU persentase 100%
+            if (strpos($resultStatus, 'win') !== false || $resultPercent == 100) {
+                $stats['win']++;
+            } 
+            // Kriteria LOSE: Ada kata "lose"
+            elseif (strpos($resultStatus, 'lose') !== false) {
+                $stats['lose']++;
+            }
+        }
+
+        // Finalisasi count unique
+        foreach ($grouped as &$item) {
+            $item['stats']['total_customers'] = count($item['stats']['customers_list']);
+            $item['stats']['total_products'] = count($item['stats']['products_list']);
+            
+            unset($item['stats']['customers_list']);
+            unset($item['stats']['products_list']);
+        }
+
+        return $grouped;
+    }
+
+    private function addRowspanInfo($data)
     {
         $result = [];
         $currentWitel = null;
@@ -214,183 +240,79 @@ class HighFiveAMPerformanceController extends Controller
         foreach ($data as $index => $row) {
             if ($row['witel'] !== $currentWitel) {
                 if ($currentWitel !== null) {
-                    $this->finalizeWitelRowspan($result, $witelStartIndex, $index);
+                    $rowspan = $index - $witelStartIndex;
+                    $result[$witelStartIndex]['witel_rowspan'] = $rowspan;
                 }
                 $currentWitel = $row['witel'];
                 $witelStartIndex = $index;
             }
-
+            $row['witel_rowspan'] = 0; // Default
             $result[] = $row;
         }
 
         if (!empty($result)) {
-            $this->finalizeWitelRowspan($result, $witelStartIndex, count($result));
+            $rowspan = count($result) - $witelStartIndex;
+            $result[$witelStartIndex]['witel_rowspan'] = $rowspan;
         }
 
         return $result;
     }
 
-    /**
-     * ✅ PRESERVED: Finalize witel rowspan (unchanged)
-     */
-    private function finalizeWitelRowspan(&$result, $startIndex, $endIndex)
-    {
-        $rowspan = $endIndex - $startIndex;
-        for ($i = $startIndex; $i < $endIndex; $i++) {
-            $result[$i]['witel_rowspan'] = ($i === $startIndex) ? $rowspan : 0;
-        }
-    }
-
-    /**
-     * ✅ REVISED: Calculate Witel analysis with narrative
-     * 📝 UPDATED: Enhanced narrative with bold formatting hints
-     */
     private function calculateWitelAnalysis($mergedData, $snapshot1, $snapshot2)
     {
-        // Group by Witel
         $witelData = [];
         foreach ($mergedData as $row) {
             $witel = $row['witel'];
             if (!isset($witelData[$witel])) {
-                $witelData[$witel] = [
-                    'witel' => $witel,
-                    'dataset_1' => [
-                        'total_progress' => 0,
-                        'total_result' => 0,
-                        'count' => 0,
-                    ],
-                    'dataset_2' => [
-                        'total_progress' => 0,
-                        'total_result' => 0,
-                        'count' => 0,
-                    ],
-                ];
+                $witelData[$witel] = ['witel' => $witel, 'p1' => [], 'p2' => []];
             }
-
-            $witelData[$witel]['dataset_1']['total_progress'] += $row['progress_1'];
-            $witelData[$witel]['dataset_1']['total_result'] += $row['result_1'];
-            $witelData[$witel]['dataset_1']['count']++;
-
-            $witelData[$witel]['dataset_2']['total_progress'] += $row['progress_2'];
-            $witelData[$witel]['dataset_2']['total_result'] += $row['result_2'];
-            $witelData[$witel]['dataset_2']['count']++;
+            if ($row['progress_1'] > 0 || $row['result_1'] > 0) $witelData[$witel]['p1'][] = $row['progress_1'];
+            if ($row['progress_2'] > 0 || $row['result_2'] > 0) $witelData[$witel]['p2'][] = $row['progress_2'];
         }
 
-        // Calculate averages
-        $witelAverages1 = [];
-        $witelAverages2 = [];
+        $avgs1 = [];
+        $avgs2 = [];
 
-        foreach ($witelData as $witel => $data) {
-            $avg1 = [
-                'witel' => $witel,
-                'avg_progress' => $data['dataset_1']['count'] > 0
-                    ? round($data['dataset_1']['total_progress'] / $data['dataset_1']['count'], 2)
-                    : 0,
-                'avg_result' => $data['dataset_1']['count'] > 0
-                    ? round($data['dataset_1']['total_result'] / $data['dataset_1']['count'], 2)
-                    : 0,
-            ];
-
-            $avg2 = [
-                'witel' => $witel,
-                'avg_progress' => $data['dataset_2']['count'] > 0
-                    ? round($data['dataset_2']['total_progress'] / $data['dataset_2']['count'], 2)
-                    : 0,
-                'avg_result' => $data['dataset_2']['count'] > 0
-                    ? round($data['dataset_2']['total_result'] / $data['dataset_2']['count'], 2)
-                    : 0,
-            ];
-
-            $witelAverages1[] = $avg1;
-            $witelAverages2[] = $avg2;
+        foreach ($witelData as $w => $d) {
+            $avg1 = count($d['p1']) > 0 ? array_sum($d['p1']) / count($d['p1']) : 0;
+            $avg2 = count($d['p2']) > 0 ? array_sum($d['p2']) / count($d['p2']) : 0;
+            
+            $avgs1[] = ['witel' => $w, 'avg_progress' => $avg1];
+            $avgs2[] = ['witel' => $w, 'avg_progress' => $avg2];
         }
 
-        // Find most & least progress
-        usort($witelAverages1, function($a, $b) {
-            return $b['avg_progress'] <=> $a['avg_progress'];
-        });
+        usort($avgs1, fn($a, $b) => $b['avg_progress'] <=> $a['avg_progress']);
+        usort($avgs2, fn($a, $b) => $b['avg_progress'] <=> $a['avg_progress']);
 
-        usort($witelAverages2, function($a, $b) {
-            return $b['avg_progress'] <=> $a['avg_progress'];
-        });
+        $most1 = $avgs1[0] ?? null;
+        $least1 = end($avgs1) ?: null;
+        $most2 = $avgs2[0] ?? null;
+        $least2 = end($avgs2) ?: null;
 
-        $mostProgress1 = $witelAverages1[0] ?? null;
-        $leastProgress1 = end($witelAverages1) ?: null;
-        $mostProgress2 = $witelAverages2[0] ?? null;
-        $leastProgress2 = end($witelAverages2) ?: null;
-
-        // Generate narrative paragraphs
-        $date1 = $snapshot1->snapshot_date->format('d M Y');
-        $date2 = $snapshot2->snapshot_date->format('d M Y');
-
-        $narrative1 = $mostProgress1 && $leastProgress1
-            ? sprintf(
-                "Pada minggu %s, Witel %s menunjukkan progress tertinggi dengan rata-rata %.2f%%, sementara Witel %s memiliki progress terendah dengan rata-rata %.2f%%.",
-                $date1,
-                $mostProgress1['witel'],
-                $mostProgress1['avg_progress'],
-                $leastProgress1['witel'],
-                $leastProgress1['avg_progress']
-            )
-            : "Data tidak tersedia untuk analisis periode lama.";
-
-        $narrative2 = $mostProgress2 && $leastProgress2
-            ? sprintf(
-                "Pada minggu %s, Witel %s menunjukkan progress tertinggi dengan rata-rata %.2f%%, sementara Witel %s memiliki progress terendah dengan rata-rata %.2f%%.",
-                $date2,
-                $mostProgress2['witel'],
-                $mostProgress2['avg_progress'],
-                $leastProgress2['witel'],
-                $leastProgress2['avg_progress']
-            )
-            : "Data tidak tersedia untuk analisis periode baru.";
-
-        // Generate conclusion
-        $improvement = $mostProgress2 && $mostProgress1
-            ? ($mostProgress2['avg_progress'] - $mostProgress1['avg_progress'])
-            : 0;
-
-        $conclusion = $improvement > 0
-            ? sprintf(
-                "Terjadi peningkatan performa secara keseluruhan dengan Witel terbaik meningkat %.2f poin persentase dari periode sebelumnya.",
-                $improvement
-            )
-            : "Performa relatif stabil dibandingkan periode sebelumnya.";
-
+        $n1 = $most1 ? "Minggu lalu, Witel {$most1['witel']} memimpin dengan rata-rata progress ".number_format($most1['avg_progress'],1)."%." : "Data tidak tersedia.";
+        $n2 = $most2 ? "Minggu ini, Witel {$most2['witel']} memimpin dengan rata-rata progress ".number_format($most2['avg_progress'],1)."%." : "Data tidak tersedia.";
+        
         return [
             'cards' => [
-                'dataset_1' => [
-                    'most_progress' => $mostProgress1,
-                    'least_progress' => $leastProgress1,
-                ],
-                'dataset_2' => [
-                    'most_progress' => $mostProgress2,
-                    'least_progress' => $leastProgress2,
-                ],
+                'dataset_1' => ['most_progress' => $most1, 'least_progress' => $least1],
+                'dataset_2' => ['most_progress' => $most2, 'least_progress' => $least2],
             ],
             'narrative' => [
-                'dataset_1_paragraph' => $narrative1,
-                'dataset_2_paragraph' => $narrative2,
-                'conclusion_paragraph' => $conclusion,
+                'dataset_1_paragraph' => $n1,
+                'dataset_2_paragraph' => $n2,
+                'conclusion_paragraph' => "Analisis witel selesai.",
             ],
         ];
     }
 
-    /**
-     * ✅ PRESERVED: Generate leaderboard (unchanged)
-     */
     private function generateLeaderboard($mergedData)
     {
         $leaderboard = $mergedData;
-        usort($leaderboard, function($a, $b) {
-            return $b['change_avg'] <=> $a['change_avg'];
-        });
-
+        usort($leaderboard, fn($a, $b) => $b['change_avg'] <=> $a['change_avg']);
+        
         $top10 = array_slice($leaderboard, 0, 10);
-        foreach ($top10 as $index => $row) {
-            $top10[$index]['rank'] = $index + 1;
-        }
-
+        foreach ($top10 as $i => $r) $top10[$i]['rank'] = $i + 1;
+        
         return $top10;
     }
 }
