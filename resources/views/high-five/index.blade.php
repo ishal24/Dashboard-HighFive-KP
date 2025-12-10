@@ -26,15 +26,19 @@
 <!-- Section 1: Kelola Dataset High Five (UPDATED TITLE & BUTTON) -->
 <div class="toolkit-container">
     <!-- Header -->
-    <div class="toolkit-header">
+    <div class="toolkit-header" onclick="toggleManualFetch()">
         <h4>
             <i class="fas fa-database"></i>
             Kelola Dataset High Five
         </h4>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" class="btn-kelola-link" onclick="event.stopPropagation(); openLinkModal()">
         <button type="button" class="btn-kelola-link" onclick="openLinkModal()">
             <i class="fas fa-cog"></i>
             Kelola Link Spreadsheet
         </button>
+            <i class="fas fa-chevron-down toolkit-toggle" id="manualFetchToggle"></i>
+        </div>
     </div>
 
     <!-- Subtitle -->
@@ -43,7 +47,7 @@
     </p>
 
     <!-- Body (Always Visible) -->
-    <div class="toolkit-body" id="manualFetchBody" style="display: block;">
+    <div class="toolkit-body" id="manualFetchBody">
         <!-- Info Banner (UPDATED COPYWRITING) -->
         <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 14px 18px; border-radius: var(--radius-lg); border: 1px solid #fcd34d; margin-bottom: 16px;">
             <div style="display: flex; align-items: start; gap: 10px;">
@@ -107,11 +111,26 @@
 </div>
 
 <!-- Section 2: Dataset Selector - Benchmarking (UPDATED LABELS) -->
-<div class="selector-container">
-    <div class="selector-grid">
+{{-- <div class="selector-container">
+</div> --}}
+
+<!-- Section 3: Performance Tabs -->
+<div class="performance-container">
+    <div class="toolkit-header" style="padding-bottom: 24px">
+        <h4>
+            <i class="fas fa-chart-line"></i>
+            Overview Data Performa High Five
+        </h4>
+        <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
+            <i class="fas fa-file-pdf"></i>
+            Unduh Laporan PDF
+        </button>
+    </div>
+
+    <div class="selector-grid" style="padding-bottom: 32px">
         <div class="field-group">
             <label><i class="fas fa-filter"></i> Filter Divisi</label>
-            <select id="filterDivisi" class="selectpicker" title="Pilih Divisi">
+            <select id="filterDivisi" class="native-select" title="Pilih Divisi">
                 @foreach($divisiList as $divisi)
                     <option value="{{ $divisi->id }}">{{ $divisi->kode }}</option>
                 @endforeach
@@ -136,10 +155,7 @@
             <i class="fas fa-sync-alt"></i> Load Data
         </button>
     </div>
-</div>
 
-<!-- Section 3: Performance Tabs -->
-<div class="performance-container">
     <!-- Tabs Navigation (NO ACTIVE BY DEFAULT) -->
     <div class="performance-tabs">
         <button class="tab-btn" data-tab="am-level">
@@ -285,9 +301,7 @@
                 <!-- Sub-Tab Content: Benchmarking -->
                 <div class="am-tab-content active" id="amBenchmarkingTab">
                     <div class="table-container">
-                        <div class="table-header">
-                            <h4><i class="fas fa-table"></i> Benchmarking Performa Account Manager</h4>
-                        </div>
+                        
                         <div class="table-header-fixed">
                             <table class="benchmark-table">
                                 <thead>
@@ -319,9 +333,7 @@
                 <!-- Sub-Tab Content: Leaderboard -->
                 <div class="am-tab-content" id="amLeaderboardTab">
                     <div class="table-container leaderboard-container">
-                        <div class="table-header">
-                            <h4><i class="fas fa-medal"></i> Leaderboard AM (Top Performers)</h4>
-                        </div>
+                        
                         <div class="table-responsive">
                             <table class="benchmark-table leaderboard-table">
                                 <thead>
@@ -343,11 +355,7 @@
             </div>
 
             <!-- Download Report Button -->
-            <div class="report-actions">
-                <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
-                    <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
-                </button>
-            </div>
+            
         </div>
 
         <!-- Product Level Tab Content -->
@@ -421,9 +429,7 @@
                 <!-- Product Benchmarking Content -->
                 <div class="product-tab-content active" id="productBenchmarkingTab">
                     <div class="table-container">
-                        <div class="table-header">
-                            <h4><i class="fas fa-table"></i> Benchmarking Performa Per Produk</h4>
-                        </div>
+                        
                         <div class="table-header-fixed">
                             <table class="benchmark-table">
                                 <thead>
@@ -456,9 +462,6 @@
                 <!-- Product Improvement Leaderboard -->
                 <div class="product-tab-content" id="productImprovementTab">
                     <div class="table-container">
-                        <div class="table-header">
-                            <h4><i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)</h4>
-                        </div>
                         <div class="table-responsive">
                             <table class="benchmark-table leaderboard-table">
                                 <thead>
@@ -482,9 +485,7 @@
                 <!-- Product Leaderboard -->
                 <div class="product-tab-content" id="productLeaderboardTab">
                     <div class="table-container">
-                        <div class="table-header">
-                            <h4><i class="fas fa-star"></i> Leaderboard Produk (Top 10)</h4>
-                        </div>
+                        
                         <div class="table-responsive">
                             <table class="benchmark-table leaderboard-table">
                                 <thead>
@@ -578,14 +579,6 @@ $(document).ready(function() {
     // ================================
     // INITIALIZATION
     // ================================
-
-    // Initialize Bootstrap Select (only for divisi dropdowns)
-    $('#filterDivisi').selectpicker({
-        liveSearch: false,
-        size: 6,
-        dropupAuto: false,
-        container: 'body'
-    });
 
     // Initialize Flatpickr for manual fetch
     let datePickerInstance = flatpickr("#manualSnapshotDate", {
@@ -955,7 +948,7 @@ $(document).ready(function() {
     // SNAPSHOT DROPDOWN LOADING
     // ================================
 
-    $('#filterDivisi').on('changed.bs.select', function() {
+    $('#filterDivisi').on('change', function() {
         const divisiId = $(this).val();
         if (divisiId) {
             loadSnapshotOptions(divisiId);

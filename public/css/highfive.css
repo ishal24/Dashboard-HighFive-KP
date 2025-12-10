@@ -144,7 +144,7 @@ main.main-content,
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
+    /* cursor: pointer; */
     padding: 8px 0;
     margin-bottom: 0;
 }
@@ -1405,19 +1405,18 @@ main.main-content,
 }
 
 .btn-download-report {
-    padding: 12px 28px;
+    padding: 8px 16px;
     background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
     color: var(--white);
     border: none;
-    border-radius: var(--radius-lg);
-    font-size: 14px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: var(--shadow-md);
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
 }
 
 .btn-download-report:hover:not(:disabled) {
