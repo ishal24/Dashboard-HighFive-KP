@@ -517,32 +517,52 @@ main.main-content,
    PERFORMANCE SECTION - Tabs
    ===================================================== */
 
+/* =====================================================
+   PERFORMANCE SECTION - REVISED LAYOUT (FULL HEADER)
+   ===================================================== */
+
 .performance-container {
     background: var(--white);
     border-radius: var(--radius-xl);
-    padding: 30px;
+    padding: 0 !important; /* HAPUS PADDING UTAMA */
     box-shadow: var(--shadow-md);
     border: 1px solid var(--gray-200);
     position: relative;
-    overflow: visible;
+    overflow: hidden; /* Agar background header tidak keluar dari radius */
 }
 
-.performance-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    
+/* Wrapper untuk Header + Filter + Tabs (Background Abu-abu) */
+.performance-header-wrapper {
+    background-color: var(--white); /* Abu-abu sedikit gelap (Slate-100) */
+    padding: 25px 30px 0 30px; /* Padding atas kanan kiri, bawah 0 untuk tabs */
+    border-bottom: 1px solid #cbd5e1; /* Garis pemisah */
 }
 
+/* Wrapper untuk Konten (Background Putih) */
+.performance-body-wrapper {
+    background-color: var(--white);
+    padding: 30px;
+    min-height: 400px;
+}
+
+/* Penyesuaian Header Title di dalam wrapper baru */
+.performance-header-wrapper .toolkit-header {
+    padding-bottom: 20px;
+    margin-bottom: 0;
+}
+
+/* Penyesuaian Grid Selector */
+.performance-header-wrapper .selector-grid {
+    padding-bottom: 25px !important;
+}
+
+/* Penyesuaian Tabs agar menempel di bawah */
 .performance-tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
-    padding-top: 10px;
-    border-bottom: 2px solid var(--gray-200);
+    margin-bottom: 0; /* Hapus margin bawah */
+    padding-top: 0;
+    border-bottom: none; /* Hapus border bawaan karena sudah ada di wrapper */
 }
 
 .tab-btn {
@@ -550,7 +570,7 @@ main.main-content,
     padding: 14px 20px;
     background: transparent;
     border: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: 4px solid transparent; /* Pertebal sedikit indikator aktif */
     color: var(--gray-600);
     font-size: 15px;
     font-weight: 600;
@@ -560,21 +580,22 @@ main.main-content,
     align-items: center;
     justify-content: center;
     gap: 8px;
+    margin-bottom: -1px; /* Agar menimpa garis border wrapper */
 }
 
 .tab-btn:hover {
     color: var(--telkom-red);
-    background: var(--telkom-red-ultra-soft);
+    background: rgba(255, 255, 255, 0.5); /* Efek hover halus */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 .tab-btn.active {
     color: var(--telkom-red);
     border-bottom-color: var(--telkom-red);
-    background: var(--telkom-red-soft);
-}
-
-.tab-btn i {
-    font-size: 16px;
+    background: var(--telkom-red-subtle);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 /* =====================================================
@@ -1063,7 +1084,7 @@ main.main-content,
     color: var(--gray-700);
     font-weight: 500;
     vertical-align: middle;
-    border-right: 1px solid var(--gray-100);
+    border-right: 1px solid var(--gray-200);
 }
 
 .benchmark-table td:last-child {
@@ -1132,8 +1153,6 @@ main.main-content,
 .witel-summary {
     background: linear-gradient(135deg, #fee2e2, #fecaca) !important; /* Pink/red-soft */
     font-weight: 600 !important;
-    border-top: 2px solid #fca5a5; /* Slightly darker pink for border */
-    border-bottom: 2px solid #fca5a5;
 }
 
 .witel-summary td {

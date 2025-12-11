@@ -32,7 +32,6 @@
             Kelola Dataset High Five
         </h4>
         <div style="display: flex; align-items: center; gap: 12px;">
-            <button type="button" class="btn-kelola-link" onclick="event.stopPropagation(); openLinkModal()">
         <button type="button" class="btn-kelola-link" onclick="openLinkModal()">
             <i class="fas fa-cog"></i>
             Kelola Link Spreadsheet
@@ -116,342 +115,342 @@
 
 <!-- Section 3: Performance Tabs -->
 <div class="performance-container">
-    <div class="toolkit-header" style="padding-bottom: 24px">
-        <h4>
-            <i class="fas fa-chart-line"></i>
-            Overview Data Performa High Five
-        </h4>
-        <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
-            <i class="fas fa-file-pdf"></i>
-            Unduh Laporan PDF
-        </button>
-    </div>
-
-    <div class="selector-grid" style="padding-bottom: 32px">
-        <div class="field-group">
-            <label><i class="fas fa-filter"></i> Filter Divisi</label>
-            <select id="filterDivisi" class="native-select" title="Pilih Divisi">
-                @foreach($divisiList as $divisi)
-                    <option value="{{ $divisi->id }}">{{ $divisi->kode }}</option>
-                @endforeach
-            </select>
+    
+    <div class="performance-header-wrapper">
+        <div class="toolkit-header">
+            <h4>
+                <i class="fas fa-chart-line"></i>
+                Overview Data Performa High Five
+            </h4>
+            <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
+                <i class="fas fa-file-pdf"></i>
+                Unduh Laporan PDF
+            </button>
         </div>
 
-        <div class="field-group">
-            <label><i class="fas fa-database"></i> Data Progres 1 (Periode Lama)</label>
-            <select id="snapshot1" class="native-select" disabled>
-                <option value="">-- Pilih Data Progres 1 --</option>
-            </select>
-        </div>
-
-        <div class="field-group">
-            <label><i class="fas fa-database"></i> Data Progres 2 (Periode Baru)</label>
-            <select id="snapshot2" class="native-select" disabled>
-                <option value="">-- Pilih Data Progres 2 --</option>
-            </select>
-        </div>
-
-        <button type="button" id="loadBenchmarkBtn" class="btn-load-data" disabled>
-            <i class="fas fa-sync-alt"></i> Load Data
-        </button>
-    </div>
-
-    <!-- Tabs Navigation (NO ACTIVE BY DEFAULT) -->
-    <div class="performance-tabs">
-        <button class="tab-btn" data-tab="am-level">
-            <i class="fas fa-user-tie"></i> Performa AM Level
-        </button>
-        <button class="tab-btn" data-tab="product-level">
-            <i class="fas fa-box"></i> Performa Product Level
-        </button>
-    </div>
-
-    <!-- Tab Content Area -->
-    <div class="tab-content-area">
-        <!-- Empty State -->
-        <div id="emptyState" class="empty-state active">
-            <i class="fas fa-chart-bar"></i>
-            <h3>Belum Ada Data untuk Divisualisasikan</h3>
-            <p>Pilih Filter Divisi dan 2 Data Progres untuk membandingkan performa</p>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="loading-state">
-            <div class="spinner"></div>
-            <p>Memproses data dari database...</p>
-        </div>
-
-        <!-- AM Level Tab Content -->
-        <div id="amLevelContent" class="tab-content">
-            <!-- Analysis Cards Section - 4 HORIZONTAL (UPDATED LAYOUT) -->
-            <div class="cards-section">
-                <div class="cards-section-title" onclick="toggleAnalysisCards()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <i class="fas fa-chart-bar"></i>
-                        Analisis Performa by Dataset
-                    </div>
-                    <i class="fas fa-chevron-down toolkit-toggle active" id="analysisCardsToggle"></i>
-                </div>
-
-                <div id="analysisCardsBody" class="cards-grid-wrapper" style="display: block;">
-                    <!-- Dataset Name Display (UPDATED FORMAT) - MOVED TO TOP -->
-                    <div style="margin-bottom: 16px; text-align: center;">
-                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700);">
-                            <i class="fas fa-calendar-alt" style="font-size: 0.85rem; margin-right: 6px;"></i>
-                            <span id="dataset1NameCard">Data Progres 1</span>
-                            <span style="margin: 0 10px; color: var(--gray-500);">vs</span>
-                            <span id="dataset2NameCard">Data Progres 2</span>
-                        </span>
-                    </div>
-
-                    <!-- 4 CARDS HORIZONTAL (UPDATED GRID) -->
-                    <div class="cards-grid-horizontal">
-                        <!-- Dataset 1 - Most Progress -->
-                        <div class="analysis-card card-most">
-                            <div class="card-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div class="card-info">
-                                <h4>Most Progress</h4>
-                                <p class="period-label" style="font-size: 10px; color: var(--gray-500); margin-bottom: 4px;">Periode Lama</p>
-                                <p class="witel-name" id="mostProgressWitel1">-</p>
-                                <span class="progress-value" id="mostProgressValue1">-</span>
-                            </div>
-                        </div>
-
-                        <!-- Dataset 1 - Least Progress -->
-                        <div class="analysis-card card-least">
-                            <div class="card-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="card-info">
-                                <h4>Least Progress</h4>
-                                <p class="period-label" style="font-size: 10px; color: var(--gray-500); margin-bottom: 4px;">Periode Lama</p>
-                                <p class="witel-name" id="leastProgressWitel1">-</p>
-                                <span class="progress-value" id="leastProgressValue1">-</span>
-                            </div>
-                        </div>
-
-                        <!-- Dataset 2 - Most Progress -->
-                        <div class="analysis-card card-most">
-                            <div class="card-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div class="card-info">
-                                <h4>Most Progress</h4>
-                                <p class="period-label" style="font-size: 10px; color: var(--gray-500); margin-bottom: 4px;">Periode Baru</p>
-                                <p class="witel-name" id="mostProgressWitel2">-</p>
-                                <span class="progress-value" id="mostProgressValue2">-</span>
-                            </div>
-                        </div>
-
-                        <!-- Dataset 2 - Least Progress -->
-                        <div class="analysis-card card-least">
-                            <div class="card-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="card-info">
-                                <h4>Least Progress</h4>
-                                <p class="period-label" style="font-size: 10px; color: var(--gray-500); margin-bottom: 4px;">Periode Baru</p>
-                                <p class="witel-name" id="leastProgressWitel2">-</p>
-                                <span class="progress-value" id="leastProgressValue2">-</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Narrative Analysis Section (UPDATED COPYWRITING) -->
-            <div class="narrative-section">
-                <div class="narrative-header" onclick="toggleNarrative()">
-                    <h4><i class="fas fa-file-alt"></i> Analisis Performa</h4>
-                    <i class="fas fa-chevron-down narrative-toggle" id="narrativeToggle"></i>
-                </div>
-
-                <div class="narrative-body" id="narrativeBody">
-                    <div class="narrative-paragraph">
-                        <h5 id="narrativeDataset1Title">Hasil Analisis Data Progres (Periode Lama)</h5>
-                        <p id="narrativeDataset1">-</p>
-                    </div>
-
-                    <div class="narrative-paragraph">
-                        <h5 id="narrativeDataset2Title">Hasil Analisis Data Progres (Periode Baru)</h5>
-                        <p id="narrativeDataset2">-</p>
-                    </div>
-
-                    <div class="narrative-paragraph conclusion">
-                        <h5>Kesimpulan</h5>
-                        <p id="narrativeConclusion">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AM Sub-Tabs: Benchmarking & Leaderboard -->
-            <div class="am-tabs-container">
-                <!-- Sub-Tabs Navigation -->
-                <div class="am-tabs-navigation">
-                    <button class="am-tab-btn active" data-am-tab="benchmarking">
-                        <i class="fas fa-table"></i> Benchmarking Performa Account Manager
-                    </button>
-                    <button class="am-tab-btn" data-am-tab="leaderboard">
-                        <i class="fas fa-medal"></i> Leaderboard AM (Top Performers)
-                    </button>
-                </div>
-
-                <!-- Sub-Tab Content: Benchmarking -->
-                <div class="am-tab-content active" id="amBenchmarkingTab">
-                    <div class="table-container">
-                        
-                        <div class="table-header-fixed">
-                            <table class="benchmark-table">
-                                <thead>
-                                    <tr>
-                                        <th>Witel</th>
-                                        <th style="width: 320px; min-width: 400px;">Account Manager</th>
-                                        <th>Avg % Progress<br><small id="dataset1DateAM">-</small></th>
-                                        <th>Avg % Progress<br><small id="dataset2DateAM">-</small></th>
-                                        <th>Avg % Result<br><small id="dataset1ResultAM">-</small></th>
-                                        <th>Avg % Result<br><small id="dataset2ResultAM">-</small></th>
-                                        <th>Perubahan</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                        <div class="table-scrollable-wrapper">
-                            <div class="table-responsive">
-                                <table class="benchmark-table">
-                                <thead style="display: none;"></thead>
-                                <tbody id="amBenchmarkTableBody">
-                                    <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
-                                </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sub-Tab Content: Leaderboard -->
-                <div class="am-tab-content" id="amLeaderboardTab">
-                    <div class="table-container leaderboard-container">
-                        
-                        <div class="table-responsive">
-                            <table class="benchmark-table leaderboard-table">
-                                <thead>
-                                    <tr>
-                                        <th width="100">Rank</th>
-                                        <th>Account Manager</th>
-                                        <th>Witel</th>
-                                        <th width="150">Improvement</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="amLeaderboardTableBody">
-                                    <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="amLeaderboardPagination" class="pagination-wrapper"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Download Report Button -->
-            
-        </div>
-
-        <!-- Product Level Tab Content -->
-        <div id="productLevelContent" class="tab-content">
-            <!-- Statistics Cards (COMPACT VERSION) -->
-            <div class="stats-grid">
-                <div class="stat-card visited">
-                    <i class="fas fa-check-circle"></i>
-                    <h4>CC Visited</h4>
-                    <div class="stat-value" id="visitedValue">-</div>
-                    <span class="stat-label" id="visitedPercentage">-</span>
-                </div>
-
-                <div class="stat-card no-progress">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4>AM No Progress</h4>
-                    <div class="stat-value" id="noProgressValue">-</div>
-                    <span class="stat-label">Account Managers</span>
-                </div>
-
-                <div class="stat-card products">
-                    <i class="fas fa-box-open"></i>
-                    <h4>Total Products</h4>
-                    <div class="stat-value" id="totalProductsValue">-</div>
-                    <span class="stat-label">Produk ditawarkan</span>
-                </div>
-            </div>
-
-            <!-- Product Analysis Section (COLLAPSIBLE) -->
-            <div class="narrative-section" style="margin-bottom: 20px;">
-                <div class="narrative-header" onclick="toggleProductNarrative()">
-                    <h4><i class="fas fa-chart-pie"></i> Analisis Product Level</h4>
-                    <i class="fas fa-chevron-down narrative-toggle" id="productNarrativeToggle"></i>
-                </div>
-
-                <div class="narrative-body" id="productNarrativeBody">
-                    <div class="narrative-paragraph">
-                        <h5>Statistik Kunjungan</h5>
-                        <p id="productNarrativeVisited">-</p>
-                    </div>
-
-                    <div class="narrative-paragraph conclusion">
-                        <h5>Progress Analysis</h5>
-                        <p id="productNarrativeProgress">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Filter -->
-            <div class="product-filters">
-                <label><i class="fas fa-filter"></i> Filter Witel:</label>
-                <select id="witelFilter" class="native-select">
-                    <option value="">Semua Witel</option>
+        <div class="selector-grid">
+            <div class="field-group">
+                <label><i class="fas fa-filter"></i> Filter Divisi</label>
+                <select id="filterDivisi" class="native-select" title="Pilih Divisi">
+                    @foreach($divisiList as $divisi)
+                        <option value="{{ $divisi->id }}">{{ $divisi->kode }}</option>
+                    @endforeach
                 </select>
             </div>
 
-            <!-- Product Sub-Tabs: Benchmarking & Leaderboards -->
-            <div class="product-tabs-container">
-                <div class="product-tabs-navigation">
-                    <button class="product-tab-btn active" data-product-tab="benchmarking">
-                        <i class="fas fa-table"></i> Benchmarking Performa Per Produk
-                    </button>
-                    <button class="product-tab-btn" data-product-tab="improvement">
-                        <i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)
-                    </button>
-                    <button class="product-tab-btn" data-product-tab="product">
-                        <i class="fas fa-star"></i> Leaderboard Produk (Top 10)
-                    </button>
+            <div class="field-group">
+                <label><i class="fas fa-database"></i> Data Progres 1 (Periode Lama)</label>
+                <select id="snapshot1" class="native-select" disabled>
+                    <option value="">-- Pilih Data Progres 1 --</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label><i class="fas fa-database"></i> Data Progres 2 (Periode Baru)</label>
+                <select id="snapshot2" class="native-select" disabled>
+                    <option value="">-- Pilih Data Progres 2 --</option>
+                </select>
+            </div>
+
+            <button type="button" id="loadBenchmarkBtn" class="btn-load-data" disabled>
+                <i class="fas fa-sync-alt"></i> Load Data
+            </button>
+        </div>
+
+        <div class="performance-tabs">
+            <button class="tab-btn" data-tab="am-level">
+                <i class="fas fa-user-tie"></i> Performa AM Level
+            </button>
+            <button class="tab-btn" data-tab="product-level">
+                <i class="fas fa-box"></i> Performa Product Level
+            </button>
+        </div>
+    </div>
+    <div class="performance-body-wrapper">
+        <div class="tab-content-area">
+            <div id="emptyState" class="empty-state active">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Belum Ada Data untuk Divisualisasikan</h3>
+                <p>Pilih Filter Divisi dan 2 Data Progres untuk membandingkan performa</p>
+            </div>
+
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p>Memproses data dari database...</p>
+            </div>
+
+            <div id="amLevelContent" class="tab-content">
+                <div class="cards-section">
+                    <div class="cards-section-title" onclick="toggleAnalysisCards()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <i class="fas fa-chart-bar"></i>
+                            Analisis Performa by Dataset
+                        </div>
+                        <i class="fas fa-chevron-down toolkit-toggle active" id="analysisCardsToggle"></i>
+                    </div>
+
+                    <div id="analysisCardsBody" class="cards-grid-wrapper" style="display: block;">
+                        <div style="margin-bottom: 16px; text-align: center;">
+                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700);">
+                                <i class="fas fa-calendar-alt" style="font-size: 0.85rem; margin-right: 6px;"></i>
+                                <span id="dataset1NameCard">Data Progres 1</span>
+                                <span style="margin: 0 10px; color: var(--gray-500);">vs</span>
+                                <span id="dataset2NameCard">Data Progres 2</span>
+                            </span>
+                        </div>
+
+                        <div class="cards-grid-horizontal">
+                            <div class="analysis-card card-most">
+                                <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                                <div class="card-info">
+                                    <h4>Most Progress</h4>
+                                    <p class="period-label">Periode Lama</p>
+                                    <p class="witel-name" id="mostProgressWitel1">-</p>
+                                    <span class="progress-value" id="mostProgressValue1">-</span>
+                                </div>
+                            </div>
+                            <div class="analysis-card card-least">
+                                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                                <div class="card-info">
+                                    <h4>Least Progress</h4>
+                                    <p class="period-label">Periode Lama</p>
+                                    <p class="witel-name" id="leastProgressWitel1">-</p>
+                                    <span class="progress-value" id="leastProgressValue1">-</span>
+                                </div>
+                            </div>
+                            <div class="analysis-card card-most">
+                                <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                                <div class="card-info">
+                                    <h4>Most Progress</h4>
+                                    <p class="period-label">Periode Baru</p>
+                                    <p class="witel-name" id="mostProgressWitel2">-</p>
+                                    <span class="progress-value" id="mostProgressValue2">-</span>
+                                </div>
+                            </div>
+                            <div class="analysis-card card-least">
+                                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                                <div class="card-info">
+                                    <h4>Least Progress</h4>
+                                    <p class="period-label">Periode Baru</p>
+                                    <p class="witel-name" id="leastProgressWitel2">-</p>
+                                    <span class="progress-value" id="leastProgressValue2">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Product Benchmarking Content -->
-                <div class="product-tab-content active" id="productBenchmarkingTab">
-                    <div class="table-container">
-                        
-                        <div class="table-header-fixed">
-                            <table class="benchmark-table">
-                                <thead>
-                                    <tr>
-                                        <th>AM</th>
-                                        <th>Customer</th>
-                                        <th>Product</th>
-                                        <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
-                                        <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
-                                        <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
-                                        <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
-                                        <th>Perubahan</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                <div class="narrative-section">
+                    <div class="narrative-header" onclick="toggleNarrative()">
+                        <h4><i class="fas fa-file-alt"></i> Analisis Performa</h4>
+                        <i class="fas fa-chevron-down narrative-toggle" id="narrativeToggle"></i>
+                    </div>
+                    <div class="narrative-body" id="narrativeBody">
+                        <div class="narrative-paragraph">
+                            <h5 id="narrativeDataset1Title">Hasil Analisis Data Progres (Periode Lama)</h5>
+                            <p id="narrativeDataset1">-</p>
                         </div>
-                        <div class="table-scrollable-wrapper">
-                            <div class="table-responsive">
+                        <div class="narrative-paragraph">
+                            <h5 id="narrativeDataset2Title">Hasil Analisis Data Progres (Periode Baru)</h5>
+                            <p id="narrativeDataset2">-</p>
+                        </div>
+                        <div class="narrative-paragraph conclusion">
+                            <h5>Kesimpulan</h5>
+                            <p id="narrativeConclusion">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="am-tabs-container">
+                    <div class="am-tabs-navigation">
+                        <button class="am-tab-btn active" data-am-tab="benchmarking">
+                            <i class="fas fa-table"></i> Benchmarking Performa Account Manager
+                        </button>
+                        <button class="am-tab-btn" data-am-tab="leaderboard">
+                            <i class="fas fa-medal"></i> Leaderboard AM (Top Performers)
+                        </button>
+                    </div>
+
+                    <div class="am-tab-content active" id="amBenchmarkingTab">
+                        <div class="table-container">
+                            <div class="table-header-fixed">
                                 <table class="benchmark-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 200px; min-width: 200px;">Witel</th>
+                                            <th style="width: 320px; min-width: 320px;">Account Manager</th>
+                                            <th>Avg % Progress<br><small id="dataset1DateAM">-</small></th>
+                                            <th>Avg % Progress<br><small id="dataset2DateAM">-</small></th>
+                                            <th>Avg % Result<br><small id="dataset1ResultAM">-</small></th>
+                                            <th>Avg % Result<br><small id="dataset2ResultAM">-</small></th>
+                                            <th>Perubahan</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="table-scrollable-wrapper">
+                                <div class="table-responsive">
+                                    <table class="benchmark-table">
                                     <thead style="display: none;"></thead>
-                                    <tbody id="productBenchmarkTableBody">
-                                        <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                    <tbody id="amBenchmarkTableBody">
+                                        <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="am-tab-content" id="amLeaderboardTab">
+                        <div class="table-container leaderboard-container">
+                            <div class="table-responsive">
+                                <table class="benchmark-table leaderboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="100">Rank</th>
+                                            <th>Account Manager</th>
+                                            <th>Witel</th>
+                                            <th width="150">Improvement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="amLeaderboardTableBody">
+                                        <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="amLeaderboardPagination" class="pagination-wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="productLevelContent" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card visited">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>CC Visited</h4>
+                        <div class="stat-value" id="visitedValue">-</div>
+                        <span class="stat-label" id="visitedPercentage">-</span>
+                    </div>
+                    <div class="stat-card no-progress">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>AM No Progress</h4>
+                        <div class="stat-value" id="noProgressValue">-</div>
+                        <span class="stat-label">Account Managers</span>
+                    </div>
+                    <div class="stat-card products">
+                        <i class="fas fa-box-open"></i>
+                        <h4>Total Products</h4>
+                        <div class="stat-value" id="totalProductsValue">-</div>
+                        <span class="stat-label">Produk ditawarkan</span>
+                    </div>
+                </div>
+
+                <div class="narrative-section" style="margin-bottom: 20px;">
+                    <div class="narrative-header" onclick="toggleProductNarrative()">
+                        <h4><i class="fas fa-chart-pie"></i> Analisis Product Level</h4>
+                        <i class="fas fa-chevron-down narrative-toggle" id="productNarrativeToggle"></i>
+                    </div>
+                    <div class="narrative-body" id="productNarrativeBody">
+                        <div class="narrative-paragraph">
+                            <h5>Statistik Kunjungan</h5>
+                            <p id="productNarrativeVisited">-</p>
+                        </div>
+                        <div class="narrative-paragraph conclusion">
+                            <h5>Progress Analysis</h5>
+                            <p id="productNarrativeProgress">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-filters">
+                    <label><i class="fas fa-filter"></i> Filter Witel:</label>
+                    <select id="witelFilter" class="native-select">
+                        <option value="">Semua Witel</option>
+                    </select>
+                </div>
+
+                <div class="product-tabs-container">
+                    <div class="product-tabs-navigation">
+                        <button class="product-tab-btn active" data-product-tab="benchmarking">
+                            <i class="fas fa-table"></i> Benchmarking Performa Per Produk
+                        </button>
+                        <button class="product-tab-btn" data-product-tab="improvement">
+                            <i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)
+                        </button>
+                        <button class="product-tab-btn" data-product-tab="product">
+                            <i class="fas fa-star"></i> Leaderboard Produk (Top 10)
+                        </button>
+                    </div>
+
+                    <div class="product-tab-content active" id="productBenchmarkingTab">
+                        <div class="table-container">
+                            <div class="table-header-fixed">
+                                <table class="benchmark-table">
+                                    <thead>
+                                        <tr>
+                                            <th>AM</th>
+                                            <th>Customer</th>
+                                            <th>Product</th>
+                                            <th>% Progress<br><small id="dataset1DateProduct">-</small></th>
+                                            <th>% Progress<br><small id="dataset2DateProduct">-</small></th>
+                                            <th>% Result<br><small id="dataset1ResultProduct">-</small></th>
+                                            <th>% Result<br><small id="dataset2ResultProduct">-</small></th>
+                                            <th>Perubahan</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="table-scrollable-wrapper">
+                                <div class="table-responsive">
+                                    <table class="benchmark-table">
+                                        <thead style="display: none;"></thead>
+                                        <tbody id="productBenchmarkTableBody">
+                                            <tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-tab-content" id="productImprovementTab">
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="benchmark-table leaderboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="100">Rank</th>
+                                            <th>AM</th>
+                                            <th>Customer</th>
+                                            <th>Product</th>
+                                            <th width="150">Improvement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="improvementLeaderboardTableBody">
+                                        <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="improvementLeaderboardPagination" class="pagination-wrapper"></div>
+                        </div>
+                    </div>
+
+                    <div class="product-tab-content" id="productLeaderboardTab">
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="benchmark-table leaderboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="100">Rank</th>
+                                            <th>Produk</th>
+                                            <th>Avg Progress</th>
+                                            <th>Avg Result</th>
+                                            <th>Total Offerings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productLeaderboardTableBody">
+                                        <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -459,58 +458,11 @@
                     </div>
                 </div>
 
-                <!-- Product Improvement Leaderboard -->
-                <div class="product-tab-content" id="productImprovementTab">
-                    <div class="table-container">
-                        <div class="table-responsive">
-                            <table class="benchmark-table leaderboard-table">
-                                <thead>
-                                    <tr>
-                                        <th width="100">Rank</th>
-                                        <th>AM</th>
-                                        <th>Customer</th>
-                                        <th>Product</th>
-                                        <th width="150">Improvement</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="improvementLeaderboardTableBody">
-                                    <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="improvementLeaderboardPagination" class="pagination-wrapper"></div>
-                    </div>
+                <div class="report-actions">
+                    <button type="button" id="downloadReportProduct" class="btn-download-report" disabled>
+                        <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
+                    </button>
                 </div>
-
-                <!-- Product Leaderboard -->
-                <div class="product-tab-content" id="productLeaderboardTab">
-                    <div class="table-container">
-                        
-                        <div class="table-responsive">
-                            <table class="benchmark-table leaderboard-table">
-                                <thead>
-                                    <tr>
-                                        <th width="100">Rank</th>
-                                        <th>Produk</th>
-                                        <th>Avg Progress</th>
-                                        <th>Avg Result</th>
-                                        <th>Total Offerings</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productLeaderboardTableBody">
-                                    <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Belum ada data</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Download Report Button -->
-            <div class="report-actions">
-                <button type="button" id="downloadReportProduct" class="btn-download-report" disabled>
-                    <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
-                </button>
             </div>
         </div>
     </div>
@@ -1270,93 +1222,122 @@ $(document).ready(function() {
             return '<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Tidak ada data</td></tr>';
         }
 
-        // Definisi Style untuk Badges (Diambil dari kode lama tapi dirapikan)
-        const containerStyle = 'display: flex; gap: 6px; width: 100%; flex-wrap: wrap; margin-top: 6px;';
-        const badgeStyle = 'display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 4px; font-size: 10px; white-space: nowrap;';
+        const containerStyle = 'display: flex; gap: 6px; width: 100%; margin-top: 6px;';
+        // flex: 1 1 0px -> Kunci agar lebar selalu dibagi rata (25% per blok jika ada 4 blok)
+        const badgeStyle = 'display: flex; flex: 1 1 0px; justify-content: center; align-items: center; padding: 4px 2px; border-radius: 4px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
         const iconStyle = 'font-size: 9px; margin-right: 4px;';
         
-        // Warna badges
-        const grayBadge = 'background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;'; // Untuk Offering & CC
-        const winBadge = 'background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 600;'; // Untuk Win
-        const loseBadge = 'background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 600;'; // Untuk Lose
+        const grayBadge = 'background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;';
+        const winBadge = 'background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 600;';
+        const loseBadge = 'background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 600;';
 
-        let html = '';
-        let currentWitel = null;
-        let witelRows = [];
+        const grouped = {};
+        const witelOrder = [];
 
-        data.forEach((row, index) => {
-            // Grouping logic untuk Witel Summary
-            if (row.witel !== currentWitel) {
-                if (currentWitel && witelRows.length > 0) {
-                    html += renderWitelSummary(witelRows, currentWitel);
-                }
-                currentWitel = row.witel;
-                witelRows = [];
+        data.forEach(row => {
+            if (!grouped[row.witel]) {
+                grouped[row.witel] = [];
+                witelOrder.push(row.witel);
             }
-
-            witelRows.push(row);
-
-            html += '<tr>';
-
-            // Kolom Witel (Rowspan)
-            if (row.witel_rowspan > 0) {
-                // Tambahkan vertical-align top agar teks Witel tetap di atas meski baris AM jadi tinggi
-                html += `<td rowspan="${row.witel_rowspan}" style="vertical-align: top; padding-top: 14px;">${row.witel}</td>`;
-            }
-
-            // --- BAGIAN MODIFIKASI DISINI (Kolom Account Manager) ---
-            const s = row.stats || { offerings: 0, total_customers: 0, win: 0, lose: 0 };
-            
-            html += `<td style="padding: 8px 12px; width: 320px; min-width: 400px;">
-                <div style="font-weight: 600; color: #1e293b;">${row.am}</div>
-      
-                <div style="${containerStyle}">
-                    <span style="${badgeStyle} ${grayBadge}" title="${s.offerings} Offerings">
-                        <i class="fas fa-box-open" style="${iconStyle}"></i> ${s.offerings} Offerings
-                    </span>
-                    
-                    <span style="${badgeStyle} ${grayBadge}" title="${s.total_customers} Corporate Customers">
-                        <i class="fas fa-users" style="${iconStyle}"></i> ${s.total_customers} CC
-                    </span>
-
-                    ${s.win > 0 ? `
-                    <span style="${badgeStyle} ${winBadge}" title="${s.win} Win">
-                        <i class="fas fa-check" style="${iconStyle}"></i> ${s.win} Win
-                    </span>` : ''}
-
-                    ${s.lose > 0 ? `
-                    <span style="${badgeStyle} ${loseBadge}" title="${s.lose} Lose">
-                        <i class="fas fa-times" style="${iconStyle}"></i> ${s.lose} Lose
-                    </span>` : ''}
-                </div>
-            </td>`;
-            // --- AKHIR MODIFIKASI ---
-
-            // Progress & Result Columns
-            html += renderProgressCell(row.progress_1);
-            html += renderProgressCell(row.progress_2);
-            html += renderProgressCell(row.result_1);
-            html += renderProgressCell(row.result_2);
-
-            // Perubahan Column
-            const change = row.change_avg;
-            const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
-            const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
-            
-            html += `<td style="text-align: center;">
-                <span class="change-indicator ${changeClass}">
-                    <i class="fas ${changeIcon}"></i>
-                    ${change > 0 ? '+' : ''}${change.toFixed(2)}%
-                </span>
-            </td>`;
-
-            html += '</tr>';
+            grouped[row.witel].push(row);
         });
 
-        // Render summary untuk witel terakhir
-        if (currentWitel && witelRows.length > 0) {
-            html += renderWitelSummary(witelRows, currentWitel);
-        }
+        let html = '';
+
+        witelOrder.forEach(witel => {
+            const rows = grouped[witel];
+
+            // Hitung Rata-rata
+            const avgProgress1 = rows.reduce((a, b) => a + b.progress_1, 0) / rows.length;
+            const avgProgress2 = rows.reduce((a, b) => a + b.progress_2, 0) / rows.length;
+            const avgResult1 = rows.reduce((a, b) => a + b.result_1, 0) / rows.length;
+            const avgResult2 = rows.reduce((a, b) => a + b.result_2, 0) / rows.length;
+            const avgChange = rows.reduce((a, b) => a + b.change_avg, 0) / rows.length;
+            
+            const avgChangeClass = avgChange > 0 ? 'positive' : (avgChange < 0 ? 'negative' : 'neutral');
+            const avgChangeIcon = avgChange > 0 ? 'fa-arrow-up' : (avgChange < 0 ? 'fa-arrow-down' : 'fa-minus');
+
+            // --- 1. RENDER BARIS RATA-RATA ---
+            html += '<tr style="background-color: #f8fafc; font-weight: 700;">'; // Pakai hex f8fafc agar aman/konsisten
+            
+            html += `<td rowspan="${rows.length + 1}" style="vertical-align: top; padding-top: 14px; width: 200px; min-width: 200px;">
+                ${witel}
+            </td>`;
+
+            html += `<td style="padding: 12px; color: var(--telkom-red); letter-spacing: 0.5px; width: 320px; min-width: 320px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 800; font-style: italic;">RATA-RATA</span>
+                </div>
+            </td>`;
+
+            html += renderProgressCell(avgProgress1, true);
+            html += renderProgressCell(avgProgress2, true);
+            html += renderProgressCell(avgResult1, true);
+            html += renderProgressCell(avgResult2, true);
+
+            html += `<td style="text-align: center;">
+                <span class="change-indicator ${avgChangeClass}">
+                    <i class="fas ${avgChangeIcon}"></i>
+                    ${avgChange > 0 ? '+' : ''}${avgChange.toFixed(2)}%
+                </span>
+            </td>`;
+            html += '</tr>';
+
+            // --- 2. RENDER BARIS AM ---
+            rows.forEach(row => {
+                const s = row.stats || { offerings: 0, total_customers: 0, win: 0, lose: 0 };
+
+                // --- LOGIKA BADGE 4 BLOK RATA ---
+                let badges = [];
+
+                // Blok 1: Offerings (Selalu ada)
+                badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.offerings} Offerings">${s.offerings} Offerings</span>`);
+                
+                // Blok 2: CC (Selalu ada)
+                badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.total_customers} Corporate Customers">${s.total_customers} CC</span>`);
+
+                // Blok 3 & 4: Win & Lose (Dinamis)
+                // Jika Win ada, masukkan.
+                if (s.win > 0) {
+                    badges.push(`<span style="${badgeStyle} ${winBadge}" title="${s.win} Win">${s.win} Win</span>`);
+                }
+                
+                // Jika Lose ada, masukkan. (Jika Win tidak ada tadi, Lose otomatis masuk ke index ke-3)
+                if (s.lose > 0) {
+                    badges.push(`<span style="${badgeStyle} ${loseBadge}" title="${s.lose} Lose">${s.lose} Lose</span>`);
+                }
+
+                // Padding: Isi sisa slot dengan elemen kosong agar total tetap 4 blok
+                while (badges.length < 4) {
+                    badges.push(`<span style="flex: 1 1 0px;"></span>`);
+                }
+
+                html += '<tr>';
+                html += `<td style="padding: 8px 12px; width: 320px; min-width: 320px;">
+                    <div style="font-weight: 600; color: #1e293b;">${row.am}</div>
+                    <div style="${containerStyle}">
+                        ${badges.join('')}
+                    </div>
+                </td>`;
+
+                html += renderProgressCell(row.progress_1);
+                html += renderProgressCell(row.progress_2);
+                html += renderProgressCell(row.result_1);
+                html += renderProgressCell(row.result_2);
+
+                const change = row.change_avg;
+                const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
+                const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
+                
+                html += `<td style="text-align: center;">
+                    <span class="change-indicator ${changeClass}">
+                        <i class="fas ${changeIcon}"></i>
+                        ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+                    </span>
+                </td>`;
+                html += '</tr>';
+            });
+        });
 
         return html;
     }
@@ -1386,15 +1367,38 @@ $(document).ready(function() {
         `;
     }
 
-    // NEW: Render progress cell with bar
-    function renderProgressCell(value) {
+    // Render progress cell with bar
+    // Helper Function untuk Render Cell Progress
+    function renderProgressCell(value, isSummary = false) {
         const percentage = typeof value === 'number' ? value : 0;
+        
+        // 1. Setting Style Background Cell (Optional: pakai var gray-50)
+        const bgStyle = isSummary ? 'background-color: var(--gray-100);' : '';
+        
+        // 2. Setting Style Text
+        // Font size SAMA (13px), tapi warna teks menyesuaikan bar (Abu gelap vs Merah)
+        const valueStyle = isSummary 
+            ? 'font-size: 13px; font-weight: 700; color: var(--telkom-red);' 
+            : 'font-size: 13px; font-weight: 600; color: var(--telkom-red);';
+        
+        // 3. SETTING WARNA BAR (Pakai Variable CSS yang ada)
+        let barColor;
+        
+        if (isSummary) {
+            // --- WARNA KHUSUS RATA-RATA (Abu-abu) ---
+            // Menggunakan var(--gray-600) ke var(--gray-800)
+            barColor = 'var(--telkom-red)';
+        } else {
+            // --- WARNA DEFAULT AM (Merah) ---
+            barColor = 'linear-gradient(90deg, #ffb3b3ff, var(--telkom-red))';
+        }
+
         return `
-            <td style="text-align: center;">
+            <td style="text-align: center; ${bgStyle}">
                 <div class="progress-cell">
-                    <span class="progress-value">${percentage.toFixed(2)}%</span>
+                    <span style="${valueStyle}">${percentage.toFixed(2)}%</span>
                     <div class="progress-bar-wrapper">
-                        <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+                        <div class="progress-bar-fill" style="width: ${percentage}%; background: ${barColor};"></div>
                     </div>
                 </div>
             </td>
