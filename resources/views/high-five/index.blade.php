@@ -900,18 +900,8 @@ $(document).ready(function() {
     // SNAPSHOT DROPDOWN LOADING
     // ================================
 
-    $('#filterDivisi').on('change', function() {
-        const divisiId = $(this).val();
-        if (divisiId) {
-            loadSnapshotOptions(divisiId);
-            $('#snapshot1, #snapshot2').prop('disabled', false);
-        } else {
-            $('#snapshot1, #snapshot2').empty().prop('disabled', true).append('<option value="">-- Pilih Data Progres --</option>');
-            $('#loadBenchmarkBtn').prop('disabled', true);
-        }
-    });
-
-    function loadSnapshotOptions(divisiId) {
+    // Cari function loadSnapshotOptions yang lama, dan GANTI dengan yang ini:
+    function loadSnapshotOptions(divisiId, callback = null) {
         $.ajax({
             url: "{{ route('high-five.snapshots') }}",
             method: 'GET',
@@ -941,6 +931,10 @@ $(document).ready(function() {
                     selectedSnapshot1 = null;
                     selectedSnapshot2 = null;
                     $('#loadBenchmarkBtn').prop('disabled', true);
+
+                    // --- TAMBAHAN: Jalankan callback jika ada (untuk restore state) ---
+                    if (callback) callback(); 
+
                 } else {
                     $('#snapshot1, #snapshot2').empty().prop('disabled', true).append('<option value="">-- Tidak ada data progres --</option>');
                     showAlert('info', 'Info', 'Belum ada data progres untuk divisi ini.');
@@ -953,16 +947,89 @@ $(document).ready(function() {
         });
     }
 
+    // ==========================================
+    // 1. AUTO-RESTORE STATE DARI LOCAL STORAGE
+    // ==========================================
+    const savedDivisi = localStorage.getItem('hf_divisi');
+    
+    if (savedDivisi) {
+        // Set nilai divisi
+        $('#filterDivisi').val(savedDivisi);
+        
+        // Panggil fungsi load options dengan CALLBACK restore snapshot
+        loadSnapshotOptions(savedDivisi, function() {
+            const savedSn1 = localStorage.getItem('hf_sn1');
+            const savedSn2 = localStorage.getItem('hf_sn2');
+            const isLoaded = localStorage.getItem('hf_loaded');
+
+            if (savedSn1) {
+                // Restore Snapshot 1
+                $('#snapshot1').val(savedSn1);
+                selectedSnapshot1 = savedSn1; // Update variabel global
+                
+                // Generate opsi untuk Snapshot 2 (filter opsi yg sama)
+                updateSnapshot2Options();
+
+                if (savedSn2) {
+                    // Restore Snapshot 2
+                    $('#snapshot2').val(savedSn2);
+                    selectedSnapshot2 = savedSn2; // Update variabel global
+                }
+
+                // Cek tombol load
+                checkCanLoad();
+
+                // Jika sebelumnya user sudah klik Load, otomatis load datanya
+                if (isLoaded === 'true' && savedSn1 && savedSn2) {
+                    loadBenchmarkingData();
+                }
+            }
+        });
+    }
+
+    // ==========================================
+    // 2. SIMPAN STATE SAAT USER BERINTERAKSI
+    // ==========================================
+
+    $('#filterDivisi').on('change', function() {
+        const val = $(this).val();
+        // Simpan Divisi
+        localStorage.setItem('hf_divisi', val);
+        
+        // Reset state snapshot & loaded karena divisi berubah
+        localStorage.removeItem('hf_sn1');
+        localStorage.removeItem('hf_sn2');
+        localStorage.removeItem('hf_loaded');
+
+        if (val) {
+            loadSnapshotOptions(val);
+            $('#snapshot1, #snapshot2').prop('disabled', false);
+        } else {
+            $('#snapshot1, #snapshot2').empty().prop('disabled', true);
+            $('#loadBenchmarkBtn').prop('disabled', true);
+        }
+    });
+
     $('#snapshot1').on('change', function() {
         selectedSnapshot1 = $(this).val();
+        localStorage.setItem('hf_sn1', selectedSnapshot1); // Simpan
+        
         updateSnapshot2Options();
         checkCanLoad();
+        
+        // Kalau user ganti snapshot, anggap data belum ter-load (reset tampilan)
+        localStorage.removeItem('hf_loaded'); 
     });
 
     $('#snapshot2').on('change', function() {
         selectedSnapshot2 = $(this).val();
+        localStorage.setItem('hf_sn2', selectedSnapshot2); // Simpan
+        
         checkCanLoad();
+        localStorage.removeItem('hf_loaded'); 
     });
+
+    // ... sisa kode lainnya (loadBenchmarkingData, render functions, dll) ...
 
     function updateSnapshot2Options() {
         const snapshot1Val = $('#snapshot1').val();
@@ -1014,7 +1081,9 @@ $(document).ready(function() {
     // LOAD BENCHMARKING DATA
     // ================================
 
+    // Modifikasi listener tombol load yang sudah ada
     $('#loadBenchmarkBtn').on('click', function() {
+        localStorage.setItem('hf_loaded', 'true'); // Tandai data sudah diload
         loadBenchmarkingData();
     });
 
