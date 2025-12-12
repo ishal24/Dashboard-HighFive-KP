@@ -11,7 +11,6 @@
 
 @section('content')
 <div class="highfive-main-content">
-<!-- Header -->
 <div class="header-leaderboard">
     <h1 class="header-title">
         <i class="fas fa-chart-line"></i>
@@ -20,114 +19,63 @@
     <p class="header-subtitle">Monitoring Performa Mingguan Account Manager dan Produk High Five</p>
 </div>
 
-<!-- Alert Container (Fixed Position) -->
 <div class="alert-container" id="alertContainer"></div>
 
-<!-- Section 1: Kelola Dataset High Five (UPDATED TITLE & BUTTON) -->
 <div class="toolkit-container">
-    <!-- Header -->
     <div class="toolkit-header" onclick="toggleManualFetch()">
-        <h4>
-            <i class="fas fa-database"></i>
-            Kelola Dataset High Five
-        </h4>
+        <h4><i class="fas fa-database"></i> Kelola Dataset High Five</h4>
         <div style="display: flex; align-items: center; gap: 12px;">
-        <button type="button" class="btn-kelola-link" onclick="openLinkModal()">
-            <i class="fas fa-cog"></i>
-            Kelola Link Spreadsheet
-        </button>
+            <button type="button" class="btn-kelola-link" onclick="openLinkModal()">
+                <i class="fas fa-cog"></i> Kelola Link Spreadsheet
+            </button>
             <i class="fas fa-chevron-down toolkit-toggle" id="manualFetchToggle"></i>
         </div>
     </div>
-
-    <!-- Subtitle -->
-    <p style="font-size: 12px; color: var(--gray-600); margin: 8px 0 0 0; padding-left: 28px;">
-        Rekap link dan update data performa mingguan
-    </p>
-
-    <!-- Body (Always Visible) -->
     <div class="toolkit-body" id="manualFetchBody">
-        <!-- Info Banner (UPDATED COPYWRITING) -->
         <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 14px 18px; border-radius: var(--radius-lg); border: 1px solid #fcd34d; margin-bottom: 16px;">
             <div style="display: flex; align-items: start; gap: 10px;">
                 <i class="fas fa-info-circle" style="color: #f59e0b; font-size: 1.1rem; margin-top: 2px;"></i>
                 <div style="flex: 1;">
-                    <strong style="font-size: 13px; color: #92400e; display: block; margin-bottom: 4px;">💡 Kapan Pakai Fitur Ini?</strong>
+                    <strong style="font-size: 13px; color: #92400e; display: block; margin-bottom: 4px;">💡 Info Update Data</strong>
                     <p style="font-size: 12px; color: #92400e; line-height: 1.5; margin: 0;">
-                        Gunakan fitur ini untuk <strong>update data performa terbaru secara manual</strong>.
-                        Pastikan tanggal yang dipilih sesuai jadwal dan belum tercatat di sistem sebelumnya.
-                        <br><strong>Catatan:</strong> Data akan otomatis terupdate setiap Jumat jam 01:00 pagi.
+                        Gunakan fitur ini untuk update data manual. Data otomatis terupdate setiap Jumat 01:00 pagi.
                     </p>
                 </div>
             </div>
         </div>
-
-        <!-- Manual Fetch Form -->
         <div class="toolkit-grid" style="grid-template-columns: 200px 160px 1fr 150px;">
-            <!-- Link Dropdown -->
             <div class="field-group">
-                <label>
-                    <i class="fas fa-link"></i>
-                    Link Spreadsheet
-                </label>
-                <select id="manualLinkSelect" class="native-select">
-                    <option value="">Pilih Link</option>
-                </select>
+                <label><i class="fas fa-link"></i> Link Spreadsheet</label>
+                <select id="manualLinkSelect" class="native-select"><option value="">Pilih Link</option></select>
             </div>
-
-            <!-- Date Picker -->
             <div class="field-group">
-                <label>
-                    <i class="fas fa-calendar"></i>
-                    Tanggal Data
-                </label>
+                <label><i class="fas fa-calendar"></i> Tanggal Data</label>
                 <input type="text" id="manualSnapshotDate" class="native-select" placeholder="Pilih tanggal" readonly>
             </div>
-
-            <!-- Info Display (UPDATED FORMAT) -->
             <div class="field-group">
-                <label style="color: var(--gray-500);">
-                    <i class="fas fa-info-circle"></i>
-                    Info Link
-                </label>
+                <label style="color: var(--gray-500);"><i class="fas fa-info-circle"></i> Info Link</label>
                 <div style="height: var(--ctrl-h); padding: 0 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); display: flex; align-items: center; background: var(--gray-50);">
-                    <span id="manualLinkInfo" style="font-size: 12px; color: var(--gray-500); font-weight: 500;">
-                        Pilih link untuk melihat info
-                    </span>
+                    <span id="manualLinkInfo" style="font-size: 12px; color: var(--gray-500); font-weight: 500;">Pilih link untuk melihat info</span>
                 </div>
             </div>
-
-            <!-- Save Button -->
             <div class="field-group">
                 <label style="opacity: 0;">.</label>
                 <button id="btnSaveManual" class="btn-save-dataset" onclick="saveManualData()">
-                    <i class="fas fa-save"></i>
-                    Simpan Data
+                    <i class="fas fa-save"></i> Simpan Data
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Section 2: Dataset Selector - Benchmarking (UPDATED LABELS) -->
-{{-- <div class="selector-container">
-</div> --}}
-
-<!-- Section 3: Performance Tabs -->
 <div class="performance-container">
-    
     <div class="performance-header-wrapper">
         <div class="toolkit-header">
-            <h4>
-                <i class="fas fa-chart-line"></i>
-                Overview Data Performa High Five
-            </h4>
+            <h4><i class="fas fa-chart-line"></i> Overview Data Performa High Five</h4>
             <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
-                <i class="fas fa-file-pdf"></i>
-                Unduh Laporan PDF
+                <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
             </button>
         </div>
-
         <div class="selector-grid">
             <div class="field-group">
                 <label><i class="fas fa-filter"></i> Filter Divisi</label>
@@ -137,35 +85,24 @@
                     @endforeach
                 </select>
             </div>
-
             <div class="field-group">
                 <label><i class="fas fa-database"></i> Data Progres 1 (Periode Lama)</label>
-                <select id="snapshot1" class="native-select" disabled>
-                    <option value="">-- Pilih Data Progres 1 --</option>
-                </select>
+                <select id="snapshot1" class="native-select" disabled><option value="">-- Pilih Data Progres 1 --</option></select>
             </div>
-
             <div class="field-group">
                 <label><i class="fas fa-database"></i> Data Progres 2 (Periode Baru)</label>
-                <select id="snapshot2" class="native-select" disabled>
-                    <option value="">-- Pilih Data Progres 2 --</option>
-                </select>
+                <select id="snapshot2" class="native-select" disabled><option value="">-- Pilih Data Progres 2 --</option></select>
             </div>
-
             <button type="button" id="loadBenchmarkBtn" class="btn-load-data" disabled>
                 <i class="fas fa-sync-alt"></i> Load Data
             </button>
         </div>
-
         <div class="performance-tabs">
-            <button class="tab-btn" data-tab="am-level">
-                <i class="fas fa-user-tie"></i> Performa AM Level
-            </button>
-            <button class="tab-btn" data-tab="product-level">
-                <i class="fas fa-box"></i> Performa Product Level
-            </button>
+            <button class="tab-btn" data-tab="am-level"><i class="fas fa-user-tie"></i> Performa AM Level</button>
+            <button class="tab-btn" data-tab="product-level"><i class="fas fa-box"></i> Performa Product Level</button>
         </div>
     </div>
+
     <div class="performance-body-wrapper">
         <div class="tab-content-area">
             <div id="emptyState" class="empty-state active">
@@ -173,7 +110,6 @@
                 <h3>Belum Ada Data untuk Divisualisasikan</h3>
                 <p>Pilih Filter Divisi dan 2 Data Progres untuk membandingkan performa</p>
             </div>
-
             <div id="loadingState" class="loading-state">
                 <div class="spinner"></div>
                 <p>Memproses data dari database...</p>
@@ -181,97 +117,109 @@
 
             <div id="amLevelContent" class="tab-content">
                 <div class="cards-section">
-                    <div class="cards-section-title" onclick="toggleAnalysisCards()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <i class="fas fa-chart-bar"></i>
-                            Analisis Performa by Dataset
-                        </div>
-                        <i class="fas fa-chevron-down toolkit-toggle active" id="analysisCardsToggle"></i>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Performance Highlights</h4>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">Overview & Key Metrics</p>
                     </div>
 
-                    <div id="analysisCardsBody" class="cards-grid-wrapper" style="display: block;">
-                        <div style="margin-bottom: 16px; text-align: center;">
-                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700);">
-                                <i class="fas fa-calendar-alt" style="font-size: 0.85rem; margin-right: 6px;"></i>
-                                <span id="dataset1NameCard">Data Progres 1</span>
-                                <span style="margin: 0 10px; color: var(--gray-500);">vs</span>
-                                <span id="dataset2NameCard">Data Progres 2</span>
-                            </span>
+                    <div class="cards-grid-3-cols">
+                        
+                        <div class="metric-sq-card card-tall theme-success" id="cardNational">
+                            <button class="btn-sq-insight" onclick="showMetricInsight('national')"><i class="fas fa-info"></i></button>
+                            <div class="sq-icon"><i class="fas fa-globe-asia"></i></div>
+                            <div class="sq-label" style="font-size: 14px;">National Avg Progress</div>
+                            <div class="sq-stat" id="metricNatValue" style="margin-bottom: 0;">-</div>
+                            <div class="sq-sub" id="metricNatTrend" style="margin-bottom: 8px;">-</div>
+
+                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
+                                    <div style="text-align: left;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL OFFERINGS</span>
+                                        <span id="valOfferings" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL VISITED</span>
+                                        <span id="valVisited" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
+                                    <div style="text-align: left;">
+                                        <span style="color: #059669; display: block; font-size: 10px; font-weight: 700;">TOTAL WINS</span>
+                                        <span id="valWins" style="font-weight: 700; color: #059669;">-</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="color: #dc2626; display: block; font-size: 10px; font-weight: 700;">TOTAL LOSES</span>
+                                        <span id="valLoses" style="font-weight: 700; color: #dc2626;">-</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="cards-grid-horizontal">
-                            <div class="analysis-card card-most">
-                                <div class="card-icon"><i class="fas fa-trophy"></i></div>
-                                <div class="card-info">
-                                    <h4>Most Progress</h4>
-                                    <p class="period-label">Periode Lama</p>
-                                    <p class="witel-name" id="mostProgressWitel1">-</p>
-                                    <span class="progress-value" id="mostProgressValue1">-</span>
-                                </div>
-                            </div>
-                            <div class="analysis-card card-least">
-                                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                                <div class="card-info">
-                                    <h4>Least Progress</h4>
-                                    <p class="period-label">Periode Lama</p>
-                                    <p class="witel-name" id="leastProgressWitel1">-</p>
-                                    <span class="progress-value" id="leastProgressValue1">-</span>
-                                </div>
-                            </div>
-                            <div class="analysis-card card-most">
-                                <div class="card-icon"><i class="fas fa-trophy"></i></div>
-                                <div class="card-info">
-                                    <h4>Most Progress</h4>
-                                    <p class="period-label">Periode Baru</p>
-                                    <p class="witel-name" id="mostProgressWitel2">-</p>
-                                    <span class="progress-value" id="mostProgressValue2">-</span>
-                                </div>
-                            </div>
-                            <div class="analysis-card card-least">
-                                <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                                <div class="card-info">
-                                    <h4>Least Progress</h4>
-                                    <p class="period-label">Periode Baru</p>
-                                    <p class="witel-name" id="leastProgressWitel2">-</p>
-                                    <span class="progress-value" id="leastProgressValue2">-</span>
-                                </div>
-                            </div>
+                        <div class="metric-sq-card theme-primary" id="cardMostWitel">
+                            <button class="btn-sq-insight" onclick="showMetricInsight('most_witel')"><i class="fas fa-info"></i></button>
+                            <div class="sq-icon"><i class="fas fa-crown"></i></div>
+                            <div class="sq-label">Witel Champion</div>
+                            <div class="sq-value" id="metricMostName">-</div>
+                            <div class="sq-sub" id="metricMostStat">-</div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="narrative-section">
-                    <div class="narrative-header" onclick="toggleNarrative()">
-                        <h4><i class="fas fa-file-alt"></i> Analisis Performa</h4>
-                        <i class="fas fa-chevron-down narrative-toggle" id="narrativeToggle"></i>
-                    </div>
-                    <div class="narrative-body" id="narrativeBody">
-                        <div class="narrative-paragraph">
-                            <h5 id="narrativeDataset1Title">Hasil Analisis Data Progres (Periode Lama)</h5>
-                            <p id="narrativeDataset1">-</p>
+                        <div class="metric-sq-card theme-warning" id="cardLeastWitel">
+                            <button class="btn-sq-insight" onclick="showMetricInsight('least_witel')"><i class="fas fa-info"></i></button>
+                            <div class="sq-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="sq-label">Focus Area</div>
+                            <div class="sq-value" id="metricLeastName">-</div>
+                            <div class="sq-sub" id="metricLeastStat">-</div>
                         </div>
-                        <div class="narrative-paragraph">
-                            <h5 id="narrativeDataset2Title">Hasil Analisis Data Progres (Periode Baru)</h5>
-                            <p id="narrativeDataset2">-</p>
+
+                        <div class="metric-sq-card theme-purple" id="cardTopAM">
+                            <button class="btn-sq-insight" onclick="showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
+                            <div class="sq-icon"><i class="fas fa-user-astronaut"></i></div>
+                            <div class="sq-label">MVP Improver</div>
+                            <div class="sq-value" id="metricTopAMName">-</div>
+                            <div class="sq-sub" id="metricTopAMStat">-</div>
                         </div>
-                        <div class="narrative-paragraph conclusion">
-                            <h5>Kesimpulan</h5>
-                            <p id="narrativeConclusion">-</p>
+
+                        <div class="metric-sq-card theme-success" id="cardAmWin">
+                            <button class="btn-sq-insight" onclick="showMetricInsight('am_most_win')"><i class="fas fa-info"></i></button>
+                            <div class="sq-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="sq-label">Top Sales AM</div>
+                            <div class="sq-value" id="metricAmWinName">-</div>
+                            <div class="sq-sub" id="metricAmWinStat">-</div>
                         </div>
+
                     </div>
                 </div>
 
                 <div class="am-tabs-container">
                     <div class="am-tabs-navigation">
-                        <button class="am-tab-btn active" data-am-tab="benchmarking">
-                            <i class="fas fa-table"></i> Benchmarking Performa Account Manager
-                        </button>
-                        <button class="am-tab-btn" data-am-tab="leaderboard">
-                            <i class="fas fa-medal"></i> Leaderboard AM (Top Performers)
-                        </button>
+                        <button class="am-tab-btn active" data-am-tab="benchmarking"><i class="fas fa-table"></i> Benchmarking</button>
+                        <button class="am-tab-btn" data-am-tab="leaderboard"><i class="fas fa-medal"></i> Leaderboard</button>
                     </div>
 
                     <div class="am-tab-content active" id="amBenchmarkingTab">
+                        <div class="am-filter-container">
+                            <div class="am-search-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="amSearchInput" placeholder="Cari Account Manager..." autocomplete="off">
+                            </div>
+                            <div class="am-filter-group">
+                                <select id="amStatusFilter" class="native-select">
+                                    <option value="all">Semua Status</option>
+                                    <option value="result_gt_50">Result > 50%</option>
+                                    <option value="result_lt_50">Result < 50%</option>
+                                    <option value="progress_0">Progress 0%</option>
+                                    <option value="has_win">Has Win</option>
+                                    <option value="has_lose">Has Lose</option>
+                                </select>
+                            </div>
+                            <div class="am-sort-group">
+                                <span class="sort-label">Sort by:</span>
+                                <button class="btn-sort active" data-sort="improvement"><i class="fas fa-chart-line"></i> Improve</button>
+                                <button class="btn-sort" data-sort="win"><i class="fas fa-trophy"></i> Wins</button>
+                                <button class="btn-sort" data-sort="offerings"><i class="fas fa-briefcase"></i> Offers</button>
+                                <button class="btn-sort" data-sort="result"><i class="fas fa-percentage"></i> Result</button>
+                            </div>
+                        </div>
                         <div class="table-container">
                             <div class="table-header-fixed">
                                 <table class="benchmark-table">
@@ -291,10 +239,10 @@
                             <div class="table-scrollable-wrapper">
                                 <div class="table-responsive">
                                     <table class="benchmark-table">
-                                    <thead style="display: none;"></thead>
-                                    <tbody id="amBenchmarkTableBody">
-                                        <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
-                                    </tbody>
+                                        <thead style="display: none;"></thead>
+                                        <tbody id="amBenchmarkTableBody">
+                                            <tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--gray-500);">Pilih data progres untuk melihat data</td></tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -324,7 +272,7 @@
                 </div>
             </div>
 
-            <div id="productLevelContent" class="tab-content">
+                        <div id="productLevelContent" class="tab-content">
                 <div class="stats-grid">
                     <div class="stat-card visited">
                         <i class="fas fa-check-circle"></i>
@@ -521,6 +469,32 @@
     </div>
 </div>
 
+<div id="insightModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container" style="max-width: 600px;">
+        <div class="modal-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: #eff6ff; padding: 10px; border-radius: 50%; color: #2563eb;">
+                    <i class="fas fa-lightbulb fa-lg"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; color: #1e293b;">Performance Insights</h3>
+                    <p style="margin: 0; font-size: 13px; color: #64748b;">Analisis mendalam & rekomendasi aksi</p>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeInsightModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="insightModalBody" style="padding: 24px; font-size: 14px; line-height: 1.6; color: #334155;">
+            <div style="text-align: center; color: var(--gray-500);"><i class="fas fa-spinner fa-spin"></i> Loading data...</div>
+        </div>
+        <div class="modal-footer" style="padding: 16px 24px; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc; border-radius: 0 0 12px 12px;">
+            <button class="btn-save-dataset" onclick="closeInsightModal()" style="background: white; border: 1px solid #cbd5e1; color: #475569;">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<div id="linkModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container"><div class="modal-header"><h3>Kelola Link</h3><button class="modal-close" onclick="closeLinkModal()">X</button></div><div class="modal-body" id="existingLinksContainer"></div></div>
+</div>
 @endsection
 
 @section('scripts')
@@ -557,6 +531,9 @@ $(document).ready(function() {
     let amLeaderboardData = [];
     let improvementLeaderboardData = [];
     let allProductData = []; // For witel filtering
+    let fullAMData = []; // Menyimpan data asli dari backend
+    let currentAMSort = 'improvement'; // Default sort  
+    let globalInsightsData = {};
     const ITEMS_PER_PAGE = 10;
 
     // Load available links on page load
@@ -1082,11 +1059,6 @@ $(document).ready(function() {
     // ================================
 
     // Modifikasi listener tombol load yang sudah ada
-    $('#loadBenchmarkBtn').on('click', function() {
-        localStorage.setItem('hf_loaded', 'true'); // Tandai data sudah diload
-        loadBenchmarkingData();
-    });
-
     function loadBenchmarkingData() {
         $('#emptyState').removeClass('active');
         $('#loadingState').addClass('active');
@@ -1095,7 +1067,9 @@ $(document).ready(function() {
         // Remove all active tabs
         $('.tab-btn').removeClass('active');
 
-        // Load AM Performance
+        // ==========================================
+        // 1. LOAD AM PERFORMANCE (Disini Perbaikannya)
+        // ==========================================
         $.ajax({
             url: "{{ route('high-five.am-performance') }}",
             method: 'GET',
@@ -1105,18 +1079,27 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
+                    // BENAR: Simpan data AM disini
+                    fullAMData = response.data.benchmarking; 
+                    
+                    // BENAR: Render komponen AM
                     renderAMPerformance(response.data);
+                    
+                    // BENAR: Terapkan filter default
+                    applyAMFilters();
                 }
             },
             error: function(xhr) {
                 const message = xhr.responseJSON?.message || 'Gagal memuat data AM';
                 showAlert('error', 'Error!', message);
-                $('#loadingState').removeClass('active');
-                $('#emptyState').addClass('active');
+                // Jangan matikan loading state disini kalau Product belum selesai, 
+                // tapi untuk UX sederhana tidak apa-apa alert error dulu.
             }
         });
 
-        // Load Product Performance
+        // ==========================================
+        // 2. LOAD PRODUCT PERFORMANCE (Kembalikan ke Asal)
+        // ==========================================
         $.ajax({
             url: "{{ route('high-five.product-performance') }}",
             method: 'GET',
@@ -1126,7 +1109,9 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
+                    // BENAR: Render Product Performance (JANGAN render AM disini)
                     renderProductPerformance(response.data);
+                    
                     $('#loadingState').removeClass('active');
 
                     // Activate first tab AFTER data is loaded
@@ -1145,60 +1130,121 @@ $(document).ready(function() {
         });
     }
 
-    // ================================
-    // RENDER AM PERFORMANCE
-    // ================================
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
 
+    $('#amSearchInput').on('keyup', debounce(function() {
+        applyAMFilters();
+    }, 300));
+
+    // Untuk dropdown dan button sort tidak perlu debounce karena klik-nya jarang
+    $('#amStatusFilter').on('change', function() {
+        applyAMFilters();
+    });
+
+    $('.btn-sort').on('click', function() {
+        $('.btn-sort').removeClass('active');
+        $(this).addClass('active');
+        currentAMSort = $(this).data('sort');
+        applyAMFilters();
+    });
+
+    // ==========================================
+    // RENDER AM PERFORMANCE (FIXED & OPTIMIZED)
+    // ==========================================
+    // ==========================================
+    // RENDER AM PERFORMANCE (FIXED MAPPING)
+    // ==========================================
     function renderAMPerformance(data) {
-        // Update dataset names - UPDATED FORMAT
-        const dataset1Label = `Data Progres ${data.snapshot_1.label}`;
-        const dataset2Label = `Data Progres ${data.snapshot_2.label}`;
-
-        $('#dataset1NameCard').text(dataset1Label);
-        $('#dataset2NameCard').text(dataset2Label);
+        // ... (label dataset update sama) ...
+        $('#dataset1NameCard').text(`Data ${data.snapshot_1.label}`);
+        $('#dataset2NameCard').text(`Data ${data.snapshot_2.label}`);
         $('#dataset1DateAM, #dataset1ResultAM').text(data.snapshot_1.tanggal_formatted);
         $('#dataset2DateAM, #dataset2ResultAM').text(data.snapshot_2.tanggal_formatted);
 
-        // Update narrative titles
-        $('#narrativeDataset1Title').text(`Hasil Analisis Data Progres ${data.snapshot_1.tanggal_formatted} (Periode Lama)`);
-        $('#narrativeDataset2Title').text(`Hasil Analisis Data Progres ${data.snapshot_2.tanggal_formatted} (Periode Baru)`);
+        const m = data.witel_analysis.metrics;
 
-        // Update card period labels with dates
-        $('.cards-grid-horizontal .analysis-card').eq(0).find('.period-label').text(`Periode ${data.snapshot_1.tanggal_formatted}`);
-        $('.cards-grid-horizontal .analysis-card').eq(1).find('.period-label').text(`Periode ${data.snapshot_1.tanggal_formatted}`);
-        $('.cards-grid-horizontal .analysis-card').eq(2).find('.period-label').text(`Periode ${data.snapshot_2.tanggal_formatted}`);
-        $('.cards-grid-horizontal .analysis-card').eq(3).find('.period-label').text(`Periode ${data.snapshot_2.tanggal_formatted}`);
+        // 1. National Pulse (TALL CARD)
+        if(m.national) {
+            $('#metricNatValue').text(m.national.value);
+            $('#metricNatTrend').html(m.national.trend_text);
+            
+            // Update warna kartu
+            $('#cardNational').removeClass('theme-success theme-danger')
+                .addClass(m.national.trend >= 0 ? 'theme-success' : 'theme-danger');
+            
+            // UPDATE: Isi data statistik detail baru
+            $('#valOfferings').text(m.national.offerings);
+            $('#valVisited').text(m.national.visited);
+            $('#valWins').text(m.national.wins);
+            $('#valLoses').text(m.national.loses);
+        }
 
-        // Update cards
-        const cards1 = data.witel_analysis.cards.dataset_1;
-        $('#mostProgressWitel1').text(cards1.most_progress?.witel || 'N/A');
-        $('#mostProgressValue1').text(cards1.most_progress?.avg_progress ? cards1.most_progress.avg_progress.toFixed(2) + '%' : '0%');
-        $('#leastProgressWitel1').text(cards1.least_progress?.witel || 'N/A');
-        $('#leastProgressValue1').text(cards1.least_progress?.avg_progress ? cards1.least_progress.avg_progress.toFixed(2) + '%' : '0%');
+        // 2. Witel Champion
+        if(m.most_witel) {
+            $('#metricMostName').text(m.most_witel.value);
+            $('#metricMostStat').text(m.most_witel.main_stat);
+        }
 
-        const cards2 = data.witel_analysis.cards.dataset_2;
-        $('#mostProgressWitel2').text(cards2.most_progress?.witel || 'N/A');
-        $('#mostProgressValue2').text(cards2.most_progress?.avg_progress ? cards2.most_progress.avg_progress.toFixed(2) + '%' : '0%');
-        $('#leastProgressWitel2').text(cards2.least_progress?.witel || 'N/A');
-        $('#leastProgressValue2').text(cards2.least_progress?.avg_progress ? cards2.least_progress.avg_progress.toFixed(2) + '%' : '0%');
+        // 3. Focus Area
+        if(m.least_witel) {
+            $('#metricLeastName').text(m.least_witel.value);
+            $('#metricLeastStat').text(m.least_witel.main_stat);
+        }
 
-        // Update narrative - FORMAT WITH BOLD
-        const narrative = data.witel_analysis.narrative;
-        $('#narrativeDataset1').html(formatNarrativeWithBold(narrative.dataset_1_paragraph));
-        $('#narrativeDataset2').html(formatNarrativeWithBold(narrative.dataset_2_paragraph));
-        $('#narrativeConclusion').html(formatNarrativeWithBold(narrative.conclusion_paragraph));
+        // 4. MVP AM
+        if(m.top_am) {
+            $('#metricTopAMName').text(m.top_am.value);
+            $('#metricTopAMStat').text(m.top_am.main_stat);
+        }
 
-        // Render table WITH PROGRESS BARS
+        // 5. Top Sales AM
+        if(m.am_most_win) {
+            $('#metricAmWinName').text(m.am_most_win.value);
+            $('#metricAmWinStat').text(m.am_most_win.main_stat);
+        }
+
+        // ... (Simpan Insight & Render Table sama) ...
+        globalInsightsData = data.witel_analysis.insights_data; 
         const tableHTML = renderAMTable(data.benchmarking);
         $('#amBenchmarkTableBody').html(tableHTML);
-
-        // Render leaderboard
+        // ... (Leaderboard render) ...
         amLeaderboardData = data.leaderboard;
         currentAMLeaderboardPage = 1;
         const leaderboardResult = renderLeaderboard(amLeaderboardData, 1, ITEMS_PER_PAGE, 'am');
         $('#amLeaderboardTableBody').html(leaderboardResult.html);
         $('#amLeaderboardPagination').html(leaderboardResult.pagination);
     }
+    
+    // ==========================================
+    // FUNGSI MODAL INSIGHTS (PER ITEM)
+    // ==========================================
+    
+    // Dipanggil saat tombol (?) kecil di kartu diklik
+    window.showMetricInsight = function(type) {
+        // Ambil konten HTML spesifik berdasarkan type (progress/result/active_am/top_mover)
+        const content = globalInsightsData ? globalInsightsData[type] : null;
+
+        if (content) {
+            $('#insightModalBody').html(content);
+        } else {
+            $('#insightModalBody').html('<p class="text-center text-gray-500">Data insight belum tersedia. Silakan muat data terlebih dahulu.</p>');
+        }
+
+        // Tampilkan Modal
+        $('#insightModal').fadeIn(200);
+    };
+
+    // Dipanggil saat tombol Tutup / X diklik
+    window.closeInsightModal = function() {
+        $('#insightModal').fadeOut(200);
+    };
 
     // NEW: Format narrative with bold for numbers
     function formatNarrativeWithBold(text) {
@@ -1285,6 +1331,61 @@ $(document).ready(function() {
     // ================================
     // TABLE RENDERERS WITH PROGRESS BARS
     // ================================
+    // Fungsi Filtering & Sorting
+    function applyAMFilters() {
+        let filteredData = [...fullAMData]; // Clone array agar data asli aman
+        const searchValue = $('#amSearchInput').val().toLowerCase();
+        const statusValue = $('#amStatusFilter').val();
+
+        // A. FILTERING
+        filteredData = filteredData.filter(row => {
+            // Filter by Name
+            const nameMatch = row.am.toLowerCase().includes(searchValue);
+            
+            // Filter by Status
+            let statusMatch = true;
+            const stats = row.stats || { win: 0, lose: 0 };
+            
+            // Mengambil nilai result dan progress terbaru (snapshot 2)
+            const resultVal = parseFloat(row.result_2 || 0);
+            const progressVal = parseFloat(row.progress_2 || 0);
+
+            if (statusValue === 'has_win') {
+                statusMatch = stats.win > 0;
+            } else if (statusValue === 'has_lose') {
+                statusMatch = stats.lose > 0;
+            } else if (statusValue === 'result_gt_50') {
+                statusMatch = resultVal > 50; // Filter > 50% Result
+            } else if (statusValue === 'result_lt_50') {
+                statusMatch = resultVal < 50; // Filter < 50% Result
+            } else if (statusValue === 'progress_0') {
+                statusMatch = progressVal === 0; // Filter 0% Progress (Need Attention)
+            }
+
+            return nameMatch && statusMatch;
+        });
+
+        // B. SORTING (Tidak Berubah - Tetap Witel First)
+        filteredData.sort((a, b) => {
+            // 1. Primary Sort: Witel (A-Z)
+            const witelCompare = a.witel.localeCompare(b.witel);
+            if (witelCompare !== 0) return witelCompare;
+
+            // 2. Secondary Sort: Sesuai tombol sort
+            let valA, valB;
+            switch (currentAMSort) {
+                case 'win': valA = a.stats?.win || 0; valB = b.stats?.win || 0; break;
+                case 'offerings': valA = a.stats?.offerings || 0; valB = b.stats?.offerings || 0; break;
+                case 'result': valA = a.result_2 || 0; valB = b.result_2 || 0; break;
+                case 'improvement': default: valA = a.change_avg || 0; valB = b.change_avg || 0; break;
+            }
+            return valB - valA;
+        });
+
+        // C. RENDER ULANG TABEL
+        const tableHTML = renderAMTable(filteredData);
+        $('#amBenchmarkTableBody').html(tableHTML);
+    }
 
     function renderAMTable(data) {
         if (!data || data.length === 0) {
@@ -1327,7 +1428,7 @@ $(document).ready(function() {
             const avgChangeIcon = avgChange > 0 ? 'fa-arrow-up' : (avgChange < 0 ? 'fa-arrow-down' : 'fa-minus');
 
             // --- 1. RENDER BARIS RATA-RATA ---
-            html += '<tr style="background-color: #f8fafc; font-weight: 700;">'; // Pakai hex f8fafc agar aman/konsisten
+            html += '<tr style="background-color: var(--gray-100); font-weight: 700;">'; // Pakai hex f8fafc agar aman/konsisten
             
             html += `<td rowspan="${rows.length + 1}" style="vertical-align: top; padding-top: 14px; width: 200px; min-width: 200px;">
                 ${witel}
