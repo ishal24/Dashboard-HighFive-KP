@@ -2315,3 +2315,107 @@ main.main-content,
         transform: translateY(0);
     }
 }
+
+/* =========================================
+   INSIGHT MODAL 2.0 STYLES
+   ========================================= */
+
+/* Grid Container untuk Data Metrics */
+.insight-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Card Kecil untuk setiap angka */
+.insight-metric-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.insight-metric-item:hover {
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.insight-metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.insight-metric-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.insight-metric-sub {
+    font-size: 10px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Warna Contextual */
+.im-success .insight-metric-value { color: #10b981; }
+.im-danger .insight-metric-value { color: #ef4444; }
+.im-primary .insight-metric-value { color: #3b82f6; }
+.im-warning .insight-metric-value { color: #f59e0b; }
+
+/* Section Penjelasan Narrative */
+.insight-narrative-box {
+    background: #fffbeb; /* Warna dasar kuning lembut */
+    border-left: 4px solid #f59e0b;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.insight-narrative-box.blue-theme {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.insight-narrative-box.green-theme {
+    background: #f0fdf4;
+    border-left-color: #22c55e;
+}
+
+.insight-narrative-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.insight-narrative-text {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Khusus Mobile */
+@media (max-width: 600px) {
+    .insight-metrics-grid {
+        grid-template-columns: repeat(2, 1fr); /* Jadi 2 kolom di HP */
+    }
+}

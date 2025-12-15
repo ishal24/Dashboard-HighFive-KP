@@ -378,71 +378,206 @@ class HighFiveAMPerformanceController extends Controller
             ? ($stats['total_wins'] / ($stats['total_wins'] + $stats['total_loses'])) * 100 
             : 0;
 
+        // 1. INSIGHT NATIONAL
+        $trendColor = $deltaProg >= 0 ? 'text-green-600' : 'text-red-600';
+        $trendIcon = $deltaProg >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+        $trendSign = $deltaProg >= 0 ? '+' : '';
+        
         $insightNational = "
-            <h5 class='text-blue-600'><i class='fas fa-globe-asia'></i> Overview Nasional</h5>
-            <p>Performa High Five secara nasional menunjukkan tren <strong>" . ($deltaProg >= 0 ? "positif" : "negatif") . "</strong> dengan rata-rata progress <strong>" . number_format($avgProg2, 2) . "%</strong>.</p>
-            
-            <div class='insight-grid' style='display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; margin-bottom:10px;'>
-                <div style='background:#f8fafc; padding:8px; border-radius:6px;'>
-                    <div style='font-size:11px; color:#64748b;'>FUNNEL ACTIVITY</div>
-                    <div style='font-weight:600; font-size:13px;'>
-                        🎯 " . number_format($stats['total_offerings']) . " Offerings<br>
-                        👥 " . number_format($stats['total_visited']) . " CC Visited
-                    </div>
+            <div style='margin-bottom: 16px;'>
+                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0 0 4px 0;'>National Overview</h4>
+                <p style='font-size:12px; color:#64748b; margin:0;'>Snapshot performa nasional saat ini.</p>
+            </div>
+
+            <div class='insight-metrics-grid'>
+                <div class='insight-metric-item im-primary'>
+                    <span class='insight-metric-label'>Avg Progress</span>
+                    <span class='insight-metric-value'>" . number_format($avgProg2, 2) . "%</span>
+                    <span class='insight-metric-sub'>Global Average</span>
                 </div>
-                <div style='background:#f8fafc; padding:8px; border-radius:6px;'>
-                    <div style='font-size:11px; color:#64748b;'>SALES CONVERSION</div>
-                    <div style='font-weight:600; font-size:13px;'>
-                        🏆 " . number_format($stats['total_wins']) . " Wins<br>
-                        ❌ " . number_format($stats['total_loses']) . " Loses
-                    </div>
+                <div class='insight-metric-item " . ($deltaProg >= 0 ? 'im-success' : 'im-danger') . "'>
+                    <span class='insight-metric-label'>Growth</span>
+                    <span class='insight-metric-value'>{$trendSign}" . number_format($deltaProg, 2) . "%</span>
+                    <span class='insight-metric-sub'>vs Last Period</span>
+                </div>
+                <div class='insight-metric-item im-warning'>
+                    <span class='insight-metric-label'>Win Rate</span>
+                    <span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span>
+                    <span class='insight-metric-sub'>From Offerings</span>
+                </div>
+                <div class='insight-metric-item'>
+                    <span class='insight-metric-label'>Total Wins</span>
+                    <span class='insight-metric-value'>" . number_format($stats['total_wins']) . "</span>
+                    <span class='insight-metric-sub'>Deals Closed</span>
+                </div>
+                 <div class='insight-metric-item'>
+                    <span class='insight-metric-label'>Participation</span>
+                    <span class='insight-metric-value'>" . number_format(($stats['active_ams'] / $total) * 100, 0) . "%</span>
+                    <span class='insight-metric-sub'>Active AMs</span>
                 </div>
             </div>
 
-            <ul class='insight-list'>
-                <li><strong>Win Rate Global:</strong> " . number_format($winRate, 1) . "% dari total offerings berhasil dikonversi menjadi Win.</li>
-                <li><strong>Participation:</strong> Dari total {$total} AM, sebanyak <strong>" . number_format(($stats['active_ams'] / $total) * 100, 1) . "%</strong> aktif melakukan update progress.</li>
-            </ul>";
+            <div class='insight-narrative-box blue-theme'>
+                <div class='insight-narrative-title'><i class='fas fa-info-circle'></i> Analisis & Rekomendasi</div>
+                <p class='insight-narrative-text'>
+                    Secara nasional, tren performa bergerak <strong>" . ($deltaProg >= 0 ? "positif" : "negatif") . "</strong>. 
+                    Tingkat konversi (Win Rate) berada di angka <strong>" . number_format($winRate, 1) . "%</strong>. 
+                    Fokus utama minggu ini adalah meningkatkan partisipasi AM yang masih pasif dan mengawal " . number_format($stats['total_offerings']) . " offerings yang sedang berjalan.
+                </p>
+            </div>";
 
+        // 2. INSIGHT WITEL CHAMPION
         $insightMost = "
-            <h5 class='text-primary'><i class='fas fa-crown'></i> Witel Champion: {$mostWitel['name']}</h5>
-            <p>Witel {$mostWitel['name']} konsisten memimpin leaderboard dengan rata-rata progress <strong>" . number_format($mostWitel['avg_progress'], 2) . "%</strong>.</p>
-            <ul class='insight-list'>
-                <li>Pertumbuhan (Growth) dari periode lalu: <strong>" . ($mostWitel['growth'] >= 0 ? "+" : "") . number_format($mostWitel['growth'], 2) . "%</strong>.</li>
-                <li>Witel ini memiliki <strong>{$mostWitel['am_count']} AM</strong> yang berkontribusi aktif.</li>
-            </ul>
-            <p class='text-sm text-gray-500 mt-2'>Kunci sukses: Monitoring harian dan disiplin input LOP/MyTens.</p>";
+             <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
+                <div style='background:#dbeafe; padding:8px; border-radius:8px; color:#2563eb;'><i class='fas fa-crown fa-lg'></i></div>
+                <div>
+                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$mostWitel['name']}</h4>
+                    <p style='font-size:12px; color:#64748b; margin:0;'>Top Performer Witel</p>
+                </div>
+            </div>
 
+            <div class='insight-metrics-grid'>
+                <div class='insight-metric-item im-success'>
+                    <span class='insight-metric-label'>Avg Progress</span>
+                    <span class='insight-metric-value'>" . number_format($mostWitel['avg_progress'], 2) . "%</span>
+                    <span class='insight-metric-sub'>Highest Rank</span>
+                </div>
+                <div class='insight-metric-item im-primary'>
+                    <span class='insight-metric-label'>Growth</span>
+                    <span class='insight-metric-value'>+" . number_format($mostWitel['growth'], 2) . "%</span>
+                    <span class='insight-metric-sub'>Improvement</span>
+                </div>
+                <div class='insight-metric-item'>
+                    <span class='insight-metric-label'>Sales Force</span>
+                    <span class='insight-metric-value'>{$mostWitel['am_count']}</span>
+                    <span class='insight-metric-sub'>Total AM</span>
+                </div>
+            </div>
+
+            <div class='insight-narrative-box green-theme'>
+                <div class='insight-narrative-title'><i class='fas fa-check-circle'></i> Key Success Factor</div>
+                <p class='insight-narrative-text'>
+                    Witel {$mostWitel['name']} berhasil memimpin dengan konsistensi input yang tinggi. 
+                    Gap positif sebesar <strong>+" . number_format($mostWitel['avg_progress'] - $avgProg2, 1) . "%</strong> di atas rata-rata nasional menunjukkan manajemen pipeline yang sangat sehat.
+                </p>
+            </div>";
+
+        // 3. INSIGHT FOCUS AREA
+        $gapMinus = number_format($avgProg2 - $leastWitel['avg_progress'], 1);
         $insightLeast = "
-            <h5 class='text-yellow-600'><i class='fas fa-exclamation-triangle'></i> Focus Area: Witel {$leastWitel['name']}</h5>
-            <p>Witel {$leastWitel['name']} memerlukan atensi khusus karena rata-rata progressnya (<strong>" . number_format($leastWitel['avg_progress'], 2) . "%</strong>) berada di bawah rata-rata nasional.</p>
-            <ul class='insight-list'>
-                <li>Gap dari Nasional: <strong>" . number_format($avgProg2 - $leastWitel['avg_progress'], 2) . "%</strong>.</li>
-                <li>Potensi improvement sangat besar jika dilakukan intervensi/coaching kepada AM yang masih belum bergerak.</li>
-            </ul>";
+            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
+                <div style='background:#fef3c7; padding:8px; border-radius:8px; color:#d97706;'><i class='fas fa-exclamation-triangle fa-lg'></i></div>
+                <div>
+                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$leastWitel['name']}</h4>
+                    <p style='font-size:12px; color:#64748b; margin:0;'>Memerlukan Atensi Khusus</p>
+                </div>
+            </div>
 
+            <div class='insight-metrics-grid'>
+                <div class='insight-metric-item im-danger'>
+                    <span class='insight-metric-label'>Avg Progress</span>
+                    <span class='insight-metric-value'>" . number_format($leastWitel['avg_progress'], 2) . "%</span>
+                    <span class='insight-metric-sub'>Lowest Rank</span>
+                </div>
+                <div class='insight-metric-item im-warning'>
+                    <span class='insight-metric-label'>Gap to National</span>
+                    <span class='insight-metric-value'>-{$gapMinus}%</span>
+                    <span class='insight-metric-sub'>Difference</span>
+                </div>
+                <div class='insight-metric-item'>
+                    <span class='insight-metric-label'>Sales Force</span>
+                    <span class='insight-metric-value'>{$leastWitel['am_count']}</span>
+                    <span class='insight-metric-sub'>Total AM</span>
+                </div>
+            </div>
+
+            <div class='insight-narrative-box'>
+                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Action Plan</div>
+                <p class='insight-narrative-text'>
+                    Performa Witel {$leastWitel['name']} tertinggal signifikan. 
+                    Diperlukan <strong>coaching clinic</strong> intensif untuk AM yang belum update progress. 
+                    Prioritaskan update status LOP/MyTens minggu ini untuk mengejar gap.
+                </p>
+            </div>";
+
+        // 4. INSIGHT MVP AM
         $topAmScore = $topAM ? number_format($topAM['change_avg'], 1) : 0;
         $topAmProg = $topAM ? number_format($topAM['progress_2'], 1) : 0;
-        $insightAM = "
-            <h5 class='text-purple-600'><i class='fas fa-user-astronaut'></i> MVP: " . ($topAM['am'] ?? '-') . "</h5>
-            <p>Diberikan kepada AM dengan <strong>lonjakan performa (Improvement)</strong> tertinggi minggu ini.</p>
-            <ul class='insight-list'>
-                <li>Witel: <strong>" . ($topAM['witel'] ?? '-') . "</strong></li>
-                <li>Improvement Score: <span class='badge-up'>+{$topAmScore}%</span></li>
-                <li>Progress Akhir: <strong>{$topAmProg}%</strong></li>
-            </ul>
-            <p class='text-sm text-gray-500 mt-2'>Bukti nyata bahwa akselerasi performa bisa dilakukan dalam waktu singkat.</p>";
+        
+        $amName = $topAM['am'] ?? '-';
+        $amWitel = $topAM['witel'] ?? '-';
 
+        $insightAM = "
+            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
+                <div style='background:#f3e8ff; padding:8px; border-radius:8px; color:#9333ea;'><i class='fas fa-rocket fa-lg'></i></div>
+                <div>
+                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$amName}</h4>
+                    <p style='font-size:12px; color:#64748b; margin:0;'>MVP Improver ({$amWitel})</p>
+                </div>
+            </div>
+
+            <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
+                <div class='insight-metric-item im-primary'>
+                    <span class='insight-metric-label'>Improvement Score</span>
+                    <span class='insight-metric-value'>+{$topAmScore}%</span>
+                    <span class='insight-metric-sub'>Minggu ini</span>
+                </div>
+                <div class='insight-metric-item im-success'>
+                    <span class='insight-metric-label'>Current Progress</span>
+                    <span class='insight-metric-value'>{$topAmProg}%</span>
+                    <span class='insight-metric-sub'>Capaian Akhir</span>
+                </div>
+            </div>
+
+            <div class='insight-narrative-box blue-theme'>
+                <div class='insight-narrative-title'><i class='fas fa-star'></i> Achievement</div>
+                <p class='insight-narrative-text'>
+                    AM ini mencatatkan lonjakan performa (Improvement) tertinggi minggu ini sebesar <strong>+{$topAmScore}%</strong>. 
+                    Progress saat ini telah mencapai angka <strong>{$topAmProg}%</strong>, menunjukkan akselerasi yang signifikan dibanding periode sebelumnya.
+                </p>
+            </div>";
+
+        // 5. INSIGHT TOP SALES
+        $salesName = $topWinAM['am'] ?? '-';
+        $salesWitel = $topWinAM['witel'] ?? '-';
         $winCount = $topWinAM['stats']['win'] ?? 0;
         $offerCount = $topWinAM['stats']['offerings'] ?? 0;
+        $conversionSales = $offerCount > 0 ? ($winCount/$offerCount)*100 : 0;
+
         $insightTopSales = "
-            <h5 class='text-green-600'><i class='fas fa-trophy'></i> Top Sales: " . ($topWinAM['am'] ?? '-') . "</h5>
-            <p>AM paling produktif dalam mencetak angka <strong>WIN (Closing)</strong>.</p>
-            <ul class='insight-list'>
-                <li>Witel: <strong>" . ($topWinAM['witel'] ?? '-') . "</strong></li>
-                <li>Total Wins: <strong>{$winCount}</strong> dari <strong>{$offerCount}</strong> offerings.</li>
-                <li>Efektivitas tinggi dalam mengawal peluang menjadi revenue.</li>
-            </ul>";
+            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
+                <div style='background:#ecfdf5; padding:8px; border-radius:8px; color:#059669;'><i class='fas fa-trophy fa-lg'></i></div>
+                <div>
+                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$salesName}</h4>
+                    <p style='font-size:12px; color:#64748b; margin:0;'>Top Sales ({$salesWitel})</p>
+                </div>
+            </div>
+
+            <div class='insight-metrics-grid'>
+                <div class='insight-metric-item im-success'>
+                    <span class='insight-metric-label'>Total Wins</span>
+                    <span class='insight-metric-value'>{$winCount}</span>
+                    <span class='insight-metric-sub'>Project Closed</span>
+                </div>
+                <div class='insight-metric-item'>
+                    <span class='insight-metric-label'>Offerings</span>
+                    <span class='insight-metric-value'>{$offerCount}</span>
+                    <span class='insight-metric-sub'>Total Proposed</span>
+                </div>
+                <div class='insight-metric-item im-primary'>
+                    <span class='insight-metric-label'>Conversion Rate</span>
+                    <span class='insight-metric-value'>" . number_format($conversionSales, 0) . "%</span>
+                    <span class='insight-metric-sub'>Win / Offerings</span>
+                </div>
+            </div>
+
+            <div class='insight-narrative-box green-theme'>
+                <div class='insight-narrative-title'><i class='fas fa-thumbs-up'></i> Sales Effectiveness</div>
+                <p class='insight-narrative-text'>
+                    Efektivitas closing yang luar biasa. AM ini berhasil mengonversi peluang menjadi revenue nyata. 
+                    Strategi pendekatan customer yang dilakukan patut menjadi benchmark bagi AM lainnya.
+                </p>
+            </div>";
 
         $insightsData = [
             'national' => $insightNational,
