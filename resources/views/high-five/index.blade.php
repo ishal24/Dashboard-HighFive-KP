@@ -124,8 +124,8 @@
 
                     <div class="cards-grid-3-cols">
                         
-                        <div class="metric-sq-card card-tall theme-success" id="cardNational">
-                            <button class="btn-sq-insight" onclick="showMetricInsight('national')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card card-tall theme-success clickable-card" id="cardNational" onclick="showMetricInsight('national')" data-insight="national">
+                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('national')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-globe-asia"></i></div>
                             <div class="sq-label" style="font-size: 14px;">National Avg Progress</div>
                             <div class="sq-stat" id="metricNatValue" style="margin-bottom: 0;">-</div>
@@ -155,32 +155,32 @@
                             </div>
                         </div>
 
-                        <div class="metric-sq-card theme-primary" id="cardMostWitel">
-                            <button class="btn-sq-insight" onclick="showMetricInsight('most_witel')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')" data-insight="most_witel">
+                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('most_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-crown"></i></div>
                             <div class="sq-label">Witel Champion</div>
                             <div class="sq-value" id="metricMostName">-</div>
                             <div class="sq-sub" id="metricMostStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-warning" id="cardLeastWitel">
-                            <button class="btn-sq-insight" onclick="showMetricInsight('least_witel')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')" data-insight="least_witel">
+                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('least_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-exclamation-triangle"></i></div>
                             <div class="sq-label">Focus Area</div>
                             <div class="sq-value" id="metricLeastName">-</div>
                             <div class="sq-sub" id="metricLeastStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-purple" id="cardTopAM">
-                            <button class="btn-sq-insight" onclick="showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
+                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-user-astronaut"></i></div>
                             <div class="sq-label">MVP Improver</div>
                             <div class="sq-value" id="metricTopAMName">-</div>
                             <div class="sq-sub" id="metricTopAMStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-success" id="cardAmWin">
-                            <button class="btn-sq-insight" onclick="showMetricInsight('am_most_win')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')" data-insight="am_most_win">
+                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('am_most_win')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
                             <div class="sq-label">Top Sales AM</div>
                             <div class="sq-value" id="metricAmWinName">-</div>
@@ -205,9 +205,9 @@
                             <div class="am-filter-group">
                                 <select id="amStatusFilter" class="native-select">
                                     <option value="all">Semua Status</option>
-                                    <option value="result_gt_50">Result > 50%</option>
-                                    <option value="result_lt_50">Result < 50%</option>
-                                    <option value="progress_0">Progress 0%</option>
+                                    <option value="result_gt_50">Avg Result > 50% (Data Terbaru)</option>
+                                    <option value="result_lt_50">Avg Result < 50% (Data Terbaru)</option>
+                                    <option value="progress_0">Avg Progress 0% (Data Terbaru)</option>
                                     <option value="has_win">Has Win</option>
                                     <option value="has_lose">Has Lose</option>
                                 </select>
@@ -216,7 +216,7 @@
                                 <span class="sort-label">Sort by:</span>
                                 <button class="btn-sort active" data-sort="improvement"><i class="fas fa-chart-line"></i> Improve</button>
                                 <button class="btn-sort" data-sort="win"><i class="fas fa-trophy"></i> Wins</button>
-                                <button class="btn-sort" data-sort="offerings"><i class="fas fa-briefcase"></i> Offers</button>
+                                <button class="btn-sort" data-sort="cc"><i class="fas fa-building"></i> CC</button>
                                 <button class="btn-sort" data-sort="result"><i class="fas fa-percentage"></i> Result</button>
                             </div>
                         </div>
@@ -327,13 +327,13 @@
                     
 
                     <div class="product-tab-content active" id="productBenchmarkingTab">
-                        <div class="product-filter-container" style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
-                            <div class="product-search-group" style="position: relative; flex: 1; min-width: 250px;">
-                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
-                                <input type="text" id="productSearchInput" placeholder="Cari AM, Customer, atau Product..." autocomplete="off" style="width: 100%; padding: 8px 12px 8px 36px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: white;">
+                        <div class="am-filter-container">
+                            <div class="am-search-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="productSearchInput" placeholder="Cari AM, Customer, atau Product..." autocomplete="off">
                             </div>
-                            <div class="product-filter-group" style="min-width: 150px;">
-                                <select id="witelFilter" class="native-select" style="width: 100%; padding: 8px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: white;">
+                            <div class="am-filter-group">
+                                <select id="witelFilter" class="native-select">
                                     <option value="">Semua Witel</option>
                                 </select>
                             </div>
@@ -1255,6 +1255,14 @@ $(document).ready(function() {
         $('#insightModal').fadeOut(200);
     };
 
+    // Close modal when clicking outside (on overlay)
+    $('#insightModal').on('click', function(e) {
+        // Check if click is on the overlay itself, not the modal container
+        if (e.target.id === 'insightModal') {
+            closeInsightModal();
+        }
+    });
+
     // NEW: Format narrative with bold for numbers
     function formatNarrativeWithBold(text) {
         // Bold percentages: 37.38% -> <strong>37.38%</strong>
@@ -1493,7 +1501,7 @@ $(document).ready(function() {
             let valA, valB;
             switch (currentAMSort) {
                 case 'win': valA = a.stats?.win || 0; valB = b.stats?.win || 0; break;
-                case 'offerings': valA = a.stats?.offerings || 0; valB = b.stats?.offerings || 0; break;
+                case 'cc': valA = a.stats?.visited || 0; valB = b.stats?.visited || 0; break;
                 case 'result': valA = a.result_2 || 0; valB = b.result_2 || 0; break;
                 case 'improvement': default: valA = a.change_avg || 0; valB = b.change_avg || 0; break;
             }

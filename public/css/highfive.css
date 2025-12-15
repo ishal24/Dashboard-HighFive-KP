@@ -17,16 +17,20 @@
 .main-content,
 .highfive-main-content {
     padding: 0 30px !important;
-    margin-left: 10px !important; /* Minimal spacing from sidebar */
+    margin-left: 10px !important;
+    /* Minimal spacing from sidebar */
     margin-right: 20px !important;
-    width: calc(100% - 30px) !important; /* Adjusted: 10px left + 20px right */
+    width: calc(100% - 30px) !important;
+    /* Adjusted: 10px left + 20px right */
     background: transparent;
     min-height: 100vh;
 }
+
 /* Style untuk Cell AM */
 .am-cell-dropdown {
     vertical-align: top !important;
-    padding: 0 !important; /* Reset padding biar full width */
+    padding: 0 !important;
+    /* Reset padding biar full width */
 }
 
 .am-header {
@@ -57,7 +61,7 @@
     background-color: #f1f5f9;
     border-top: 1px solid #e2e8f0;
     padding: 10px 15px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .stat-grid {
@@ -90,21 +94,27 @@
     color: #334155;
 }
 
-.text-success { color: #10b981; }
-.text-danger { color: #ef4444; }
+.text-success {
+    color: #10b981;
+}
+
+.text-danger {
+    color: #ef4444;
+}
 
 /* Apply to any possible container wrapper */
-#app > .main-content,
+#app>.main-content,
 main.main-content,
 .content-wrapper,
 .highfive-main-content {
     padding: 0 30px !important;
-    margin-left: 10px !important; /* Minimal spacing from sidebar */
+    margin-left: 10px !important;
+    /* Minimal spacing from sidebar */
     margin-right: 20px !important;
 }
 
 /* Ensure all direct children have proper spacing */
-.main-content > * {
+.main-content>* {
     margin-left: 0;
     margin-right: 0;
 }
@@ -150,7 +160,8 @@ main.main-content,
 }
 
 .toolkit-header h4 {
-    font-size: 1.2rem; /* INCREASED from 0.95rem */
+    font-size: 1.2rem;
+    /* INCREASED from 0.95rem */
     font-weight: 700;
     color: var(--gray-800);
     margin: 0;
@@ -416,7 +427,8 @@ main.main-content,
 }
 
 .alert-box {
-    background: var(--white) !important; /* SOLID WHITE */
+    background: var(--white) !important;
+    /* SOLID WHITE */
     border-radius: var(--radius-lg);
     padding: 16px 20px;
     margin-bottom: 12px;
@@ -433,6 +445,7 @@ main.main-content,
         transform: translateX(400px);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -524,18 +537,23 @@ main.main-content,
 .performance-container {
     background: var(--white);
     border-radius: var(--radius-xl);
-    padding: 0 !important; /* HAPUS PADDING UTAMA */
+    padding: 0 !important;
+    /* HAPUS PADDING UTAMA */
     box-shadow: var(--shadow-md);
     border: 1px solid var(--gray-200);
     position: relative;
-    overflow: hidden; /* Agar background header tidak keluar dari radius */
+    overflow: hidden;
+    /* Agar background header tidak keluar dari radius */
 }
 
 /* Wrapper untuk Header + Filter + Tabs (Background Abu-abu) */
 .performance-header-wrapper {
-    background-color: var(--white); /* Abu-abu sedikit gelap (Slate-100) */
-    padding: 25px 30px 0 30px; /* Padding atas kanan kiri, bawah 0 untuk tabs */
-    border-bottom: 1px solid #cbd5e1; /* Garis pemisah */
+    background-color: var(--white);
+    /* Abu-abu sedikit gelap (Slate-100) */
+    padding: 25px 30px 0 30px;
+    /* Padding atas kanan kiri, bawah 0 untuk tabs */
+    border-bottom: 1px solid #cbd5e1;
+    /* Garis pemisah */
 }
 
 /* Wrapper untuk Konten (Background Putih) */
@@ -560,9 +578,11 @@ main.main-content,
 .performance-tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 0; /* Hapus margin bawah */
+    margin-bottom: 0;
+    /* Hapus margin bawah */
     padding-top: 0;
-    border-bottom: none; /* Hapus border bawaan karena sudah ada di wrapper */
+    border-bottom: none;
+    /* Hapus border bawaan karena sudah ada di wrapper */
 }
 
 .tab-btn {
@@ -570,7 +590,8 @@ main.main-content,
     padding: 14px 20px;
     background: transparent;
     border: none;
-    border-bottom: 4px solid transparent; /* Pertebal sedikit indikator aktif */
+    border-bottom: 4px solid transparent;
+    /* Pertebal sedikit indikator aktif */
     color: var(--gray-600);
     font-size: 15px;
     font-weight: 600;
@@ -580,12 +601,14 @@ main.main-content,
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-bottom: -1px; /* Agar menimpa garis border wrapper */
+    margin-bottom: -1px;
+    /* Agar menimpa garis border wrapper */
 }
 
 .tab-btn:hover {
     color: var(--telkom-red);
-    background: rgba(255, 255, 255, 0.5); /* Efek hover halus */
+    background: rgba(255, 255, 255, 0.5);
+    /* Efek hover halus */
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
@@ -663,7 +686,9 @@ main.main-content,
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-state p {
@@ -681,7 +706,7 @@ main.main-content,
     gap: 16px;
     margin-bottom: 24px;
     /* TAMBAHAN PENTING: Paksa setiap baris grid memiliki tinggi yang sama */
-    grid-auto-rows: 1fr; 
+    grid-auto-rows: 1fr;
 }
 
 /* Kartu Vertikal (Pillar) */
@@ -690,7 +715,8 @@ main.main-content,
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Konten di tengah vertikal */
+    justify-content: center;
+    /* Konten di tengah vertikal */
     align-items: center;
     text-align: center;
     padding: 24px;
@@ -719,17 +745,23 @@ main.main-content,
     align-items: center;
     text-align: center;
     /* UBAH INI: Reset aspect-ratio agar tinggi mengikuti grid (bukan fix) */
-    aspect-ratio: auto; 
-    height: 100%; /* Paksa memenuhi tinggi cell grid */
+    aspect-ratio: auto;
+    height: 100%;
+    /* Paksa memenuhi tinggi cell grid */
     position: relative;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .metric-sq-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     border-color: #e2e8f0;
+}
+
+/* Clickable card cursor */
+.clickable-card {
+    cursor: pointer;
 }
 
 /* Elemen Dalam Kartu */
@@ -810,33 +842,89 @@ main.main-content,
 }
 
 /* Tema Warna */
-.theme-primary .sq-icon { background: #eff6ff; color: #3b82f6; }
-.theme-primary .sq-stat { color: #3b82f6; }
+.theme-primary .sq-icon {
+    background: #eff6ff;
+    color: #3b82f6;
+}
 
-.theme-success .sq-icon { background: #ecfdf5; color: #10b981; }
-.theme-success .sq-stat { color: #10b981; }
+.theme-primary .sq-stat {
+    color: #3b82f6;
+}
 
-.theme-warning .sq-icon { background: #fffbeb; color: #f59e0b; }
-.theme-warning .sq-stat { color: #f59e0b; }
+.theme-success .sq-icon {
+    background: #ecfdf5;
+    color: #10b981;
+}
 
-.theme-purple .sq-icon { background: #f5f3ff; color: #8b5cf6; }
-.theme-purple .sq-stat { color: #8b5cf6; }
+.theme-success .sq-stat {
+    color: #10b981;
+}
 
-.theme-danger .sq-icon { background: #fef2f2; color: #ef4444; }
-.theme-danger .sq-stat { color: #ef4444; }
+.theme-warning .sq-icon {
+    background: #fffbeb;
+    color: #f59e0b;
+}
+
+.theme-warning .sq-stat {
+    color: #f59e0b;
+}
+
+.theme-purple .sq-icon {
+    background: #f5f3ff;
+    color: #8b5cf6;
+}
+
+.theme-purple .sq-stat {
+    color: #8b5cf6;
+}
+
+.theme-danger .sq-icon {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.theme-danger .sq-stat {
+    color: #ef4444;
+}
 
 /* Modal Styles */
-.insight-list { padding-left: 20px; margin-bottom: 0; }
-.insight-list li { margin-bottom: 8px; font-size: 14px; color: #334155; }
-.text-primary { color: #2563eb !important; }
-.text-success { color: #059669 !important; }
-.text-info { color: #0891b2 !important; }
-.badge-up { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+.insight-list {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.insight-list li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #334155;
+}
+
+.text-primary {
+    color: #2563eb !important;
+}
+
+.text-success {
+    color: #059669 !important;
+}
+
+.text-info {
+    color: #0891b2 !important;
+}
+
+.badge-up {
+    background: #dcfce7;
+    color: #166534;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 11px;
+}
 
 @media (max-width: 1024px) {
     .cards-grid-3-cols {
         grid-template-columns: 1fr 1fr;
     }
+
     .card-tall {
         grid-column: span 2;
         grid-row: span 1;
@@ -846,10 +934,15 @@ main.main-content,
         gap: 20px;
         padding: 24px;
     }
+
     .card-tall .sq-icon {
-        width: 60px; height: 60px; font-size: 24px; margin-bottom: 0;
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        margin-bottom: 0;
     }
 }
+
 .analysis-card {
     background: linear-gradient(135deg, var(--white) 0%, rgba(249, 250, 251, 0.9) 100%);
     border-radius: var(--radius-lg);
@@ -1027,7 +1120,8 @@ main.main-content,
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 280px)); /* COMPACT */
+    grid-template-columns: repeat(3, minmax(200px, 280px));
+    /* COMPACT */
     justify-content: center;
     gap: 16px;
     margin-bottom: 20px;
@@ -1095,18 +1189,22 @@ main.main-content,
 .am-filter-container {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Distribusi jarak */
-    gap: 12px; /* Jarak antar elemen */
+    justify-content: space-between;
+    /* Distribusi jarak */
+    gap: 12px;
+    /* Jarak antar elemen */
     background: #fff;
     border-radius: var(--radius-lg);
-    flex-wrap: nowrap !important; /* KUNCI: Paksa tidak turun baris */
+    flex-wrap: nowrap !important;
+    /* KUNCI: Paksa tidak turun baris */
     margin-bottom: 16px;
 }
 
 /* Search Input */
 .am-search-group {
-    flex: 1; 
-    min-width: 280px; /* Minimal lebar agar tidak gepeng */
+    flex: 1;
+    min-width: 280px;
+    /* Minimal lebar agar tidak gepeng */
     position: relative;
 }
 
@@ -1136,8 +1234,9 @@ main.main-content,
 
 /* Filter Dropdown */
 .am-filter-group {
-    flex: 0 0 200px; /* Lebar fix untuk dropdown */
-    min-width: 220px;
+    flex: 0 0 200px;
+    /* Lebar fix untuk dropdown */
+    min-width: 280px;
 }
 
 .am-filter-group select {
@@ -1158,7 +1257,7 @@ main.main-content,
 
 /* Sort Buttons */
 .am-sort-group {
-    flex: 0 0 auto; 
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1290,16 +1389,19 @@ main.main-content,
     text-align: left;
     font-size: 11px;
     font-weight: 700;
-    color: var(--white) !important; /* FIXED: White text */
+    color: var(--white) !important;
+    /* FIXED: White text */
     background: transparent !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
     border-right: 1px solid rgba(255, 255, 255, 0.15);
-    position: sticky; /* NEW: Sticky header */
+    position: sticky;
+    /* NEW: Sticky header */
     top: 0;
     z-index: 10;
-    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%) !important; /* Ensure background on scroll */
+    background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%) !important;
+    /* Ensure background on scroll */
 }
 
 .benchmark-table th:last-child {
@@ -1308,13 +1410,17 @@ main.main-content,
 
 .benchmark-table th small {
     display: block;
-    font-size: 10.5px; /* Increased from 9px */
-    font-weight: 700; /* Bold instead of 500 */
+    font-size: 10.5px;
+    /* Increased from 9px */
+    font-weight: 700;
+    /* Bold instead of 500 */
     color: var(--white) !important;
-    opacity: 1; /* Full opacity instead of 0.9 */
+    opacity: 1;
+    /* Full opacity instead of 0.9 */
     text-transform: none;
     margin-top: 4px;
-    background: rgba(255, 255, 255, 0.15); /* Add subtle background */
+    background: rgba(255, 255, 255, 0.15);
+    /* Add subtle background */
     padding: 2px 6px;
     border-radius: 4px;
 }
@@ -1405,7 +1511,8 @@ main.main-content,
 
 /* NEW: Witel Summary Row */
 .witel-summary {
-    background: linear-gradient(135deg, #fee2e2, #fecaca) !important; /* Pink/red-soft */
+    background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+    /* Pink/red-soft */
     font-weight: 600 !important;
 }
 
@@ -2095,50 +2202,50 @@ main.main-content,
 }
 
 .table-scrollable-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.12);
+    background: rgba(0, 0, 0, 0.12);
     border-radius: 8px;
 }
 
 /* Firefox */
 .table-scrollable-wrapper {
     scrollbar-width: thin;
-    scrollbar-color: rgba(0,0,0,0.12) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
 }
 
-    /* Product tabs reuse visual style from AM nested tabs but keep selectors scoped */
-    .product-tabs-navigation {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid var(--gray-200);
-        padding-top: 6px;
-    }
+/* Product tabs reuse visual style from AM nested tabs but keep selectors scoped */
+.product-tabs-navigation {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--gray-200);
+    padding-top: 6px;
+}
 
-    .product-tab-btn {
-        padding: 12px 18px;
-        background: transparent;
-        border: none;
-        border-bottom: 3px solid transparent;
-        color: var(--gray-600);
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-    }
+.product-tab-btn {
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--gray-600);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
 
-    .product-tab-btn:hover {
-        color: var(--telkom-red);
-        background: var(--telkom-red-ultra-soft);
-    }
+.product-tab-btn:hover {
+    color: var(--telkom-red);
+    background: var(--telkom-red-ultra-soft);
+}
 
-    .product-tab-btn.active {
-        color: var(--telkom-red);
-        border-bottom-color: var(--telkom-red);
-    }
+.product-tab-btn.active {
+    color: var(--telkom-red);
+    border-bottom-color: var(--telkom-red);
+}
 
 /* =====================================================
    AM LEVEL NESTED TABS - Benchmarking & Leaderboard
@@ -2202,6 +2309,7 @@ main.main-content,
         opacity: 0;
         transform: translateY(5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
