@@ -138,7 +138,7 @@
                                         <span id="valOfferings" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL VISITED</span>
+                                        <span style="color: #64748b; display: block; font-size: 10px;">CC VISITED</span>
                                         <span id="valVisited" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@
                 <div class="am-tabs-container">
                     <div class="am-tabs-navigation">
                         <button class="am-tab-btn active" data-am-tab="benchmarking"><i class="fas fa-table"></i> Benchmarking</button>
-                        <button class="am-tab-btn" data-am-tab="leaderboard"><i class="fas fa-medal"></i> Leaderboard</button>
+                        <button class="am-tab-btn" data-am-tab="leaderboard"><i class="fas fa-medal"></i> Leaderboard (Top Improvement)</button>
                     </div>
 
                     <div class="am-tab-content active" id="amBenchmarkingTab">
@@ -311,12 +311,6 @@
                     </div>
                 </div>
 
-                <div class="product-filters">
-                    <label><i class="fas fa-filter"></i> Filter Witel:</label>
-                    <select id="witelFilter" class="native-select">
-                        <option value="">Semua Witel</option>
-                    </select>
-                </div>
 
                 <div class="product-tabs-container">
                     <div class="product-tabs-navigation">
@@ -324,14 +318,26 @@
                             <i class="fas fa-table"></i> Benchmarking Performa Per Produk
                         </button>
                         <button class="product-tab-btn" data-product-tab="improvement">
-                            <i class="fas fa-medal"></i> Leaderboard Improvement (Top 10)
+                            <i class="fas fa-medal"></i> Leaderboard Produk (Top Improvement)
                         </button>
                         <button class="product-tab-btn" data-product-tab="product">
-                            <i class="fas fa-star"></i> Leaderboard Produk (Top 10)
+                            <i class="fas fa-star"></i> Leaderboard Produk (Top Selling)
                         </button>
                     </div>
+                    
 
                     <div class="product-tab-content active" id="productBenchmarkingTab">
+                        <div class="product-filter-container" style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+                            <div class="product-search-group" style="position: relative; flex: 1; min-width: 250px;">
+                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+                                <input type="text" id="productSearchInput" placeholder="Cari AM, Customer, atau Product..." autocomplete="off" style="width: 100%; padding: 8px 12px 8px 36px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: white;">
+                            </div>
+                            <div class="product-filter-group" style="min-width: 150px;">
+                                <select id="witelFilter" class="native-select" style="width: 100%; padding: 8px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: white;">
+                                    <option value="">Semua Witel</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="table-container">
                             <div class="table-header-fixed">
                                 <table class="benchmark-table">
@@ -392,9 +398,8 @@
                                         <tr>
                                             <th width="100">Rank</th>
                                             <th>Produk</th>
-                                            <th>Avg Progress</th>
-                                            <th>Avg Result</th>
                                             <th>Total Offerings</th>
+                                            <th>Total Win</th>
                                         </tr>
                                     </thead>
                                     <tbody id="productLeaderboardTableBody">
@@ -406,11 +411,11 @@
                     </div>
                 </div>
 
-                <div class="report-actions">
+                {{-- <div class="report-actions">
                     <button type="button" id="downloadReportProduct" class="btn-download-report" disabled>
                         <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
                     </button>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -1058,6 +1063,10 @@ $(document).ready(function() {
     // LOAD BENCHMARKING DATA
     // ================================
 
+    $('#loadBenchmarkBtn').on('click', function() {
+        localStorage.setItem('hf_loaded', 'true'); // Tandai data sudah diload
+        loadBenchmarkingData();
+    });
     // Modifikasi listener tombol load yang sudah ada
     function loadBenchmarkingData() {
         $('#emptyState').removeClass('active');
@@ -1181,7 +1190,7 @@ $(document).ready(function() {
             
             // UPDATE: Isi data statistik detail baru
             $('#valOfferings').text(m.national.offerings);
-            $('#valVisited').text(m.national.visited);
+            $('#valVisited').text(`${m.national.visited}/${m.national.total_customers}`);
             $('#valWins').text(m.national.wins);
             $('#valLoses').text(m.national.loses);
         }
@@ -1290,9 +1299,8 @@ $(document).ready(function() {
         // Populate Witel filter
         populateWitelFilter(data.products);
 
-        // Render table WITH PROGRESS BARS
-        const tableHTML = renderProductTable(data.products);
-        $('#productBenchmarkTableBody').html(tableHTML);
+        // Apply filters and render table
+        applyProductFilters();
 
         // Render leaderboards
         const productLeaderboard = data.product_leaderboard.top_10;
@@ -1322,11 +1330,121 @@ $(document).ready(function() {
     }
 
     $('#witelFilter').on('change', function() {
-        const selectedWitel = $(this).val();
-        const filteredData = selectedWitel ? allProductData.filter(p => p.witel === selectedWitel) : allProductData;
+        applyProductFilters();
+    });
+
+    $('#productSearchInput').on('keyup', debounce(function() {
+        applyProductFilters();
+    }, 300));
+
+    $('#productStatusFilter').on('change', function() {
+        applyProductFilters();
+    });
+
+    // ================================
+    // RECALCULATE ROWSPAN FOR FILTERED DATA
+    // ================================
+    function recalculateProductRowspans(data) {
+        if (!data || data.length === 0) return data;
+
+        // Create a deep copy to avoid mutating original data
+        const processedData = data.map(row => ({...row}));
+
+        // Group by AM first
+        const amGroups = {};
+        processedData.forEach(row => {
+            if (!amGroups[row.am]) {
+                amGroups[row.am] = [];
+            }
+            amGroups[row.am].push(row);
+        });
+
+        // For each AM group, calculate rowspan
+        Object.keys(amGroups).forEach(am => {
+            const amRows = amGroups[am];
+            
+            // Set AM rowspan on first row only
+            amRows[0].am_rowspan = amRows.length;
+            for (let i = 1; i < amRows.length; i++) {
+                amRows[i].am_rowspan = 0;
+            }
+
+            // Within each AM, group by Customer
+            const customerGroups = {};
+            amRows.forEach(row => {
+                const customerKey = row.customer || 'NO_CUSTOMER';
+                if (!customerGroups[customerKey]) {
+                    customerGroups[customerKey] = [];
+                }
+                customerGroups[customerKey].push(row);
+            });
+
+            // Calculate customer rowspan
+            let customerIndex = 0;
+            Object.keys(customerGroups).forEach(customer => {
+                const customerRows = customerGroups[customer];
+                
+                // Find the first row for this customer in the AM group
+                const firstCustomerRow = amRows[customerIndex];
+                firstCustomerRow.customer_rowspan = customerRows.length;
+                
+                // Set rowspan to 0 for subsequent rows of the same customer
+                for (let i = 1; i < customerRows.length; i++) {
+                    amRows[customerIndex + i].customer_rowspan = 0;
+                }
+                
+                customerIndex += customerRows.length;
+            });
+        });
+
+        return processedData;
+    }
+
+    function applyProductFilters() {
+        let filteredData = [...allProductData]; // Clone array
+        const searchValue = $('#productSearchInput').val().toLowerCase();
+        const statusValue = $('#productStatusFilter').val();
+        const selectedWitel = $('#witelFilter').val();
+
+        // A. FILTERING
+        filteredData = filteredData.filter(row => {
+            // Filter by Search (AM, Customer, Product)
+            const searchMatch = row.am.toLowerCase().includes(searchValue) ||
+                               row.customer.toLowerCase().includes(searchValue) ||
+                               row.product.toLowerCase().includes(searchValue);
+
+            // Filter by Witel
+            const witelMatch = !selectedWitel || row.witel === selectedWitel;
+
+            // Filter by Status
+            let statusMatch = true;
+            const resultVal = parseFloat(row.result_2 || 0);
+            const progressVal = parseFloat(row.progress_2 || 0);
+            const hasWin = (row.result_2 || 0) == 100;
+            const hasLose = (row.result_2 || 0) < 100 && (row.progress_2 || 0) > 0;
+
+            if (statusValue === 'has_win') {
+                statusMatch = hasWin;
+            } else if (statusValue === 'has_lose') {
+                statusMatch = hasLose;
+            } else if (statusValue === 'result_gt_50') {
+                statusMatch = resultVal > 50;
+            } else if (statusValue === 'result_lt_50') {
+                statusMatch = resultVal < 50;
+            } else if (statusValue === 'progress_0') {
+                statusMatch = progressVal === 0;
+            }
+
+            return searchMatch && witelMatch && statusMatch;
+        });
+
+        // B. RECALCULATE ROWSPANS FOR FILTERED DATA
+        filteredData = recalculateProductRowspans(filteredData);
+
+        // C. RENDER FILTERED DATA
         const tableHTML = renderProductTable(filteredData);
         $('#productBenchmarkTableBody').html(tableHTML);
-    });
+    }
 
     // ================================
     // TABLE RENDERERS WITH PROGRESS BARS
@@ -1460,25 +1578,22 @@ $(document).ready(function() {
                 // --- LOGIKA BADGE 4 BLOK RATA ---
                 let badges = [];
 
-                // Blok 1: Offerings (Selalu ada)
-                badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.offerings} Offerings">${s.offerings} Offerings</span>`);
-                
-                // Blok 2: CC (Selalu ada)
-                badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.total_customers} Corporate Customers">${s.total_customers} CC</span>`);
+                // Blok 1: CC Visited (Selalu ada)
+                badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.visited}/${s.total_customers} Corporate Customers Visited">${s.visited}/${s.total_customers} CC visited</span>`);
 
-                // Blok 3 & 4: Win & Lose (Dinamis)
+                // Blok 2 & 3: Win & Lose (Dinamis)
                 // Jika Win ada, masukkan.
                 if (s.win > 0) {
                     badges.push(`<span style="${badgeStyle} ${winBadge}" title="${s.win} Win">${s.win} Win</span>`);
                 }
                 
-                // Jika Lose ada, masukkan. (Jika Win tidak ada tadi, Lose otomatis masuk ke index ke-3)
+                // Jika Lose ada, masukkan.
                 if (s.lose > 0) {
                     badges.push(`<span style="${badgeStyle} ${loseBadge}" title="${s.lose} Lose">${s.lose} Lose</span>`);
                 }
 
-                // Padding: Isi sisa slot dengan elemen kosong agar total tetap 4 blok
-                while (badges.length < 4) {
+                // Padding: Isi sisa slot dengan elemen kosong agar total tetap 3 blok (karena offerings dihapus)
+                while (badges.length < 3) {
                     badges.push(`<span style="flex: 1 1 0px;"></span>`);
                 }
 
@@ -1622,7 +1737,7 @@ $(document).ready(function() {
 
     function renderProductLeaderboard(data) {
         if (!data || data.length === 0) {
-            return '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--gray-500);">Tidak ada data</td></tr>';
+            return '<tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--gray-500);">Tidak ada data</td></tr>';
         }
 
         let html = '';
@@ -1633,9 +1748,8 @@ $(document).ready(function() {
             html += `<tr class="${rankClass}">`;
             html += `<td style="text-align: center;"><span class="${badgeClass}">#${row.rank}</span></td>`;
             html += `<td><strong>${row.product}</strong></td>`;
-            html += `<td style="text-align: center;">${row.avg_progress.toFixed(2)}%</td>`;
-            html += `<td style="text-align: center;">${row.avg_result.toFixed(2)}%</td>`;
             html += `<td style="text-align: center;">${row.total_offerings}</td>`;
+            html += `<td style="text-align: center;">${row.wins}</td>`;
             html += '</tr>';
         });
 

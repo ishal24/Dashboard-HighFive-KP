@@ -357,12 +357,18 @@ class HighFiveProductPerformanceController extends Controller
                     'total_progress' => 0,
                     'total_result' => 0,
                     'count' => 0,
+                    'wins' => 0,
                 ];
             }
 
             $productGrouped[$product]['total_progress'] += $row['progress_2'];
             $productGrouped[$product]['total_result'] += $row['result_2'];
             $productGrouped[$product]['count']++;
+
+            // Count wins: if result is 100%
+            if ($row['result_2'] == 100) {
+                $productGrouped[$product]['wins']++;
+            }
         }
 
         $leaderboard = [];
@@ -377,11 +383,17 @@ class HighFiveProductPerformanceController extends Controller
                 'avg_result' => $avgResult,
                 'avg_total' => $avgTotal,
                 'total_offerings' => $data['count'],
+                'wins' => $data['wins'],
             ];
         }
 
         usort($leaderboard, function($a, $b) {
-            return $b['avg_total'] <=> $a['avg_total'];
+            // Primary sort: wins descending
+            if ($a['wins'] != $b['wins']) {
+                return $b['wins'] <=> $a['wins'];
+            }
+            // Secondary sort: total_offerings ascending (lower offerings better if wins same)
+            return $a['total_offerings'] <=> $b['total_offerings'];
         });
 
         $top10 = array_slice($leaderboard, 0, 10);

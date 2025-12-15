@@ -107,7 +107,8 @@ class HighFiveAMPerformanceController extends Controller
                         'offerings' => 0,
                         'win' => 0,
                         'lose' => 0,
-                        'cust_list' => []
+                        'cust_list' => [],
+                        'visited_customers' => []
                     ]
                 ];
             }
@@ -120,7 +121,13 @@ class HighFiveAMPerformanceController extends Controller
             $stats['offerings']++;
 
             if (!empty($row['customer_name'])) {
-                $stats['cust_list'][$row['customer_name']] = true;
+                $custName = $row['customer_name'];
+                $stats['cust_list'][$custName] = true;
+                
+                // Track if this customer has any progress
+                if (($row['progress_percentage'] ?? 0) > 0) {
+                    $stats['visited_customers'][$custName] = true;
+                }
             }
 
             $resText = strtolower($row['result'] ?? '');
@@ -141,6 +148,7 @@ class HighFiveAMPerformanceController extends Controller
             $finalStats = [
                 'offerings' => $data['stats']['offerings'],
                 'total_customers' => count($data['stats']['cust_list']),
+                'visited' => count($data['stats']['visited_customers']),
                 'win' => $data['stats']['win'],
                 'lose' => $data['stats']['lose']
             ];
@@ -176,7 +184,7 @@ class HighFiveAMPerformanceController extends Controller
 
             $statsSource = $am2 ?? $am1;
             $stats = $statsSource['stats'] ?? [
-                'offerings' => 0, 'total_customers' => 0, 'win' => 0, 'lose' => 0
+                'offerings' => 0, 'total_customers' => 0, 'visited' => 0, 'win' => 0, 'lose' => 0
             ];
 
             $merged[$key] = [
@@ -250,6 +258,7 @@ class HighFiveAMPerformanceController extends Controller
             'active_ams' => 0,
             // New Stats
             'total_offerings' => 0,
+            'total_customers' => 0,
             'total_visited' => 0,
             'total_wins' => 0,
             'total_loses' => 0
@@ -270,7 +279,8 @@ class HighFiveAMPerformanceController extends Controller
             // Accumulate National Stats
             $amStats = $row['stats'] ?? [];
             $stats['total_offerings'] += $amStats['offerings'] ?? 0;
-            $stats['total_visited'] += $amStats['total_customers'] ?? 0; // CC Visited
+            $stats['total_customers'] += $amStats['total_customers'] ?? 0;
+            $stats['total_visited'] += $amStats['visited'] ?? 0; // CC Visited
             $stats['total_wins'] += $amStats['win'] ?? 0;
             $stats['total_loses'] += $amStats['lose'] ?? 0;
 
@@ -331,6 +341,7 @@ class HighFiveAMPerformanceController extends Controller
                 'color' => $deltaProg >= 0 ? 'success' : 'danger',
                 // New Detailed Stats for Frontend
                 'offerings' => number_format($stats['total_offerings']),
+                'total_customers' => number_format($stats['total_customers']),
                 'visited' => number_format($stats['total_visited']),
                 'wins' => number_format($stats['total_wins']),
                 'loses' => number_format($stats['total_loses'])
