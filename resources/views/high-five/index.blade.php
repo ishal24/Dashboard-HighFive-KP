@@ -200,7 +200,7 @@
                         <div class="am-filter-container">
                             <div class="am-search-group">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="amSearchInput" placeholder="Cari Account Manager..." autocomplete="off">
+                                <input type="text" id="amSearchInput" placeholder="Cari Account Manager atau Witel..." autocomplete="off">
                             </div>
                             <div class="am-filter-group">
                                 <select id="amStatusFilter" class="native-select">
@@ -1465,8 +1465,9 @@ $(document).ready(function() {
 
         // A. FILTERING
         filteredData = filteredData.filter(row => {
-            // Filter by Name
-            const nameMatch = row.am.toLowerCase().includes(searchValue);
+            // Filter by Name or Witel
+            const nameMatch = row.am.toLowerCase().includes(searchValue) ||
+                             row.witel.toLowerCase().includes(searchValue);
             
             // Filter by Status
             let statusMatch = true;
