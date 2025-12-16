@@ -155,7 +155,7 @@
                             </div>
                         </div>
 
-                        <div class="metric-sq-card theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')" data-insight="most_witel">
+                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')" data-insight="most_witel">
                             <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('most_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-crown"></i></div>
                             <div class="sq-label">Witel Champion</div>
@@ -163,7 +163,7 @@
                             <div class="sq-sub" id="metricMostStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')" data-insight="least_witel">
+                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')" data-insight="least_witel">
                             <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('least_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-exclamation-triangle"></i></div>
                             <div class="sq-label">Focus Area</div>
@@ -171,7 +171,7 @@
                             <div class="sq-sub" id="metricLeastStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
+                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
                             <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-user-astronaut"></i></div>
                             <div class="sq-label">MVP Improver</div>
@@ -179,7 +179,7 @@
                             <div class="sq-sub" id="metricTopAMStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')" data-insight="am_most_win">
+                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')" data-insight="am_most_win">
                             <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('am_most_win')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
                             <div class="sq-label">Top Sales AM</div>

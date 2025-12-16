@@ -887,6 +887,100 @@ main.main-content,
     color: #ef4444;
 }
 
+/* =====================================================
+   HORIZONTAL CARD LAYOUT (NEW DESIGN)
+   For 4 cards: Witel Champion, Focus Area, MVP Improver, Top Sales AM
+   ===================================================== */
+
+.metric-sq-card.card-horizontal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    /* Space between elements */
+    text-align: left;
+    padding: 28px 32px;
+    position: relative;
+    min-height: 140px;
+}
+
+/* Hide info button for horizontal cards */
+.card-horizontal .btn-sq-insight {
+    display: none !important;
+}
+
+/* Icon positioned at top-right - LARGER BACKGROUND */
+.card-horizontal .sq-icon {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    margin-bottom: 0;
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+    border-radius: 16px;
+}
+
+/* Label/Title at top-left */
+.card-horizontal .sq-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    margin-bottom: 0;
+    /* Remove margin */
+    width: 100%;
+    line-height: 1.2;
+    flex-shrink: 0;
+    /* Don't shrink */
+}
+
+/* Main highlighted value (name) */
+.card-horizontal .sq-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+    margin: auto 0;
+    /* Center vertically */
+    width: calc(100% - 90px);
+    flex-grow: 1;
+    /* Take available space */
+    display: flex !important;
+    align-items: center;
+    /* Center text vertically */
+    /* Remove ALL truncation properties */
+    overflow: visible !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    text-overflow: unset !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+    max-width: none !important;
+}
+
+/* Additional info at bottom */
+.card-horizontal .sq-sub {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 12px;
+    /* Add padding */
+    margin: 0;
+    border-radius: 16px;
+    /* Rounded corners */
+    background: #F8FAFC;
+    /* Light gray background */
+    color: #68778E;
+    display: inline-block;
+    /* Fit content width */
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+/* Theme-specific value colors removed - using default black for all cards */
+
+
 /* Modal Styles */
 .insight-list {
     padding-left: 20px;
@@ -2323,7 +2417,8 @@ main.main-content,
 /* Grid Container untuk Data Metrics */
 .insight-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 Kolom */
     gap: 12px;
     margin-bottom: 20px;
 }
@@ -2371,14 +2466,26 @@ main.main-content,
 }
 
 /* Warna Contextual */
-.im-success .insight-metric-value { color: #10b981; }
-.im-danger .insight-metric-value { color: #ef4444; }
-.im-primary .insight-metric-value { color: #3b82f6; }
-.im-warning .insight-metric-value { color: #f59e0b; }
+.im-success .insight-metric-value {
+    color: #10b981;
+}
+
+.im-danger .insight-metric-value {
+    color: #ef4444;
+}
+
+.im-primary .insight-metric-value {
+    color: #3b82f6;
+}
+
+.im-warning .insight-metric-value {
+    color: #f59e0b;
+}
 
 /* Section Penjelasan Narrative */
 .insight-narrative-box {
-    background: #fffbeb; /* Warna dasar kuning lembut */
+    background: #fffbeb;
+    /* Warna dasar kuning lembut */
     border-left: 4px solid #f59e0b;
     border-radius: 6px;
     padding: 16px;
@@ -2416,6 +2523,7 @@ main.main-content,
 /* Khusus Mobile */
 @media (max-width: 600px) {
     .insight-metrics-grid {
-        grid-template-columns: repeat(2, 1fr); /* Jadi 2 kolom di HP */
+        grid-template-columns: repeat(2, 1fr);
+        /* Jadi 2 kolom di HP */
     }
 }

@@ -350,23 +350,23 @@ class HighFiveAMPerformanceController extends Controller
                 'label' => 'Witel Champion',
                 'value' => $mostWitel['name'],
                 'sub_label' => 'Highest Progress',
-                'main_stat' => number_format($mostWitel['avg_progress'], 1) . '%',
+                'main_stat' => number_format($mostWitel['avg_progress'], 1) . '% Progress',
             ],
             'least_witel' => [
                 'label' => 'Focus Area',
                 'value' => $leastWitel['name'],
                 'sub_label' => 'Lowest Progress',
-                'main_stat' => number_format($leastWitel['avg_progress'], 1) . '%',
+                'main_stat' => number_format($leastWitel['avg_progress'], 1) . '% Progress',
             ],
             'top_am' => [
                 'label' => 'MVP Improver',
-                'value' => $topAM ? Str::limit($topAM['am'], 15) : '-',
+                'value' => $topAM ? $topAM['am'] : '-',
                 'sub_label' => $topAM ? $topAM['witel'] : '-',
-                'main_stat' => $topAM ? '+' . number_format($topAM['change_avg'], 1) . '%' : '0%',
+                'main_stat' => $topAM ? number_format($topAM['change_avg'], 1) . '% Avg Improvement' : '0%',
             ],
             'am_most_win' => [
                 'label' => 'Top Sales AM',
-                'value' => $topWinAM ? Str::limit($topWinAM['am'], 15) : '-',
+                'value' => $topWinAM ? $topWinAM['am'] : '-',
                 'sub_label' => $topWinAM ? $topWinAM['witel'] : '-',
                 'main_stat' => ($topWinAM['stats']['win'] ?? 0) . ' Wins',
             ]
