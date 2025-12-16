@@ -1262,9 +1262,8 @@ main.main-content,
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 280px));
-    /* COMPACT */
-    justify-content: center;
+    /* Ganti 3 jadi 4, atau pakai auto-fit agar responsif */
+    grid-template-columns: repeat(4, 1fr); 
     gap: 16px;
     margin-bottom: 20px;
 }

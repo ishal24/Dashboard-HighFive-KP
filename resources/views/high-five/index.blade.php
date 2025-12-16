@@ -267,8 +267,8 @@
                 </div>
             </div>
 
-                        <div id="productLevelContent" class="tab-content">
-                <div class="stats-grid">
+            <div id="productLevelContent" class="tab-content">
+               <div class="stats-grid">
                     <div class="stat-card visited">
                         <i class="fas fa-check-circle"></i>
                         <h4>CC Visited</h4>
@@ -280,6 +280,12 @@
                         <h4>AM No Progress</h4>
                         <div class="stat-value" id="noProgressValue">-</div>
                         <span class="stat-label">Account Managers</span>
+                    </div>
+                    <div class="stat-card stagnation">
+                        <i class="fas fa-anchor"></i>
+                        <h4>Stagnant Offers</h4>
+                        <div class="stat-value" id="stagnantValue">-</div>
+                        <span class="stat-label" id="stagnantLabel">No movement</span>
                     </div>
                     <div class="stat-card products">
                         <i class="fas fa-box-open"></i>

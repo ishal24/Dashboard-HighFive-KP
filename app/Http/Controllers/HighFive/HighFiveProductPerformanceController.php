@@ -296,18 +296,22 @@ class HighFiveProductPerformanceController extends Controller
         $visitedCustomers = [];
         $amProgress = [];
         $totalProducts = count($productData);
+        $stagnantCount = 0; // [NEW] Variabel hitung stagnan
 
         foreach ($productData as $row) {
             $am = $row['am'];
-            $customer = $row['customer'] ?? '__EMPTY__'; // Handle null customer
+            $customer = $row['customer'] ?? '__EMPTY__'; 
             $progress2 = $row['progress_2'];
+
+            // [NEW] Logika Stagnan: Jika Change Avg 0 (Tidak ada perubahan progress & result)
+            if ($row['change_avg'] == 0) {
+                $stagnantCount++;
+            }
 
             $uniqueAMs[$am] = true;
 
-            // Only count non-empty customers
             if ($customer !== '__EMPTY__') {
                 $uniqueCustomers[$customer] = true;
-
                 if ($progress2 >= 25) {
                     $visitedCustomers[$customer] = true;
                 }
@@ -333,6 +337,10 @@ class HighFiveProductPerformanceController extends Controller
             'total_products' => $totalProducts,
             'visited_customers' => count($visitedCustomers),
             'am_no_progress' => count($amNoProgress),
+            // [NEW] Data Stagnation untuk dikirim ke frontend
+            'stagnant_count' => $stagnantCount,
+            'stagnant_percentage' => $totalProducts > 0 ? round(($stagnantCount / $totalProducts) * 100, 1) : 0,
+            
             'visited_text' => count($visitedCustomers) . '/' . count($uniqueCustomers) . " CC {$divisiName} telah divisit dan dipropose produk High Five",
             'no_progress_text' => count($amNoProgress) . ' AM belum berprogress',
             'visited_percentage' => count($uniqueCustomers) > 0
