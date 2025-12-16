@@ -6,6 +6,55 @@
 /* Import base design system */
 @import url('leaderboardAM.css');
 
+/* Hide mobile menu hamburger button */
+.mobile-menu-btn {
+    display: none !important;
+}
+
+/* CRITICAL: Force sidebar to always be visible - prevent hiding on zoom */
+body aside#sidebar,
+body #sidebar,
+aside#sidebar,
+#sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+}
+
+/* Sidebar navigation takes available space */
+#sidebar .sidebar-nav,
+aside#sidebar .sidebar-nav {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+}
+
+/* Sidebar footer sticks to bottom */
+#sidebar .sidebar-footer,
+aside#sidebar .sidebar-footer {
+    margin-top: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Ensure sidebar stays visible at all screen sizes */
+@media (max-width: 1024px) {
+
+    body aside#sidebar,
+    body #sidebar,
+    aside#sidebar,
+    #sidebar {
+        display: flex !important;
+        flex-direction: column !important;
+        left: 0 !important;
+        transform: none !important;
+    }
+}
+
 /* =====================================================
    MAIN CONTENT AREA - FIXED MARGIN & PADDING
    ===================================================== */
@@ -776,7 +825,8 @@ main.main-content,
 }
 
 .sq-icon i {
-    font-size: 20px; /* Paksa ukuran font ikon */
+    font-size: 20px;
+    /* Paksa ukuran font ikon */
 }
 
 .sq-label {

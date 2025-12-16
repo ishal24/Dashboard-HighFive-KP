@@ -487,7 +487,7 @@
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('high-five.index') }}" class="sidebar-link">
-                        <i class="lni lni-hand-open"></i><span>High-Five</span>
+                        <i class="fas fa-hand-sparkles"></i><span>High-Five</span>
                     </a>
                 </li>
 

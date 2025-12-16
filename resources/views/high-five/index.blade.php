@@ -1258,6 +1258,15 @@ $(document).ready(function() {
         }
     });
 
+    // Close modal when pressing ESC key
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            if ($('#insightModal').is(':visible')) {
+                closeInsightModal();
+            }
+        }
+    });
+
     // NEW: Format narrative with bold for numbers
     function formatNarrativeWithBold(text) {
         // Bold percentages: 37.38% -> <strong>37.38%</strong>
