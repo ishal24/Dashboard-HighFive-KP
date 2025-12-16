@@ -173,7 +173,7 @@
 
                         <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
                             <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
-                            <div class="sq-icon"><i class="fas fa-user-astronaut"></i></div>
+                            <div class="sq-icon"><i class="fas fa-user"></i></div>
                             <div class="sq-label">MVP Improver</div>
                             <div class="sq-value" id="metricTopAMName">-</div>
                             <div class="sq-sub" id="metricTopAMStat">-</div>
@@ -193,7 +193,7 @@
                 <div class="am-tabs-container">
                     <div class="am-tabs-navigation">
                         <button class="am-tab-btn active" data-am-tab="benchmarking"><i class="fas fa-table"></i> Benchmarking</button>
-                        <button class="am-tab-btn" data-am-tab="leaderboard"><i class="fas fa-medal"></i> Leaderboard (Top Improvement)</button>
+                        <button class="am-tab-btn" data-am-tab="leaderboard"><i class="fas fa-medal"></i> Leaderboard AM (Top Improvement)</button>
                     </div>
 
                     <div class="am-tab-content active" id="amBenchmarkingTab">

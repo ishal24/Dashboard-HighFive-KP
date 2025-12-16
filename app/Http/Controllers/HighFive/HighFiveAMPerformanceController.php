@@ -300,10 +300,19 @@ class HighFiveAMPerformanceController extends Controller
             // Grouping Witel
             $witel = $row['witel'];
             if (!isset($witelStats[$witel])) {
-                $witelStats[$witel] = ['name' => $witel, 'sum_p1' => 0, 'sum_p2' => 0, 'count' => 0];
+                $witelStats[$witel] = [
+                    'name' => $witel, 
+                    'sum_p1' => 0, 
+                    'sum_p2' => 0, 
+                    'sum_r1' => 0, 
+                    'sum_r2' => 0, 
+                    'count' => 0
+                ];
             }
             $witelStats[$witel]['sum_p1'] += $row['progress_1'];
             $witelStats[$witel]['sum_p2'] += $row['progress_2'];
+            $witelStats[$witel]['sum_r1'] += $row['result_1'];
+            $witelStats[$witel]['sum_r2'] += $row['result_2'];
             $witelStats[$witel]['count']++;
         }
 
@@ -312,18 +321,26 @@ class HighFiveAMPerformanceController extends Controller
         foreach ($witelStats as $w => $d) {
             $avgP1 = $d['count'] > 0 ? $d['sum_p1'] / $d['count'] : 0;
             $avgP2 = $d['count'] > 0 ? $d['sum_p2'] / $d['count'] : 0;
+            $avgR1 = $d['count'] > 0 ? $d['sum_r1'] / $d['count'] : 0;
+            $avgR2 = $d['count'] > 0 ? $d['sum_r2'] / $d['count'] : 0;
+            
+            $progressChange = $avgP2 - $avgP1;
+            $resultChange = $avgR2 - $avgR1;
+            $avgImprovement = ($progressChange + $resultChange) / 2;
+            
             $witelFinal[] = [
                 'name' => $w,
                 'avg_progress' => $avgP2,
+                'avg_improvement' => $avgImprovement,
                 'growth' => $avgP2 - $avgP1,
                 'am_count' => $d['count']
             ];
         }
 
-        // Sort Witel
-        usort($witelFinal, fn($a, $b) => $b['avg_progress'] <=> $a['avg_progress']);
-        $mostWitel = $witelFinal[0] ?? ['name' => '-', 'avg_progress' => 0, 'growth' => 0];
-        $leastWitel = end($witelFinal) ?: ['name' => '-', 'avg_progress' => 0, 'growth' => 0];
+        // Sort Witel by average improvement
+        usort($witelFinal, fn($a, $b) => $b['avg_improvement'] <=> $a['avg_improvement']);
+        $mostWitel = $witelFinal[0] ?? ['name' => '-', 'avg_progress' => 0, 'avg_improvement' => 0, 'growth' => 0];
+        $leastWitel = end($witelFinal) ?: ['name' => '-', 'avg_progress' => 0, 'avg_improvement' => 0, 'growth' => 0];
 
         // Global Stats
         $total = $stats['total_ams'] ?: 1;
@@ -349,14 +366,14 @@ class HighFiveAMPerformanceController extends Controller
             'most_witel' => [
                 'label' => 'Witel Champion',
                 'value' => $mostWitel['name'],
-                'sub_label' => 'Highest Progress',
-                'main_stat' => number_format($mostWitel['avg_progress'], 1) . '% Progress',
+                'sub_label' => 'Highest Improvement',
+                'main_stat' => number_format($mostWitel['avg_improvement'], 1) . '% Avg Improvement',
             ],
             'least_witel' => [
                 'label' => 'Focus Area',
                 'value' => $leastWitel['name'],
-                'sub_label' => 'Lowest Progress',
-                'main_stat' => number_format($leastWitel['avg_progress'], 1) . '% Progress',
+                'sub_label' => 'Lowest Improvement',
+                'main_stat' => number_format($leastWitel['avg_improvement'], 1) . '% Avg Improvement',
             ],
             'top_am' => [
                 'label' => 'MVP Improver',
