@@ -177,11 +177,12 @@ main.main-content,
 
 /* NEW: Kelola Link Button */
 .btn-kelola-link {
+    height: var(--ctrl-h);
     padding: 8px 16px;
     background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
     color: var(--white);
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -336,7 +337,7 @@ main.main-content,
 
 .selector-grid {
     display: grid;
-    grid-template-columns: 140px 1fr 1fr 150px;
+    grid-template-columns: 140px 1fr 1fr 144px 144px;
     gap: 12px;
     align-items: end;
 }
@@ -348,7 +349,7 @@ main.main-content,
     color: var(--white);
     border: none;
     border-radius: var(--radius-lg);
-    font-size: var(--ctrl-fs);
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
@@ -723,9 +724,7 @@ main.main-content,
 }
 
 .card-tall .sq-icon {
-    width: 80px;
-    height: 80px;
-    font-size: 32px;
+    border-radius: 16px;
     margin-bottom: 20px;
 }
 
@@ -766,15 +765,18 @@ main.main-content,
 
 /* Elemen Dalam Kartu */
 .sq-icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 52px;
-    margin-bottom: 12px;
+    font-size: 28px;
     flex-shrink: 0;
+}
+
+.sq-icon i {
+    font-size: 20px; /* Paksa ukuran font ikon */
 }
 
 .sq-label {
@@ -912,13 +914,9 @@ main.main-content,
 /* Icon positioned at top-right - LARGER BACKGROUND */
 .card-horizontal .sq-icon {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 20px;
+    right: 20px;
     margin-bottom: 0;
-    width: 64px;
-    height: 64px;
-    font-size: 52px;
-    /* Override base class */
     border-radius: 16px;
 }
 
@@ -1031,10 +1029,8 @@ main.main-content,
     }
 
     .card-tall .sq-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 52px;
-        /* Override base class */
+        width: 56px;
+        height: 56px;
         margin-bottom: 0;
     }
 }
@@ -1882,16 +1878,18 @@ main.main-content,
 
 .btn-download-report {
     padding: 8px 16px;
+    height: var(--ctrl-h);
     background: linear-gradient(135deg, var(--telkom-red) 0%, var(--telkom-red-dark) 100%);
     color: var(--white);
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
 }
 

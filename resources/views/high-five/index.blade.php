@@ -72,9 +72,6 @@
     <div class="performance-header-wrapper">
         <div class="toolkit-header">
             <h4><i class="fas fa-chart-line"></i> Overview Data Performa High Five</h4>
-            <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
-                <i class="fas fa-file-pdf"></i> Unduh Laporan PDF
-            </button>
         </div>
         <div class="selector-grid">
             <div class="field-group">
@@ -95,6 +92,9 @@
             </div>
             <button type="button" id="loadBenchmarkBtn" class="btn-load-data" disabled>
                 <i class="fas fa-sync-alt"></i> Load Data
+            </button>
+            <button type="button" id="downloadReportAM" class="btn-download-report" disabled>
+                <i class="fas fa-file-pdf"></i> Unduh Laporan
             </button>
         </div>
         <div class="performance-tabs">
@@ -124,10 +124,9 @@
 
                     <div class="cards-grid-3-cols">
                         
-                        <div class="metric-sq-card card-tall theme-success clickable-card" id="cardNational" onclick="showMetricInsight('national')" data-insight="national">
-                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('national')"><i class="fas fa-info"></i></button>
+                        <div class="metric-sq-card card-tall theme-success clickable-card" id="cardTREG3" onclick="showMetricInsight('TREG3')" data-insight="TREG3">
                             <div class="sq-icon"><i class="fas fa-globe-asia"></i></div>
-                            <div class="sq-label" style="font-size: 14px;">National Avg Progress</div>
+                            <div class="sq-label" style="font-size: 14px;">TREG3 Avg Progress</div>
                             <div class="sq-stat" id="metricNatValue" style="margin-bottom: 0;">-</div>
                             <div class="sq-sub" id="metricNatTrend" style="margin-bottom: 8px;">-</div>
 
@@ -148,7 +147,7 @@
                                         <span id="valWins" style="font-weight: 700; color: #059669;">-</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <span style="color: #dc2626; display: block; font-size: 10px; font-weight: 700;">TOTAL LOSES</span>
+                                        <span style="color: #dc2626; display: block; font-size: 10px; font-weight: 700;">TOTAL LOSSES</span>
                                         <span id="valLoses" style="font-weight: 700; color: #dc2626;">-</span>
                                     </div>
                                 </div>
@@ -156,33 +155,29 @@
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')" data-insight="most_witel">
-                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('most_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-crown"></i></div>
-                            <div class="sq-label">Witel Champion</div>
+                            <div class="sq-label">Top Improvement Witel</div>
                             <div class="sq-value" id="metricMostName">-</div>
                             <div class="sq-sub" id="metricMostStat">-</div>
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')" data-insight="least_witel">
-                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('least_witel')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                            <div class="sq-label">Focus Area</div>
+                            <div class="sq-label">Least Improvement Witel</div>
                             <div class="sq-value" id="metricLeastName">-</div>
                             <div class="sq-sub" id="metricLeastStat">-</div>
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
-                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('top_am')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-user"></i></div>
-                            <div class="sq-label">MVP Improver</div>
+                            <div class="sq-label">Top Improvement AM</div>
                             <div class="sq-value" id="metricTopAMName">-</div>
                             <div class="sq-sub" id="metricTopAMStat">-</div>
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')" data-insight="am_most_win">
-                            <button class="btn-sq-insight" onclick="event.stopPropagation(); showMetricInsight('am_most_win')"><i class="fas fa-info"></i></button>
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
-                            <div class="sq-label">Top Sales AM</div>
+                            <div class="sq-label">Top Win AM</div>
                             <div class="sq-value" id="metricAmWinName">-</div>
                             <div class="sq-sub" id="metricAmWinStat">-</div>
                         </div>
@@ -1179,20 +1174,20 @@ $(document).ready(function() {
 
         const m = data.witel_analysis.metrics;
 
-        // 1. National Pulse (TALL CARD)
-        if(m.national) {
-            $('#metricNatValue').text(m.national.value);
-            $('#metricNatTrend').html(m.national.trend_text);
+        // 1. TREG3 Pulse (TALL CARD)
+        if(m.TREG3) {
+            $('#metricNatValue').text(m.TREG3.value);
+            $('#metricNatTrend').html(m.TREG3.trend_text);
             
             // Update warna kartu
-            $('#cardNational').removeClass('theme-success theme-danger')
-                .addClass(m.national.trend >= 0 ? 'theme-success' : 'theme-danger');
+            $('#cardTREG3').removeClass('theme-success theme-danger')
+                .addClass(m.TREG3.trend >= 0 ? 'theme-success' : 'theme-danger');
             
             // UPDATE: Isi data statistik detail baru
-            $('#valOfferings').text(m.national.offerings);
-            $('#valVisited').text(`${m.national.visited}/${m.national.total_customers}`);
-            $('#valWins').text(m.national.wins);
-            $('#valLoses').text(m.national.loses);
+            $('#valOfferings').text(m.TREG3.offerings);
+            $('#valVisited').text(`${m.TREG3.visited}/${m.TREG3.total_customers}`);
+            $('#valWins').text(m.TREG3.wins);
+            $('#valLoses').text(m.TREG3.loses);
         }
 
         // 2. Witel Champion

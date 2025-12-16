@@ -276,7 +276,7 @@ class HighFiveAMPerformanceController extends Controller
             $stats['sum_result_2'] += $row['result_2'];
             if ($row['progress_2'] > 0) $stats['active_ams']++;
 
-            // Accumulate National Stats
+            // Accumulate TREG3 Stats
             $amStats = $row['stats'] ?? [];
             $stats['total_offerings'] += $amStats['offerings'] ?? 0;
             $stats['total_customers'] += $amStats['total_customers'] ?? 0;
@@ -349,8 +349,8 @@ class HighFiveAMPerformanceController extends Controller
 
         // 4. Siapkan 5 Metriks
         $metrics = [
-            'national' => [
-                'label' => 'National Pulse',
+            'TREG3' => [
+                'label' => 'TREG3 Pulse',
                 'value' => number_format($avgProg2, 1) . '%',
                 'sub_label' => 'Avg Progress',
                 'trend' => $deltaProg,
@@ -395,15 +395,15 @@ class HighFiveAMPerformanceController extends Controller
             ? ($stats['total_wins'] / ($stats['total_wins'] + $stats['total_loses'])) * 100 
             : 0;
 
-        // 1. INSIGHT NATIONAL
+        // 1. INSIGHT TREG3
         $trendColor = $deltaProg >= 0 ? 'text-green-600' : 'text-red-600';
         $trendIcon = $deltaProg >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
         $trendSign = $deltaProg >= 0 ? '+' : '';
         
-        $insightNational = "
+        $insightTREG3 = "
             <div style='margin-bottom: 16px;'>
-                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0 0 4px 0;'>National Overview</h4>
-                <p style='font-size:12px; color:#64748b; margin:0;'>Snapshot performa nasional saat ini.</p>
+                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0 0 4px 0;'>TREG3 Overview</h4>
+                <p style='font-size:12px; color:#64748b; margin:0;'>Snapshot performa TREG3 saat ini.</p>
             </div>
 
             <div class='insight-metrics-grid'>
@@ -437,7 +437,7 @@ class HighFiveAMPerformanceController extends Controller
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-info-circle'></i> Analisis & Rekomendasi</div>
                 <p class='insight-narrative-text'>
-                    Secara nasional, tren performa bergerak <strong>" . ($deltaProg >= 0 ? "positif" : "negatif") . "</strong>. 
+                    Secara TREG3, tren performa bergerak <strong>" . ($deltaProg >= 0 ? "positif" : "negatif") . "</strong>. 
                     Tingkat konversi (Win Rate) berada di angka <strong>" . number_format($winRate, 1) . "%</strong>. 
                     Fokus utama minggu ini adalah meningkatkan partisipasi AM yang masih pasif dan mengawal " . number_format($stats['total_offerings']) . " offerings yang sedang berjalan.
                 </p>
@@ -475,7 +475,7 @@ class HighFiveAMPerformanceController extends Controller
                 <div class='insight-narrative-title'><i class='fas fa-check-circle'></i> Key Success Factor</div>
                 <p class='insight-narrative-text'>
                     Witel {$mostWitel['name']} berhasil memimpin dengan konsistensi input yang tinggi. 
-                    Gap positif sebesar <strong>+" . number_format($mostWitel['avg_progress'] - $avgProg2, 1) . "%</strong> di atas rata-rata nasional menunjukkan manajemen pipeline yang sangat sehat.
+                    Gap positif sebesar <strong>+" . number_format($mostWitel['avg_progress'] - $avgProg2, 1) . "%</strong> di atas rata-rata TREG3 menunjukkan manajemen pipeline yang sangat sehat.
                 </p>
             </div>";
 
@@ -497,7 +497,7 @@ class HighFiveAMPerformanceController extends Controller
                     <span class='insight-metric-sub'>Lowest Rank</span>
                 </div>
                 <div class='insight-metric-item im-warning'>
-                    <span class='insight-metric-label'>Gap to National</span>
+                    <span class='insight-metric-label'>Gap to TREG3</span>
                     <span class='insight-metric-value'>-{$gapMinus}%</span>
                     <span class='insight-metric-sub'>Difference</span>
                 </div>
@@ -597,7 +597,7 @@ class HighFiveAMPerformanceController extends Controller
             </div>";
 
         $insightsData = [
-            'national' => $insightNational,
+            'TREG3' => $insightTREG3,
             'most_witel' => $insightMost,
             'least_witel' => $insightLeast,
             'top_am' => $insightAM,
