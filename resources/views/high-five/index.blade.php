@@ -446,16 +446,16 @@
 </div>
 
 <!-- MODAL: Kelola Link Spreadsheet (NEW) -->
-<div id="linkModal" class="modal-overlay" style="display: none;">
-    <div class="modal-container">
-        <div class="modal-header">
+<div id="linkModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeLinkModal();">
+    <div class="modal-container" style="display: flex; flex-direction: column; max-height: 90vh;">
+        <div class="modal-header" style="position: sticky; top: 0; z-index: 10; background: white; border-bottom: 2px solid var(--gray-200);">
             <h3><i class="fas fa-cog"></i> Kelola Link Spreadsheet</h3>
             <button class="modal-close" onclick="closeLinkModal()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body" style="overflow-y: auto; flex: 1;">
             <!-- Existing Links -->
             <div class="modal-section">
                 <h4><i class="fas fa-link"></i> Link Tersedia</h4>
@@ -2023,6 +2023,230 @@ $(document).ready(function() {
 
         window.location.href = "{{ route('high-five.report.download') }}?snapshot_1_id=" + selectedSnapshot1 + "&snapshot_2_id=" + selectedSnapshot2;
     });
+
+    // ================================
+    // MODAL MANAGEMENT FOR SNAPSHOTS
+    // ================================
+
+    window.openLinkModal = function() {
+        $('#linkModal').fadeIn(300);
+        loadExistingLinks();
+        
+        // Add ESC key handler
+        $(document).on('keydown.modal', function(e) {
+            if (e.key === 'Escape') {
+                closeLinkModal();
+            }
+        });
+    };
+
+    window.closeLinkModal = function() {
+        $('#linkModal').fadeOut(300);
+        // Remove ESC key handler
+        $(document).off('keydown.modal');
+    };
+
+    function loadExistingLinks() {
+        $.get('/high-five/available-links', function(response) {
+            if (response.success) {
+                const links = response.data;
+                let html = '';
+
+                if (links.length === 0) {
+                    html = '<p style="text-align: center; color: var(--gray-500); padding: 20px;">Belum ada link tersimpan</p>';
+                } else {
+                    links.forEach(link => {
+                        const linkUrl = link.link || 'URL tidak tersedia';
+                        const displayUrl = linkUrl.length > 50 ? linkUrl.substring(0, 50) + '...' : linkUrl;
+
+                        html += `
+                            <div class="link-item-wrapper" id="link-wrapper-${link.id}" style="margin-bottom: 16px; background: var(--white); border: 2px solid var(--gray-200); border-radius: 12px; overflow: hidden;">
+                                <div class="link-item" style="padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="link-info" style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                        <span class="link-divisi" style="font-size: 15px; font-weight: 700; color: var(--telkom-red);">${link.divisi_name || 'Unknown'}</span>
+                                        <span class="link-url" style="font-size: 12px; color: var(--gray-600); font-family: monospace;">${displayUrl}</span>
+                                        <span class="link-meta" style="font-size: 11px; color: var(--gray-500);">${link.total_snapshots || 0} snapshots | Last: ${link.last_fetched || 'Never'}</span>
+                                    </div>
+                                    <div class="link-actions" style="display: flex; gap: 10px; align-items: center;">
+                                        <button class="btn-link-edit" onclick="editLink(${link.id}, '${linkUrl.replace(/'/g, "\\'")}')" title="Edit Link" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-link-toggle" onclick="toggleSnapshots(${link.id})" title="Lihat Snapshots" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-400); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-chevron-down" id="toggle-icon-${link.id}"></i>
+                                        </button>
+                                        <button class="btn-link-delete" onclick="deleteLink(${link.id})" title="Hapus Link" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="snapshots-container" id="snapshots-${link.id}" style="display: none; padding: 0 22px 18px 22px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-top: 2px solid var(--gray-200);">
+                                    <div class="snapshots-loading" style="text-align: center; padding: 24px; color: var(--gray-500); font-size: 13px;">
+                                        <i class="fas fa-spinner fa-spin" style="margin-right: 8px; color: var(--telkom-red);"></i> Loading snapshots...
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                $('#existingLinksContainer').html(html);
+            }
+        }).fail(function(xhr) {
+            $('#existingLinksContainer').html('<p style="text-align: center; color: var(--error); padding: 20px;">Gagal memuat data link</p>');
+        });
+    }
+
+    window.toggleSnapshots = function(linkId) {
+        const container = $(`#snapshots-${linkId}`);
+        const icon = $(`#toggle-icon-${linkId}`);
+        
+        if (container.is(':visible')) {
+            container.slideUp(300);
+            icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        } else {
+            if (container.find('.snapshots-loading').length > 0) {
+                loadSnapshotsForLink(linkId);
+            }
+            container.slideDown(300);
+            icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+        }
+    };
+
+    function loadSnapshotsForLink(linkId) {
+        $.get(`/high-five/settings/snapshots/${linkId}`, function(response) {
+            if (response.success) {
+                const snapshots = response.data;
+                let html = '';
+
+                if (snapshots.length === 0) {
+                    html = '<p style="text-align: center; color: var(--gray-500); padding: 12px;">Belum ada snapshot</p>';
+                } else {
+                    html = '<div class="snapshots-list" style="display: flex; flex-direction: column; gap: 12px;">';
+                    snapshots.forEach(snapshot => {
+                        const statusColor = snapshot.status_color === 'green' ? 'var(--success)' : 'var(--error)';
+                        html += `
+                            <div class="snapshot-item" style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="snapshot-info" style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas ${snapshot.status_icon}" style="color: ${statusColor};"></i>
+                                        <span class="snapshot-date" style="font-size: 14px; font-weight: 700; color: var(--gray-800);">${snapshot.snapshot_date_formatted}</span>
+                                    </div>
+                                    <div class="snapshot-stats" style="display: flex; gap: 10px; font-size: 11px; color: var(--gray-600); flex-wrap: wrap;">
+                                        <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_rows} rows</span>
+                                        <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_ams} AMs</span>
+                                        <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_customers} customers</span>
+                                        <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_products} products</span>
+                                    </div>
+                                    <span class="snapshot-fetched" style="font-size: 10px; color: var(--gray-500); font-style: italic;">Fetched: ${snapshot.fetched_at}</span>
+                                </div>
+                                <div class="snapshot-actions" style="display: flex; gap: 8px;">
+                                    <button class="btn-snapshot-edit" onclick="editSnapshotDate(${snapshot.id}, '${snapshot.snapshot_date}', ${linkId})" title="Edit Tanggal" style="width: 36px; height: 36px; border-radius: 6px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </button>
+                                    <button class="btn-snapshot-delete" onclick="deleteSnapshot(${snapshot.id}, ${linkId})" title="Hapus Snapshot" style="width: 36px; height: 36px; border-radius: 6px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+
+                $(`#snapshots-${linkId}`).html(html);
+            }
+        }).fail(function(xhr) {
+            $(`#snapshots-${linkId}`).html('<p style="text-align: center; color: var(--error); padding: 12px;">Gagal memuat snapshots</p>');
+        });
+    }
+
+    window.editSnapshotDate = function(snapshotId, currentDate, linkId) {
+        const newDate = prompt('Edit Tanggal Snapshot (YYYY-MM-DD):', currentDate);
+        if (newDate && newDate !== currentDate) {
+            $.ajax({
+                url: `/high-five/settings/snapshot/${snapshotId}/update-date`,
+                method: 'POST',
+                data: {
+                    snapshot_date: newDate,
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PUT'
+                },
+                success: function(response) {
+                    showAlert('success', 'Berhasil!', response.message);
+                    loadSnapshotsForLink(linkId);
+                    loadAvailableLinks();
+                },
+                error: function(xhr) {
+                    showAlert('error', 'Error!', xhr.responseJSON?.message || 'Gagal update tanggal');
+                }
+            });
+        }
+    };
+
+    window.deleteSnapshot = function(snapshotId, linkId) {
+        if (confirm('Hapus snapshot ini?')) {
+            $.ajax({
+                url: `/high-five/settings/snapshot/${snapshotId}`,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
+                success: function(response) {
+                    showAlert('success', 'Berhasil!', response.message);
+                    loadSnapshotsForLink(linkId);
+                    loadAvailableLinks();
+                },
+                error: function(xhr) {
+                    showAlert('error', 'Error!', xhr.responseJSON?.message || 'Gagal menghapus snapshot');
+                }
+            });
+        }
+    };
+
+    window.editLink = function(linkId, currentUrl) {
+        const newUrl = prompt('Edit Link Spreadsheet:', currentUrl);
+        if (newUrl && newUrl !== currentUrl) {
+            $.ajax({
+                url: `/high-five/settings/update/${linkId}`,
+                method: 'POST',
+                data: {
+                    link_spreadsheet: newUrl,
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PUT'
+                },
+                success: function(response) {
+                    showAlert('success', 'Berhasil!', response.message);
+                    loadExistingLinks();
+                    loadAvailableLinks();
+                },
+                error: function(xhr) {
+                    showAlert('error', 'Error!', xhr.responseJSON?.message || 'Gagal update link');
+                }
+            });
+        }
+    };
+
+    window.deleteLink = function(linkId) {
+        if (confirm('Hapus link ini? Snapshots akan tetap tersimpan.')) {
+            $.ajax({
+                url: `/high-five/settings/delete/${linkId}`,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
+                success: function(response) {
+                    showAlert('success', 'Berhasil!', response.message);
+                    loadExistingLinks();
+                    loadAvailableLinks();
+                },
+                error: function(xhr) {
+                    showAlert('error', 'Error!', xhr.responseJSON?.message || 'Gagal menghapus link');
+                }
+            });
+        }
+    };
 });
 </script>
 </div><!-- End .highfive-main-content -->

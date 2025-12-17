@@ -104,42 +104,23 @@ class HighFiveSettingsController extends Controller
             ], 422);
         }
 
-        DB::beginTransaction();
-
         try {
-            // 1. Create dataset link
+            // Create dataset link (NO auto-fetch)
             $link = DatasetLink::create([
                 'divisi_id' => $request->divisi_id,
                 'link_spreadsheet' => $request->link_spreadsheet,
                 'is_active' => true,
             ]);
 
-            // 2. Fetch data immediately (auto date)
-            $fetchResult = $this->fetchAndStoreSnapshot($link, null);
-
-            if (!$fetchResult['success']) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Link berhasil disimpan tetapi gagal fetch data: ' . $fetchResult['message']
-                ], 500);
-            }
-
-            DB::commit();
-
             return response()->json([
                 'success' => true,
-                'message' => 'Link berhasil disimpan dan data berhasil di-fetch!',
+                'message' => 'Link berhasil disimpan! Gunakan "Simpan Data" untuk membuat snapshot.',
                 'data' => [
                     'link_id' => $link->id,
-                    'snapshot_id' => $fetchResult['snapshot_id'],
-                    'snapshot_date' => $fetchResult['snapshot_date'],
-                    'total_rows' => $fetchResult['total_rows'],
                 ]
             ]);
 
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan link: ' . $e->getMessage()
@@ -221,6 +202,131 @@ class HighFiveSettingsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus link: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get all snapshots for a specific link
+     */
+    public function getSnapshotsForLink($linkId)
+    {
+        try {
+            $snapshots = SpreadsheetSnapshot::where('dataset_link_id', $linkId)
+                ->orderBy('snapshot_date', 'desc')
+                ->get()
+                ->map(function ($snapshot) {
+                    return [
+                        'id' => $snapshot->id,
+                        'snapshot_date' => $snapshot->snapshot_date->format('Y-m-d'),
+                        'snapshot_date_formatted' => $snapshot->formatted_date,
+                        'total_rows' => $snapshot->total_rows,
+                        'total_ams' => $snapshot->total_ams,
+                        'total_customers' => $snapshot->total_customers,
+                        'total_products' => $snapshot->total_products,
+                        'fetch_status' => $snapshot->fetch_status,
+                        'status_color' => $snapshot->status_color,
+                        'status_icon' => $snapshot->status_icon,
+                        'fetched_at' => $snapshot->fetched_at->locale('id')->isoFormat('DD MMM YYYY HH:mm'),
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => $snapshots,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil snapshots: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update snapshot date
+     */
+    public function updateSnapshotDate(Request $request, $snapshotId)
+    {
+        $validator = Validator::make($request->all(), [
+            'snapshot_date' => 'required|date',
+        ], [
+            'snapshot_date.required' => 'Tanggal harus diisi',
+            'snapshot_date.date' => 'Format tanggal tidak valid',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $snapshot = SpreadsheetSnapshot::findOrFail($snapshotId);
+            
+            // Check for duplicate date in same divisi
+            $duplicate = SpreadsheetSnapshot::where('divisi_id', $snapshot->divisi_id)
+                ->where('snapshot_date', $request->snapshot_date)
+                ->where('id', '!=', $snapshotId)
+                ->exists();
+
+            if ($duplicate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tanggal ini sudah ada untuk divisi yang sama'
+                ], 422);
+            }
+
+            $snapshot->update([
+                'snapshot_date' => $request->snapshot_date
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tanggal snapshot berhasil diupdate!',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal update tanggal: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete individual snapshot
+     */
+    public function deleteSnapshot($snapshotId)
+    {
+        try {
+            $snapshot = SpreadsheetSnapshot::findOrFail($snapshotId);
+            $linkId = $snapshot->dataset_link_id;
+            
+            $snapshot->delete();
+
+            // Update link's total_snapshots count if link still exists
+            if ($linkId) {
+                $link = DatasetLink::find($linkId);
+                if ($link) {
+                    $link->update([
+                        'total_snapshots' => $link->snapshots()->count()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Snapshot berhasil dihapus!',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus snapshot: ' . $e->getMessage()
             ], 500);
         }
     }

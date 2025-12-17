@@ -117,12 +117,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // CRUD Operations for Dataset Links
             Route::post('/store', [HighFiveSettingsController::class, 'store'])->name('store');
             Route::put('/update/{id}', [HighFiveSettingsController::class, 'update'])->name('update');
-            Route::delete('/delete/{id}', [HighFiveSettingsController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id}', [HighFiveSettingsController::class, 'delete'])->name('delete');
 
             // Fetch Operations
             Route::post('/fetch-now/{id}', [HighFiveSettingsController::class, 'fetchNow'])->name('fetch-now');
             Route::get('/history/{id}', [HighFiveSettingsController::class, 'history'])->name('history');
             Route::post('/retry-snapshot/{id}', [HighFiveSettingsController::class, 'retrySnapshot'])->name('retry-snapshot');
+            
+            // Snapshot Management
+            Route::get('/snapshots/{linkId}', [HighFiveSettingsController::class, 'getSnapshotsForLink'])->name('snapshots');
+            Route::put('/snapshot/{snapshotId}/update-date', [HighFiveSettingsController::class, 'updateSnapshotDate'])->name('snapshot.update-date');
+            Route::delete('/snapshot/{snapshotId}', [HighFiveSettingsController::class, 'deleteSnapshot'])->name('snapshot.delete');
         });
 
         // ===== DEPRECATED ROUTES (Kept for backward compatibility) =====
