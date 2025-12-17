@@ -839,8 +839,8 @@ main.main-content,
 }
 
 .sq-value {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 900;
     color: #1e293b;
     line-height: 1.2;
     margin-bottom: 4px;
@@ -951,7 +951,7 @@ main.main-content,
     justify-content: space-between;
     /* Space between elements */
     text-align: left;
-    padding: 28px 32px;
+    padding: 28px 28px;
     position: relative;
     min-height: 140px;
 }
@@ -987,8 +987,8 @@ main.main-content,
 
 /* Main highlighted value (name) */
 .card-horizontal .sq-value {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     color: #1e293b;
     line-height: 1.2;
     margin: auto 0;
@@ -1011,7 +1011,7 @@ main.main-content,
 
 /* Additional info at bottom */
 .card-horizontal .sq-sub {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     padding: 4px 12px;
     /* Add padding */

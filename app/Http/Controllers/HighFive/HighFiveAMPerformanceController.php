@@ -391,7 +391,7 @@ class HighFiveAMPerformanceController extends Controller
 
         // 5. Generate Detailed Insights HTML
         $winRate = $stats['total_offerings'] > 0 ? ($stats['total_wins'] / $stats['total_offerings']) * 100 : 0;
-        $conversionRate = ($stats['total_wins'] + $stats['total_loses']) > 0 
+        $winRate = ($stats['total_wins'] + $stats['total_loses']) > 0 
             ? ($stats['total_wins'] / ($stats['total_wins'] + $stats['total_loses'])) * 100 
             : 0;
 
@@ -417,16 +417,7 @@ class HighFiveAMPerformanceController extends Controller
                     <span class='insight-metric-value'>{$trendSign}" . number_format($deltaProg, 2) . "%</span>
                     <span class='insight-metric-sub'>vs Last Period</span>
                 </div>
-                <div class='insight-metric-item im-warning'>
-                    <span class='insight-metric-label'>Win Rate</span>
-                    <span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span>
-                    <span class='insight-metric-sub'>From Offerings</span>
-                </div>
-                <div class='insight-metric-item'>
-                    <span class='insight-metric-label'>Total Wins</span>
-                    <span class='insight-metric-value'>" . number_format($stats['total_wins']) . "</span>
-                    <span class='insight-metric-sub'>Deals Closed</span>
-                </div>
+
                  <div class='insight-metric-item'>
                     <span class='insight-metric-label'>Participation</span>
                     <span class='insight-metric-value'>" . number_format(($stats['active_ams'] / $total) * 100, 0) . "%</span>
@@ -559,7 +550,7 @@ class HighFiveAMPerformanceController extends Controller
         $salesWitel = $topWinAM['witel'] ?? '-';
         $winCount = $topWinAM['stats']['win'] ?? 0;
         $offerCount = $topWinAM['stats']['offerings'] ?? 0;
-        $conversionSales = $offerCount > 0 ? ($winCount/$offerCount)*100 : 0;
+        $winSales = $offerCount > 0 ? ($winCount/$offerCount)*100 : 0;
 
         $insightTopSales = "
             <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
@@ -582,8 +573,8 @@ class HighFiveAMPerformanceController extends Controller
                     <span class='insight-metric-sub'>Total Proposed</span>
                 </div>
                 <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>Conversion Rate</span>
-                    <span class='insight-metric-value'>" . number_format($conversionSales, 0) . "%</span>
+                    <span class='insight-metric-label'>win Rate</span>
+                    <span class='insight-metric-value'>" . number_format($winSales, 0) . "%</span>
                     <span class='insight-metric-sub'>Win / Offerings</span>
                 </div>
             </div>

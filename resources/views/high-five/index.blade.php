@@ -289,13 +289,13 @@
                                         <span id="valProdOfferings" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">VISITED ROWS</span>
+                                        <span style="color: #64748b; display: block; font-size: 10px;">PROPOSED PRODUCTS</span>
                                         <span id="valProdVisited" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
                                     <div style="text-align: left;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">UNIQUE CC</span>
+                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL CC</span>
                                         <span id="valUniqueCC" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                     <div style="text-align: right;">
@@ -308,28 +308,28 @@
 
                         <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardStagnancy" onclick="showMetricInsight('stagnancy')" data-insight="stagnancy">
                             <div class="sq-icon"><i class="fas fa-anchor"></i></div>
-                            <div class="sq-label">Stagnant Percentage</div>
+                            <div class="sq-label">Stagnant Offering</div>
                             <div class="sq-value" id="metricStagnantValue">-</div>
                             <div class="sq-sub" id="metricStagnantStat">-</div>
                         </div>
 
-                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardConversion" onclick="showMetricInsight('conversion')" data-insight="conversion">
+                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardwin" onclick="showMetricInsight('win')" data-insight="win">
                             <div class="sq-icon"><i class="fas fa-percent"></i></div>
-                            <div class="sq-label">Conversion Rate</div>
-                            <div class="sq-value" id="metricConversionValue">-</div>
-                            <div class="sq-sub" id="metricConversionStat">-</div>
+                            <div class="sq-label">win Rate</div>
+                            <div class="sq-value" id="metricwinValue">-</div>
+                            <div class="sq-sub" id="metricwinStat">-</div>
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardWinOffer" onclick="showMetricInsight('win_offerings')" data-insight="win_offerings">
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
-                            <div class="sq-label">Total Win / Offerings</div>
+                            <div class="sq-label">Top Selling Product</div>
                             <div class="sq-value" id="metricWinOfferValue">-</div>
                             <div class="sq-sub" id="metricWinOfferStat">-</div>
                         </div>
 
                         <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardCompleted" onclick="showMetricInsight('completed')" data-insight="completed">
                             <div class="sq-icon"><i class="fas fa-check-double"></i></div>
-                            <div class="sq-label">Completed (100% Prog)</div>
+                            <div class="sq-label">Submit SPH</div>
                             <div class="sq-value" id="metricCompletedValue">-</div>
                             <div class="sq-sub" id="metricCompletedStat">-</div>
                         </div>
@@ -1351,10 +1351,10 @@ $(document).ready(function() {
                 .addClass(m.stagnancy.trend < 0 ? 'theme-danger' : 'theme-warning');
         }
 
-        // --- RENDER KARTU 3: CONVERSION RATE ---
-        if(m.conversion) {
-            $('#metricConversionValue').text(m.conversion.value);
-            $('#metricConversionStat').text(m.conversion.main_stat);
+        // --- RENDER KARTU 3: win RATE ---
+        if(m.win) {
+            $('#metricwinValue').text(m.win.value);
+            $('#metricwinStat').text(m.win.main_stat);
         }
 
         // --- RENDER KARTU 4: WIN / OFFERINGS ---
