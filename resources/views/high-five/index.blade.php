@@ -268,50 +268,73 @@
             </div>
 
             <div id="productLevelContent" class="tab-content">
-               <div class="stats-grid">
-                    <div class="stat-card visited">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>CC Visited</h4>
-                        <div class="stat-value" id="visitedValue">-</div>
-                        <span class="stat-label" id="visitedPercentage">-</span>
+               <div class="cards-section">
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Product Performance Highlights</h4>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">Overview & Product Key Metrics</p>
                     </div>
-                    <div class="stat-card no-progress">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h4>AM No Progress</h4>
-                        <div class="stat-value" id="noProgressValue">-</div>
-                        <span class="stat-label">Account Managers</span>
-                    </div>
-                    <div class="stat-card stagnation">
-                        <i class="fas fa-anchor"></i>
-                        <h4>Stagnant Offers</h4>
-                        <div class="stat-value" id="stagnantValue">-</div>
-                        <span class="stat-label" id="stagnantLabel">No movement</span>
-                    </div>
-                    <div class="stat-card products">
-                        <i class="fas fa-box-open"></i>
-                        <h4>Total Products</h4>
-                        <div class="stat-value" id="totalProductsValue">-</div>
-                        <span class="stat-label">Produk ditawarkan</span>
+
+                    <div class="cards-grid-3-cols">
+                        
+                        <div class="metric-sq-card card-tall theme-primary clickable-card" id="cardProdPulse" onclick="showMetricInsight('prod_pulse')" data-insight="prod_pulse">
+                            <div class="sq-icon"><i class="fas fa-boxes"></i></div>
+                            <div class="sq-label" style="font-size: 14px;">Product Proposed Rate</div>
+                            <div class="sq-stat" id="metricProdPulseValue" style="margin-bottom: 0;">-</div>
+                            <div class="sq-sub" id="metricProdPulseSub" style="margin-bottom: 8px;">-</div>
+
+                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
+                                    <div style="text-align: left;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL OFFERINGS</span>
+                                        <span id="valProdOfferings" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">VISITED ROWS</span>
+                                        <span id="valProdVisited" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
+                                    <div style="text-align: left;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">UNIQUE CC</span>
+                                        <span id="valUniqueCC" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="color: #64748b; display: block; font-size: 10px;">UNIQUE PRODUCTS</span>
+                                        <span id="valUniqueProd" style="font-weight: 700; color: #1e293b;">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardStagnancy" onclick="showMetricInsight('stagnancy')" data-insight="stagnancy">
+                            <div class="sq-icon"><i class="fas fa-anchor"></i></div>
+                            <div class="sq-label">Stagnant Percentage</div>
+                            <div class="sq-value" id="metricStagnantValue">-</div>
+                            <div class="sq-sub" id="metricStagnantStat">-</div>
+                        </div>
+
+                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardConversion" onclick="showMetricInsight('conversion')" data-insight="conversion">
+                            <div class="sq-icon"><i class="fas fa-percent"></i></div>
+                            <div class="sq-label">Conversion Rate</div>
+                            <div class="sq-value" id="metricConversionValue">-</div>
+                            <div class="sq-sub" id="metricConversionStat">-</div>
+                        </div>
+
+                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardWinOffer" onclick="showMetricInsight('win_offerings')" data-insight="win_offerings">
+                            <div class="sq-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="sq-label">Total Win / Offerings</div>
+                            <div class="sq-value" id="metricWinOfferValue">-</div>
+                            <div class="sq-sub" id="metricWinOfferStat">-</div>
+                        </div>
+
+                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardCompleted" onclick="showMetricInsight('completed')" data-insight="completed">
+                            <div class="sq-icon"><i class="fas fa-check-double"></i></div>
+                            <div class="sq-label">Completed (100% Prog)</div>
+                            <div class="sq-value" id="metricCompletedValue">-</div>
+                            <div class="sq-sub" id="metricCompletedStat">-</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="narrative-section" style="margin-bottom: 20px;">
-                    <div class="narrative-header" onclick="toggleProductNarrative()">
-                        <h4><i class="fas fa-chart-pie"></i> Analisis Product Level</h4>
-                        <i class="fas fa-chevron-down narrative-toggle" id="productNarrativeToggle"></i>
-                    </div>
-                    <div class="narrative-body" id="productNarrativeBody">
-                        <div class="narrative-paragraph">
-                            <h5>Statistik Kunjungan</h5>
-                            <p id="productNarrativeVisited">-</p>
-                        </div>
-                        <div class="narrative-paragraph conclusion">
-                            <h5>Progress Analysis</h5>
-                            <p id="productNarrativeProgress">-</p>
-                        </div>
-                    </div>
-                </div>
-
 
                 <div class="product-tabs-container">
                     <div class="product-tabs-navigation">
@@ -1293,34 +1316,72 @@ $(document).ready(function() {
     // ================================
 
     function renderProductPerformance(data) {
+        // 1. Set Labels Dataset
         $('#dataset1DateProduct, #dataset1ResultProduct').text(data.snapshot_1.tanggal_formatted);
         $('#dataset2DateProduct, #dataset2ResultProduct').text(data.snapshot_2.tanggal_formatted);
 
-        // Update statistics (COMPACT)
-        const stats = data.statistics;
-        const visitedCount = stats.visited_customers;
-        const totalCount = stats.total_customers;
-        $('#visitedValue').text(`${visitedCount}/${totalCount}`);
-        $('#visitedPercentage').text(`${stats.visited_percentage.toFixed(1)}% dari total`);
-        $('#noProgressValue').text(stats.am_no_progress);
-        $('#totalProductsValue').text(stats.total_products);
+        // 2. Ambil data metrics baru dari Controller
+        const m = data.product_analysis.metrics;
+        
+        // Simpan insights product ke variable global agar Modal bisa membacanya
+        // Kita merge dengan insight AM agar tidak saling menimpa jika user switch tab
+        if (data.product_analysis.insights_data) {
+            globalInsightsData = { ...globalInsightsData, ...data.product_analysis.insights_data };
+        }
 
-        // Generate narrative WITH BOLD
-        const visitedText = `Dari ${totalCount} Corporate Customer, sebanyak <strong>${visitedCount} CC</strong> (<strong>${stats.visited_percentage.toFixed(1)}%</strong>) telah divisit dan dipropose produk High Five.`;
-        const progressText = `Terdapat <strong>${stats.am_no_progress} Account Manager</strong> yang belum menunjukkan progress sama sekali. Total <strong>${stats.total_products} produk</strong> ditawarkan kepada customer.`;
+        // --- RENDER KARTU 1: PRODUCTIVITY PULSE (TALL CARD) ---
+        if(m.prod_pulse) {
+            $('#metricProdPulseValue').text(m.prod_pulse.value);
+            $('#metricProdPulseSub').text(m.prod_pulse.trend_text);
+            
+            // Detail statistik kecil di dalam kartu
+            $('#valProdOfferings').text(m.prod_pulse.total_offerings);
+            $('#valProdVisited').text(m.prod_pulse.visited_count);
+            $('#valUniqueCC').text(m.prod_pulse.unique_cc);
+            $('#valUniqueProd').text(m.prod_pulse.unique_products);
+        }
+
+        // --- RENDER KARTU 2: STAGNANCY ---
+        if(m.stagnancy) {
+            $('#metricStagnantValue').text(m.stagnancy.value);
+            $('#metricStagnantStat').text(m.stagnancy.main_stat);
+            
+            // Warna warning jika stagnant tinggi
+            $('#cardStagnancy').removeClass('theme-success theme-warning theme-danger')
+                .addClass(m.stagnancy.trend < 0 ? 'theme-danger' : 'theme-warning');
+        }
+
+        // --- RENDER KARTU 3: CONVERSION RATE ---
+        if(m.conversion) {
+            $('#metricConversionValue').text(m.conversion.value);
+            $('#metricConversionStat').text(m.conversion.main_stat);
+        }
+
+        // --- RENDER KARTU 4: WIN / OFFERINGS ---
+        if(m.win_offerings) {
+            $('#metricWinOfferValue').text(m.win_offerings.value);
+            $('#metricWinOfferStat').text(m.win_offerings.main_stat);
+        }
+
+        // --- RENDER KARTU 5: COMPLETED ---
+        if(m.completed) {
+            $('#metricCompletedValue').text(m.completed.value);
+            $('#metricCompletedStat').text(m.completed.main_stat);
+        }
+
+        // --- UPDATE NARRATIVE (Opsional, sesuaikan dengan data baru jika perlu) ---
+        // Gunakan data dari m.prod_pulse atau m.stagnancy untuk narrative text
+        const visitedText = `Dari <strong>${m.prod_pulse.total_offerings}</strong> offerings, sebanyak <strong>${m.prod_pulse.visited_count}</strong> (<strong>${m.prod_pulse.value}</strong>) telah divisit.`;
+        const progressText = `Terdapat <strong>${m.stagnancy.main_stat}</strong> (${m.stagnancy.value}) yang tidak mengalami pergerakan sama sekali.`;
+        
         $('#productNarrativeVisited').html(visitedText);
         $('#productNarrativeProgress').html(progressText);
 
-        // Store all product data
+        // --- SISA LOGIKA RENDER TABLE (Tetap Sama) ---
         allProductData = data.products;
-
-        // Populate Witel filter
         populateWitelFilter(data.products);
-
-        // Apply filters and render table
         applyProductFilters();
 
-        // Render leaderboards
         const productLeaderboard = data.product_leaderboard.top_10;
         const productLeaderboardHTML = renderProductLeaderboard(productLeaderboard);
         $('#productLeaderboardTableBody').html(productLeaderboardHTML);

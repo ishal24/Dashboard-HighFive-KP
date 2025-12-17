@@ -25,7 +25,6 @@ class HighFiveProductPerformanceController extends Controller
      */
     public function getProductPerformance(Request $request)
     {
-        // 📄 CHANGED: Validation input
         $validator = Validator::make($request->all(), [
             'snapshot_1_id' => 'required|exists:spreadsheet_snapshots,id',
             'snapshot_2_id' => 'required|exists:spreadsheet_snapshots,id',
@@ -40,11 +39,9 @@ class HighFiveProductPerformanceController extends Controller
         }
 
         try {
-            // 📄 CHANGED: Get snapshots instead of datasets
             $snapshot1 = SpreadsheetSnapshot::with('divisi')->findOrFail($request->snapshot_1_id);
             $snapshot2 = SpreadsheetSnapshot::with('divisi')->findOrFail($request->snapshot_2_id);
 
-            // Validate same divisi
             if ($snapshot1->divisi_id !== $snapshot2->divisi_id) {
                 return response()->json([
                     'success' => false,
@@ -52,7 +49,6 @@ class HighFiveProductPerformanceController extends Controller
                 ], 422);
             }
 
-            // Validate both snapshots are successful
             if ($snapshot1->fetch_status !== 'success' || $snapshot2->fetch_status !== 'success') {
                 return response()->json([
                     'success' => false,
@@ -60,25 +56,19 @@ class HighFiveProductPerformanceController extends Controller
                 ], 422);
             }
 
-            // 📄 CHANGED: Parse JSON data from database instead of fetching from Google Sheets
             $data1 = $snapshot1->parsed_data;
             $data2 = $snapshot2->parsed_data;
 
-            // ✅ PRESERVED: All calculation logic below remains the same
-
-            // Process product performance data
+            // 1. Process product performance data (row-by-row logic)
             $productData = $this->calculateProductPerformance($data1, $data2);
 
-            // Calculate statistics
-            $stats = $this->calculateStatistics($productData, $snapshot1, $snapshot2);
+            // 2. Calculate NEW 5 Metrics & Insights
+            $metricsData = $this->calculateProductMetrics($productData, $snapshot1, $snapshot2);
 
-            // Generate product leaderboard
+            // 3. Generate leaderboards
             $productLeaderboard = $this->generateProductLeaderboard($productData);
-
-            // Generate improvement leaderboard
             $improvementLeaderboard = $this->generateImprovementLeaderboard($productData);
 
-            // 📄 CHANGED: Response structure with snapshot info
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -94,7 +84,8 @@ class HighFiveProductPerformanceController extends Controller
                         'tanggal' => $snapshot2->snapshot_date->format('Y-m-d'),
                         'tanggal_formatted' => $snapshot2->formatted_date,
                     ],
-                    'statistics' => $stats,
+                    // New Metrics Structure
+                    'product_analysis' => $metricsData,
                     'products' => $productData,
                     'product_leaderboard' => $productLeaderboard,
                     'improvement_leaderboard' => $improvementLeaderboard,
@@ -284,68 +275,143 @@ class HighFiveProductPerformanceController extends Controller
         }
     }
 
-    /**
-     * ✅ PRESERVED: Calculate statistics (unchanged)
-     *
-     * 📄 MINOR CHANGE: Use $snapshot instead of $dataset for divisi name
-     */
-    private function calculateStatistics($productData, $snapshot1, $snapshot2)
+    // --- FUNGSI BARU: CALCULATE METRICS & INSIGHTS ---
+    private function calculateProductMetrics($productData, $snapshot1, $snapshot2)
     {
-        $uniqueAMs = [];
+        $totalOfferings = count($productData);
+        $stagnantCount = 0;
+        $visitedCount = 0;
+        $winCount = 0;
+        $completedCount = 0; // Submit SPH / Progress 100%
+        
         $uniqueCustomers = [];
-        $visitedCustomers = [];
-        $amProgress = [];
-        $totalProducts = count($productData);
-        $stagnantCount = 0; // [NEW] Variabel hitung stagnan
+        $uniqueProducts = [];
 
         foreach ($productData as $row) {
-            $am = $row['am'];
-            $customer = $row['customer'] ?? '__EMPTY__'; 
-            $progress2 = $row['progress_2'];
-
-            // [NEW] Logika Stagnan: Jika Change Avg 0 (Tidak ada perubahan progress & result)
+            // 1. Stagnant
             if ($row['change_avg'] == 0) {
                 $stagnantCount++;
             }
 
-            $uniqueAMs[$am] = true;
-
-            if ($customer !== '__EMPTY__') {
-                $uniqueCustomers[$customer] = true;
-                if ($progress2 >= 25) {
-                    $visitedCustomers[$customer] = true;
-                }
+            // 2. Visited (Progress > 0)
+            if ($row['progress_2'] > 0) {
+                $visitedCount++;
             }
 
-            if (!isset($amProgress[$am])) {
-                $amProgress[$am] = false;
+            // 3. Win (Result == 100)
+            if ($row['result_2'] == 100) {
+                $winCount++;
             }
-            if ($progress2 > 0) {
-                $amProgress[$am] = true;
+
+            // 4. Completed / Submit SPH (Progress == 100 atau Result == 100)
+            // Asumsi: Submit SPH adalah progress maksimal
+            if ($row['progress_2'] == 100 || $row['result_2'] == 100) {
+                $completedCount++;
             }
+
+            if (!empty($row['customer'])) $uniqueCustomers[$row['customer']] = true;
+            if (!empty($row['product'])) $uniqueProducts[$row['product']] = true;
         }
 
-        $amNoProgress = array_filter($amProgress, function($hasProgress) {
-            return $hasProgress === false;
-        });
+        // Kalkulasi Persentase
+        $stagnantPct = $totalOfferings > 0 ? ($stagnantCount / $totalOfferings) * 100 : 0;
+        $visitedPct = $totalOfferings > 0 ? ($visitedCount / $totalOfferings) * 100 : 0;
+        $conversionRate = $totalOfferings > 0 ? ($winCount / $totalOfferings) * 100 : 0; // Win Rate
+        
+        // Data untuk 5 Kartu
+        $metrics = [
+            'prod_pulse' => [
+                'value' => number_format($visitedPct, 1) . '%',
+                'label' => 'Total Visited Rate',
+                'trend_text' => 'Dari ' . number_format($totalOfferings) . ' total offerings',
+                'trend' => 1, // Always positive context for visited
+                // Sub-stats untuk Tall Card
+                'total_offerings' => number_format($totalOfferings),
+                'unique_cc' => number_format(count($uniqueCustomers)),
+                'unique_products' => number_format(count($uniqueProducts)),
+                'visited_count' => number_format($visitedCount)
+            ],
+            'stagnancy' => [
+                'value' => number_format($stagnantPct, 1) . '%',
+                'main_stat' => $stagnantCount . ' Stagnant Rows',
+                'trend' => $stagnantPct > 50 ? -1 : 1 // High stagnancy is bad
+            ],
+            'conversion' => [
+                'value' => number_format($conversionRate, 1) . '%',
+                'main_stat' => 'Win Rate (Global)',
+                'trend' => $conversionRate > 0 ? 1 : 0
+            ],
+            'win_offerings' => [
+                'value' => $winCount . ' / ' . $totalOfferings,
+                'main_stat' => 'Wins vs Offerings',
+                'trend' => 1
+            ],
+            'completed' => [
+                'value' => $completedCount,
+                'main_stat' => 'Unique Completed (100%)',
+                'trend' => 1
+            ]
+        ];
 
-        $divisiName = $snapshot2->divisi->kode ?? 'Unknown';
+        // Generate HTML Insights
+        $insights = $this->generateProductInsightsHTML($metrics, $snapshot2->divisi->kode ?? 'RLEGS');
 
         return [
-            'total_ams' => count($uniqueAMs),
-            'total_customers' => count($uniqueCustomers),
-            'total_products' => $totalProducts,
-            'visited_customers' => count($visitedCustomers),
-            'am_no_progress' => count($amNoProgress),
-            // [NEW] Data Stagnation untuk dikirim ke frontend
-            'stagnant_count' => $stagnantCount,
-            'stagnant_percentage' => $totalProducts > 0 ? round(($stagnantCount / $totalProducts) * 100, 1) : 0,
-            
-            'visited_text' => count($visitedCustomers) . '/' . count($uniqueCustomers) . " CC {$divisiName} telah divisit dan dipropose produk High Five",
-            'no_progress_text' => count($amNoProgress) . ' AM belum berprogress',
-            'visited_percentage' => count($uniqueCustomers) > 0
-                ? round((count($visitedCustomers) / count($uniqueCustomers)) * 100, 2)
-                : 0,
+            'metrics' => $metrics,
+            'insights_data' => $insights
+        ];
+    }
+
+    private function generateProductInsightsHTML($metrics, $divisiName)
+    {
+        return [
+            'prod_pulse' => "
+                <h4 class='text-lg font-bold text-gray-800 mb-2'>Productivity Pulse</h4>
+                <p class='mb-3'>Metrik ini mengukur seberapa luas cakupan penetrasi produk terhadap customer yang ditargetkan.</p>
+                <ul class='list-disc pl-5 space-y-1'>
+                    <li>Total baris data unik (AM-CC-Product): <strong>{$metrics['prod_pulse']['total_offerings']}</strong>.</li>
+                    <li>Jumlah yang sudah dikunjungi (Visited): <strong>{$metrics['prod_pulse']['visited_count']}</strong> row.</li>
+                    <li>Mencakup <strong>{$metrics['prod_pulse']['unique_cc']}</strong> Corporate Customer unik.</li>
+                </ul>
+                <div class='mt-3 p-3 bg-blue-50 rounded border border-blue-100 text-sm text-blue-800'>
+                    <strong>Insight:</strong> Semakin tinggi rate ini, semakin aktif AM melakukan penawaran produk ke customer.
+                </div>
+            ",
+            'stagnancy' => "
+                <h4 class='text-lg font-bold text-gray-800 mb-2'>Stagnancy Analysis</h4>
+                <p class='mb-3'>Persentase data yang <strong>tidak mengalami perubahan sama sekali</strong> (Progress & Result tetap) dalam periode ini.</p>
+                <div class='flex items-center gap-4 mb-3'>
+                    <div class='text-3xl font-bold text-red-600'>{$metrics['stagnancy']['value']}</div>
+                    <div class='text-sm text-gray-500'>Stagnant Rate</div>
+                </div>
+                <p>Terdapat <strong>{$metrics['stagnancy']['main_stat']}</strong> yang perlu di-follow up.</p>
+                <div class='mt-3 p-3 bg-yellow-50 rounded border border-yellow-100 text-sm text-yellow-800'>
+                    <strong>Rekomendasi:</strong> Cek tab 'Benchmarking' dan filter 'Avg Progress 0%' untuk menemukan item yang macet.
+                </div>
+            ",
+            'conversion' => "
+                <h4 class='text-lg font-bold text-gray-800 mb-2'>Conversion Rate</h4>
+                <p class='mb-3'>Mengukur efektivitas penawaran produk hingga menjadi WON (Result 100%).</p>
+                <div class='text-2xl font-bold text-green-600 mb-2'>{$metrics['conversion']['value']}</div>
+                <p>Angka ini menunjukkan persentase keberhasilan dari total seluruh offering yang ada di database.</p>
+            ",
+            'win_offerings' => "
+                <h4 class='text-lg font-bold text-gray-800 mb-2'>Win vs Offerings Ratio</h4>
+                <p class='mb-3'>Perbandingan langsung antara jumlah Project WON dengan Total Project yang diajukan.</p>
+                <ul class='list-disc pl-5 space-y-1'>
+                    <li>Total Wins: <strong>" . explode(' / ', $metrics['win_offerings']['value'])[0] . "</strong></li>
+                    <li>Total Offerings: <strong>" . explode(' / ', $metrics['win_offerings']['value'])[1] . "</strong></li>
+                </ul>
+                <div class='mt-3 p-3 bg-gray-50 rounded border border-gray-200 text-sm'>
+                    Gunakan metrik ini untuk melihat volume keberhasilan secara absolut.
+                </div>
+            ",
+            'completed' => "
+                <h4 class='text-lg font-bold text-gray-800 mb-2'>Completed Progress</h4>
+                <p class='mb-3'>Jumlah baris data unik yang telah mencapai tahap akhir (Submit SPH atau Progress 100% / Result 100%).</p>
+                <div class='text-3xl font-bold text-purple-600 mb-2'>{$metrics['completed']['value']}</div>
+                <p>Ini adalah indikator 'Pekerjaan Selesai' atau deal yang sudah closed.</p>
+            "
         ];
     }
 
