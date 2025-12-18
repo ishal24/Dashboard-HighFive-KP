@@ -89,105 +89,103 @@
             </div>
         </div>
 
-        <!-- MANUAL UPDATE HEADER -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="background: #fef3c7; padding: 8px; border-radius: 50%; color: #d97706;">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div>
-                    <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Manual</h5>
-                    <p style="margin: 0; font-size: 12px; color: #64748b;">Update data secara manual (tidak terjadwal)</p>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- MANUAL CONTROLS CONTAINER -->
-        <div style="background: #f8fafc; padding: 16px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; margin-bottom: 12px; transition: all 0.3s;">
-            <div class="toolkit-grid" style="grid-template-columns: 200px 160px 1fr 150px;">
-                <div class="field-group">
-                    <label><i class="fas fa-link"></i> LINK SPREADSHEET</label>
-                    <select id="manualLinkSelect" class="native-select"><option value="">Pilih Link</option></select>
-                </div>
-                <div class="field-group">
-                    <label><i class="fas fa-calendar"></i> TANGGAL DATA</label>
-                    <input type="text" id="manualSnapshotDate" class="native-select" placeholder="Pilih tanggal" readonly>
-                </div>
-                <div class="field-group">
-                    <label style="color: var(--gray-500);"><i class="fas fa-info-circle"></i> INFO LINK</label>
-                    <div style="height: var(--ctrl-h); padding: 0 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); display: flex; align-items: center; background: var(--gray-50);">
-                        <span id="manualLinkInfo" style="font-size: 12px; color: var(--gray-500); font-weight: 500;">Pilih link untuk melihat info</span>
-                    </div>
-                </div>
-                <div class="field-group">
-                    <label style="opacity: 0;">.</label>
-                    <button id="btnSaveManual" class="btn-save-dataset" onclick="saveManualData()">
-                        <i class="fas fa-save"></i> Simpan Data
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEPARATOR -->
-        <div style="border-top: 1px dashed var(--gray-300); margin: 20px 0;"></div>
-
-        <!-- AUTO FETCH SECTION -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="background: #e0f2fe; padding: 8px; border-radius: 50%; color: #0284c7;">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div>
-                    <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Otomatis</h5>
-                    <p style="margin: 0; font-size: 12px; color: #64748b;">Otomatis ambil data sesuai jadwal</p>
-                </div>
-            </div>
+        <!-- UPDATE CONTROLS WRAPPER (SIDE BY SIDE) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
             
-            <!-- Toggle Switch -->
-            <label class="toggle-switch">
-                <input type="checkbox" id="autoFetchToggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div id="autoFetchControls" style="background: #f8fafc; padding: 16px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; margin-bottom: 12px; transition: all 0.3s;">
-            <div class="toolkit-grid" style="grid-template-columns: 1fr 1fr 150px;">
-                <div class="field-group">
-                            <label><i class="fas fa-calendar-day"></i> HARI</label>
-                            <select class="native-select" id="autoFetchDay">
-                                <option value="Monday">Senin</option>
-                                <option value="Tuesday">Selasa</option>
-                                <option value="Wednesday">Rabu</option>
-                                <option value="Thursday">Kamis</option>
-                                <option value="Friday">Jumat</option>
-                                <option value="Saturday">Sabtu</option>
-                                <option value="Sunday">Minggu</option>
-                            </select>
-                </div>
-                <div class="field-group">
-                    <label><i class="fas fa-clock"></i> JAM (WIB)</label>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <div style="position: relative; flex: 1;">
-                            <input type="text" id="autoFetchHour" class="native-select time-input" placeholder="HH" maxlength="2" style="padding-left: 12px; text-align: center;">
-                        </div>
-                        <span style="font-weight: bold; color: #64748b;">:</span>
-                        <div style="position: relative; flex: 1;">
-                            <input type="text" id="autoFetchMinute" class="native-select time-input" placeholder="MM" maxlength="2" style="padding-left: 12px; text-align: center;">
-                        </div>
+            <!-- COLUMN 1: MANUAL UPDATE -->
+            <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; height: 100%;">
+                
+                <!-- HEADER -->
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                    <div style="background: #fef3c7; padding: 8px; border-radius: 50%; color: #d97706;">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div>
+                        <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Manual</h5>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">Update data secara manual</p>
                     </div>
                 </div>
-                <div class="field-group">
-                    <label style="opacity: 0;">Actions</label>
-                    <button id="btnSaveAutoFetch" class="btn-save-dataset" onclick="saveAutoFetchSettings()" style="width: 100%;">
-                        <i class="fas fa-save"></i> Simpan
-                    </button>
+
+                <!-- CONTROLS -->
+                <div class="toolkit-grid" style="grid-template-columns: 2fr 1fr auto; gap: 12px;">
+                    <div class="field-group">
+                        <label><i class="fas fa-link"></i> LINK SPREADSHEET</label>
+                        <select id="manualLinkSelect" class="native-select" style="width: 100%;"><option value="">Pilih Link</option></select>
+                    </div>
+                    <div class="field-group">
+                        <label><i class="fas fa-calendar"></i> TANGGAL DATA</label>
+                        <input type="text" id="manualSnapshotDate" class="native-select" placeholder="Pilih tanggal" readonly style="width: 100%;">
+                    </div>
+                    <div class="field-group">
+                        <label style="opacity: 0;">.</label>
+                        <button id="btnSaveManual" class="btn-save-dataset" onclick="saveManualData()" style="width: 120px;">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 12px; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                <span>Jadwal berikutnya: <strong id="nextRunText">-</strong></span>
+
+            <!-- COLUMN 2: AUTO UPDATE -->
+            <div id="autoFetchControls" style="background: #f8fafc; padding: 20px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; height: 100%; transition: all 0.3s; position: relative;">
+                
+                <!-- HEADER (Inside Box) -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: #e0f2fe; padding: 8px; border-radius: 50%; color: #0284c7;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Otomatis</h5>
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">Ambil data sesuai jadwal</p>
+                        </div>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoFetchToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="toolkit-grid" style="grid-template-columns: 1.5fr 1.5fr 1fr; gap: 10px;">
+                    <div class="field-group">
+                        <label><i class="fas fa-calendar-day"></i> HARI</label>
+                        <select class="native-select" id="autoFetchDay" style="width: 100%;">
+                            <option value="Monday">Senin</option>
+                            <option value="Tuesday">Selasa</option>
+                            <option value="Wednesday">Rabu</option>
+                            <option value="Thursday">Kamis</option>
+                            <option value="Friday">Jumat</option>
+                            <option value="Saturday">Sabtu</option>
+                            <option value="Sunday">Minggu</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label><i class="fas fa-clock"></i> JAM (WIB)</label>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div style="position: relative; flex: 1;">
+                                <input type="text" id="autoFetchHour" class="native-select time-input" placeholder="HH" maxlength="2" style="padding-left: 0; text-align: center;">
+                            </div>
+                            <span style="font-weight: bold; color: #64748b;">:</span>
+                            <div style="position: relative; flex: 1;">
+                                <input type="text" id="autoFetchMinute" class="native-select time-input" placeholder="MM" maxlength="2" style="padding-left: 0; text-align: center;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label style="opacity: 0;">Act</label>
+                        <button id="btnSaveAutoFetch" class="btn-save-dataset" onclick="saveAutoFetchSettings()" style="width: 100%;">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span>Jadwal berikutnya: <strong id="nextRunText">-</strong></span>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -2423,20 +2421,15 @@ $(document).ready(function() {
     });
 
     function updateAutoFetchUI(isActive) {
-        const controls = $('#autoFetchControls');
-        // Revert to disabling the whole container as per user request
+        const inputs = $('#autoFetchDay, #autoFetchHour, #autoFetchMinute, #btnSaveAutoFetch');
+        
         if (isActive) {
-            controls.css({
-                'opacity': '1',
-                'pointer-events': 'auto'
-            });
-            $('#autoFetchDay, #autoFetchHour, #autoFetchMinute').prop('disabled', false);
+            inputs.prop('disabled', false);
+            $('#autoFetchControls').css('opacity', '1');
         } else {
-            controls.css({
-                'opacity': '0.6',
-                'pointer-events': 'none'
-            });
-            $('#autoFetchDay, #autoFetchHour, #autoFetchMinute').prop('disabled', true);
+            inputs.prop('disabled', true);
+            // Optionally dim the inputs container, but NOT the whole box to keep toggle active
+            // Or just rely on the disabled state of inputs which usually grays them out
         }
     }
 
