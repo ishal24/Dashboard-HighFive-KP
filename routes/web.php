@@ -128,6 +128,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/snapshots/{linkId}', [HighFiveSettingsController::class, 'getSnapshotsForLink'])->name('snapshots');
             Route::put('/snapshot/{snapshotId}/update-date', [HighFiveSettingsController::class, 'updateSnapshotDate'])->name('snapshot.update-date');
             Route::delete('/snapshot/{snapshotId}', [HighFiveSettingsController::class, 'deleteSnapshot'])->name('snapshot.delete');
+
+            // Auto Fetch Settings
+            Route::get('/auto-fetch', [HighFiveSettingsController::class, 'getAutoFetchSettings'])->name('auto-fetch.get');
+            Route::post('/auto-fetch', [HighFiveSettingsController::class, 'saveAutoFetchSettings'])->name('auto-fetch.save');
+            Route::get('/check-auto-fetch', [HighFiveSettingsController::class, 'checkAutoFetch'])->name('auto-fetch.check');
         });
 
         // ===== DEPRECATED ROUTES (Kept for backward compatibility) =====

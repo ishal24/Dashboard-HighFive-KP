@@ -642,4 +642,192 @@ class HighFiveSettingsController extends Controller
         // Otherwise, get last Friday
         return $now->previous(Carbon::FRIDAY)->toDateString();
     }
+
+    /**
+     * Get Auto Fetch Settings
+     */
+    public function getAutoFetchSettings()
+    {
+        $day = \App\Models\Setting::where('key', 'highfive_autofetch_day')->value('value') ?? 'Friday';
+        $time = \App\Models\Setting::where('key', 'highfive_autofetch_time')->value('value') ?? '01:00';
+        $isActive = \App\Models\Setting::where('key', 'highfive_autofetch_active')->value('value') ?? '0';
+
+        // Calculate next run
+        $nextRun = $this->calculateNextRun($day, $time);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'day' => $day,
+                'time' => $time,
+                'is_active' => filter_var($isActive, FILTER_VALIDATE_BOOLEAN),
+                'next_run' => $nextRun->locale('id')->isoFormat('dddd, D MMMM YYYY HH:mm'),
+                'next_run_diff' => $nextRun->diffForHumans(),
+            ]
+        ]);
+    }
+
+    /**
+     * Save Auto Fetch Settings
+     */
+    public function saveAutoFetchSettings(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'day' => 'required|string',
+            'time' => 'required|date_format:H:i',
+            // 'is_active' => 'required|boolean', // Remove validation to be flexible
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            // Log::info('Save AutoFetch', ['req' => $request->all(), 'is_active_bool' => $request->boolean('is_active')]);
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'highfive_autofetch_day'],
+                ['value' => $request->day, 'description' => 'Day of week for High Five auto fetch']
+            );
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'highfive_autofetch_time'],
+                ['value' => $request->time, 'description' => 'Time of day for High Five auto fetch']
+            );
+
+            // Handle Active Status Explicitly
+            // Accept: true, "true", 1, "1", "on" => TRUE
+            // Accept: false, "false", 0, "0", "off", null => FALSE
+            $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN);
+            $isActiveValue = $isActive ? '1' : '0';
+            
+            // Debug: force update
+            $activeSetting = \App\Models\Setting::firstOrNew(['key' => 'highfive_autofetch_active']);
+            $activeSetting->value = $isActiveValue;
+            $activeSetting->description = 'Is High Five auto fetch active';
+            $activeSetting->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengaturan Auto Fetch berhasil disimpan!',
+                'data' => $this->getAutoFetchSettings()->original['data'] // Return updated state
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan pengaturan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Check and Trigger Auto Fetch (To be called by Cron/Scheduler)
+     * e.g., Every hour or every minute
+     */
+    public function checkAutoFetch()
+    {
+        $isActive = filter_var(\App\Models\Setting::where('key', 'highfive_autofetch_active')->value('value'), FILTER_VALIDATE_BOOLEAN);
+
+        if (!$isActive) {
+            return response()->json(['message' => 'Auto fetch is disabled']);
+        }
+
+        // Current time (WIB)
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+        $todayName = $now->format('l'); // e.g., Friday
+        $currentTime = $now->format('H:i');
+
+        // Settings
+        $scheduledDay = \App\Models\Setting::where('key', 'highfive_autofetch_day')->value('value') ?? 'Friday';
+        $scheduledTime = \App\Models\Setting::where('key', 'highfive_autofetch_time')->value('value') ?? '01:00';
+
+        // Check if day matches
+        if (strcasecmp($todayName, $scheduledDay) !== 0) {
+            return response()->json(['message' => "Not scheduled day ($todayName != $scheduledDay)"]);
+        }
+
+        // Check if time matches (within a small window, e.g., current hour/minute)
+        // For simplicity, let's assume this is called once per hour or we check strictly
+        // Ideally, scheduler runs every minute.
+        
+        // Strict check: if current time is exactly the scheduled time (or just past it within tolerance)
+        // NOTE: Scheduler logic dictates how precise this is. 
+        // We will assume "Run if it's currently the scheduled hour and minute"
+        if ($currentTime !== $scheduledTime) {
+             return response()->json(['message' => "Not scheduled time ($currentTime != $scheduledTime)"]);
+        }
+
+        // EXECUTE FETCH
+        \Illuminate\Support\Facades\Log::info("Starting Auto Fetch High Five Snapshots...");
+        
+        $links = DatasetLink::where('is_active', true)->get();
+        $results = [];
+
+        foreach ($links as $link) {
+            try {
+                // Use existing private method via reflection or just make it public? 
+                // Or better, refactor fetchAndStoreSnapshot to be usable.
+                // Since I am inside the class, I can call private method.
+                
+                // IMPORTANT: Calculate date based on policy. 
+                // If auto fetch runs on Friday, date is Today.
+                // If runs on Monday, date is Last Friday? 
+                // Let's stick to standard logic: Snapshot Date = Today (execution date)
+                $snapshotDate = $now->toDateString();
+                
+                $res = $this->fetchAndStoreSnapshot($link, $snapshotDate);
+                $results[] = [
+                    'divisi' => $link->divisi->kode,
+                    'result' => $res
+                ];
+                
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Auto Fetch Failed for Link {$link->id}: " . $e->getMessage());
+                $results[] = [
+                    'divisi' => $link->divisi->kode,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Auto fetch executed',
+            'results' => $results
+        ]);
+    }
+
+    /**
+     * Helper: Calculate Next Run Date
+     */
+    private function calculateNextRun($day, $time)
+    {
+        // Force timezone to WIB (Asia/Jakarta)
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+        
+        // Parse "this [day]" in the specific timezone
+        // We set the time to 00:00:00 first to get the correct date for "this week"
+        $date = Carbon::parse("this $day", $timezone)->startOfDay(); 
+        
+        // Set the target time
+        $timeParts = explode(':', $time);
+        $target = $date->copy()->setTime($timeParts[0], $timeParts[1], 0);
+
+        // Logic Re-eval:
+        // If today is Friday, and we look for Friday 10:00
+        // "this Friday" might be today.
+        
+        // If target is in the past relative to now, move to next week
+        if ($target->lessThan($now)) {
+            $target->addWeek();
+        }
+
+        return $target;
+    }
 }

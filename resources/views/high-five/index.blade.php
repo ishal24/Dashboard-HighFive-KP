@@ -7,6 +7,50 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ asset('css/highfive.css') }}">
 <link rel="stylesheet" href="{{ asset('css/highfive-product-tabs.css') }}">
+<style>
+    /* Custom Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+        margin-bottom: 0;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    input:checked + .slider {
+        background-color: #0ea5e9;
+    }
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+</style>
 @endsection
 
 @section('content')
@@ -32,37 +76,112 @@
         </div>
     </div>
     <div class="toolkit-body" id="manualFetchBody">
+        <!-- INFO BOX -->
         <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 14px 18px; border-radius: var(--radius-lg); border: 1px solid #fcd34d; margin-bottom: 16px;">
             <div style="display: flex; align-items: start; gap: 10px;">
                 <i class="fas fa-info-circle" style="color: #f59e0b; font-size: 1.1rem; margin-top: 2px;"></i>
                 <div style="flex: 1;">
                     <strong style="font-size: 13px; color: #92400e; display: block; margin-bottom: 4px;">💡 Info Update Data</strong>
                     <p style="font-size: 12px; color: #92400e; line-height: 1.5; margin: 0;">
-                        Gunakan fitur ini untuk update data manual. Data otomatis terupdate setiap Jumat 01:00 pagi.
+                        Gunakan fitur update data manual untuk update data secara manual. Gunakan fitur update data otomatis untuk update data secara otomatis.
                     </p>
                 </div>
             </div>
         </div>
-        <div class="toolkit-grid" style="grid-template-columns: 200px 160px 1fr 150px;">
-            <div class="field-group">
-                <label><i class="fas fa-link"></i> Link Spreadsheet</label>
-                <select id="manualLinkSelect" class="native-select"><option value="">Pilih Link</option></select>
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-calendar"></i> Tanggal Data</label>
-                <input type="text" id="manualSnapshotDate" class="native-select" placeholder="Pilih tanggal" readonly>
-            </div>
-            <div class="field-group">
-                <label style="color: var(--gray-500);"><i class="fas fa-info-circle"></i> Info Link</label>
-                <div style="height: var(--ctrl-h); padding: 0 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); display: flex; align-items: center; background: var(--gray-50);">
-                    <span id="manualLinkInfo" style="font-size: 12px; color: var(--gray-500); font-weight: 500;">Pilih link untuk melihat info</span>
+
+        <!-- MANUAL UPDATE HEADER -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="background: #fef3c7; padding: 8px; border-radius: 50%; color: #d97706;">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div>
+                    <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Manual</h5>
+                    <p style="margin: 0; font-size: 12px; color: #64748b;">Update data secara manual (tidak terjadwal)</p>
                 </div>
             </div>
-            <div class="field-group">
-                <label style="opacity: 0;">.</label>
-                <button id="btnSaveManual" class="btn-save-dataset" onclick="saveManualData()">
-                    <i class="fas fa-save"></i> Simpan Data
-                </button>
+        </div>
+
+
+        <!-- MANUAL CONTROLS CONTAINER -->
+        <div style="background: #f8fafc; padding: 16px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; margin-bottom: 12px; transition: all 0.3s;">
+            <div class="toolkit-grid" style="grid-template-columns: 200px 160px 1fr 150px;">
+                <div class="field-group">
+                    <label><i class="fas fa-link"></i> LINK SPREADSHEET</label>
+                    <select id="manualLinkSelect" class="native-select"><option value="">Pilih Link</option></select>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-calendar"></i> TANGGAL DATA</label>
+                    <input type="text" id="manualSnapshotDate" class="native-select" placeholder="Pilih tanggal" readonly>
+                </div>
+                <div class="field-group">
+                    <label style="color: var(--gray-500);"><i class="fas fa-info-circle"></i> INFO LINK</label>
+                    <div style="height: var(--ctrl-h); padding: 0 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); display: flex; align-items: center; background: var(--gray-50);">
+                        <span id="manualLinkInfo" style="font-size: 12px; color: var(--gray-500); font-weight: 500;">Pilih link untuk melihat info</span>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label style="opacity: 0;">.</label>
+                    <button id="btnSaveManual" class="btn-save-dataset" onclick="saveManualData()">
+                        <i class="fas fa-save"></i> Simpan Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEPARATOR -->
+        <div style="border-top: 1px dashed var(--gray-300); margin: 20px 0;"></div>
+
+        <!-- AUTO FETCH SECTION -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="background: #e0f2fe; padding: 8px; border-radius: 50%; color: #0284c7;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h5 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e293b;">Update Data Otomatis</h5>
+                    <p style="margin: 0; font-size: 12px; color: #64748b;">Otomatis ambil data sesuai jadwal</p>
+                </div>
+            </div>
+            
+            <!-- Toggle Switch -->
+            <label class="toggle-switch">
+                <input type="checkbox" id="autoFetchToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="autoFetchControls" style="background: #f8fafc; padding: 16px; border-radius: var(--radius-lg); border: 1px solid #e2e8f0; margin-bottom: 12px; transition: all 0.3s;">
+            <div class="toolkit-grid" style="grid-template-columns: 1fr 1fr 150px;">
+                <div class="field-group">
+                            <label><i class="fas fa-calendar-day"></i> HARI</label>
+                            <select class="native-select" id="autoFetchDay">
+                                <option value="Monday">Senin</option>
+                                <option value="Tuesday">Selasa</option>
+                                <option value="Wednesday">Rabu</option>
+                                <option value="Thursday">Kamis</option>
+                                <option value="Friday">Jumat</option>
+                                <option value="Saturday">Sabtu</option>
+                                <option value="Sunday">Minggu</option>
+                            </select>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-clock"></i> JAM (WIB)</label>
+                    <div style="position: relative;">
+                        <input type="text" id="autoFetchTime" class="native-select" placeholder="Pilih Jam" readonly style="padding-left: 36px; cursor: pointer;">
+                        <i class="fas fa-clock" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label style="opacity: 0;">Actions</label>
+                    <button id="btnSaveAutoFetch" class="btn-save-dataset" onclick="saveAutoFetchSettings()" style="width: 100%;">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <span>Jadwal berikutnya: <strong id="nextRunText">-</strong></span>
             </div>
         </div>
     </div>
@@ -550,6 +669,16 @@ $(document).ready(function() {
                 longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
             },
         },
+    });
+
+    // Time Picker for Auto Fetch
+    flatpickr("#autoFetchTime", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        defaultDate: "01:00",
+        disableMobile: "true"
     });
 
     // Global variables
@@ -2247,6 +2376,135 @@ $(document).ready(function() {
             });
         }
     };
+
+    // ================================
+    // AUTO FETCH SETTINGS LOGIC
+    // ================================
+
+    // Load settings on init
+    loadAutoFetchSettings();
+
+    function loadAutoFetchSettings() {
+        $.get("{{ route('high-five.settings.auto-fetch.get') }}", function(response) {
+            if (response.success) {
+                const data = response.data;
+                
+                // Set values
+                $('#autoFetchDay').val(data.day);
+                $('#autoFetchTime').val(data.time);
+                $('#autoFetchToggle').prop('checked', data.is_active);
+                $('#nextRunText').text(data.next_run + ' (' + data.next_run_diff + ')');
+
+                // Update UI state
+                updateAutoFetchUI(data.is_active);
+            }
+        });
+    }
+
+    // Toggle Change Event
+    $('#autoFetchToggle').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        updateAutoFetchUI(isChecked);
+        
+        // Trigger Save immediately
+        saveAutoFetchSettings();
+    });
+
+    function updateAutoFetchUI(isActive) {
+        const controls = $('#autoFetchControls');
+        // Revert to disabling the whole container as per user request
+        if (isActive) {
+            controls.css({
+                'opacity': '1',
+                'pointer-events': 'auto'
+            });
+            $('#autoFetchDay, #autoFetchTime').prop('disabled', false);
+        } else {
+            controls.css({
+                'opacity': '0.6',
+                'pointer-events': 'none'
+            });
+            $('#autoFetchDay, #autoFetchTime').prop('disabled', true);
+        }
+    }
+
+    // ================================
+    // SCHEDULER SIMULATION (CLIENT-SIDE)
+    // ================================
+    // Run check every 30 seconds to simulate cron job if dashboard is open
+    setInterval(function() {
+        if ($('#autoFetchToggle').is(':checked')) {
+            $.get("{{ route('high-five.settings.auto-fetch.check') }}", function(response) {
+                // Only run if we actually attempted a fetch (response.results exists)
+                if (response.success && response.results) {
+                    console.log('Auto Fetch Executed:', response);
+                    
+                    const count = response.results.length;
+                    if (count > 0) {
+                        const successes = response.results.filter(r => r.status === 'success').length;
+                        const failures = response.results.filter(r => r.status === 'failed').length;
+                        
+                        let msg = `Memproses ${count} link. Berhasil: ${successes}, Gagal: ${failures}.`;
+                        if (failures > 0) {
+                            msg += ' Cek log untuk detail.';
+                        }
+                        
+                        showAlert(failures > 0 ? 'warning' : 'success', 'Auto Fetch Selesai', msg);
+                        
+                        // Reload data
+                        loadAutoFetchSettings();
+                        
+                        // If current view might be affected, reload it
+                        // e.g. currently viewing a link that was just updated
+                        const currentDivisi = $('#filterDivisi').val();
+                        if (currentDivisi) {
+                            loadBranchSnapshotOptions(currentDivisi); // Reload dropdowns
+                        }
+                    } else {
+                        // console.log('Auto fetch triggered but no active links found.');
+                    }
+                }
+            });
+        }
+    }, 30000); // 30 seconds
+
+    window.saveAutoFetchSettings = function() {
+        const day = $('#autoFetchDay').val();
+        const time = $('#autoFetchTime').val();
+        const isActive = $('#autoFetchToggle').is(':checked');
+        
+        // DEBUG REMOVED
+        
+        $.ajax({
+            url: "{{ route('high-five.settings.auto-fetch.save') }}",
+            method: 'POST',
+            data: {
+                day: day,
+                time: time,
+                is_active: isActive ? 'true' : 'false', // Send explicit string
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function() {
+                $('#btnSaveAutoFetch').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> menyimpan...');
+            },
+            success: function(response) {
+                showAlert('success', 'Berhasil!', response.message);
+                
+                // Update Next Run text from response data
+                if (response.data) {
+                    $('#nextRunText').text(response.data.next_run + ' (' + response.data.next_run_diff + ')');
+                }
+                
+                $('#btnSaveAutoFetch').prop('disabled', false).html('<i class="fas fa-save"></i> Simpan');
+            },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || 'Gagal menyimpan pengaturan';
+                showAlert('error', 'Error!', message);
+                $('#btnSaveAutoFetch').prop('disabled', false).html('<i class="fas fa-save"></i> Simpan');
+            }
+        });
+    };
+
 });
 </script>
 </div><!-- End .highfive-main-content -->
