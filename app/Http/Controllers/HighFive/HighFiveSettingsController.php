@@ -762,6 +762,13 @@ class HighFiveSettingsController extends Controller
              return response()->json(['message' => "Not scheduled time ($currentTime != $scheduledTime)"]);
         }
 
+        // PREVENT DOUBLE FETCH (Check Last Run Minute)
+        // We compare Y-m-d H:i. If it ran at 13:50:00, we block 13:50:30. But 13:51:00 is fine.
+        $lastRunTime = \App\Models\Setting::where('key', 'highfive_autofetch_last_run')->value('value');
+        if ($lastRunTime === $now->format('Y-m-d H:i')) {
+             return response()->json(['message' => "Already ran this minute (" . $now->format('H:i') . ")"]);
+        }
+
         // EXECUTE FETCH
         \Illuminate\Support\Facades\Log::info("Starting Auto Fetch High Five Snapshots...");
         
@@ -794,6 +801,12 @@ class HighFiveSettingsController extends Controller
                 ];
             }
         }
+
+        // Update Last Run Date (With Minute Precision)
+        \App\Models\Setting::updateOrCreate(
+             ['key' => 'highfive_autofetch_last_run'],
+             ['value' => $now->format('Y-m-d H:i'), 'description' => 'Last successful auto fetch timestamp']
+        );
 
         return response()->json([
             'success' => true,
