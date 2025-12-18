@@ -245,7 +245,7 @@
                         
                         <div class="metric-sq-card card-tall theme-success clickable-card" id="cardTREG3" onclick="showMetricInsight('TREG3')" data-insight="TREG3">
                             <div class="sq-icon"><i class="fas fa-globe-asia"></i></div>
-                            <div class="sq-label" style="font-size: 14px;">TREG3 Avg Progress</div>
+                            <div class="sq-label" style="font-size: 14px;">TREG3 Avg Improvement</div>
                             <div class="sq-stat" id="metricNatValue" style="margin-bottom: 0;">-</div>
                             <div class="sq-sub" id="metricNatTrend" style="margin-bottom: 8px;">-</div>
 

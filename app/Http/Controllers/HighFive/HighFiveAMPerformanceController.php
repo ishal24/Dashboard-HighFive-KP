@@ -248,15 +248,14 @@ class HighFiveAMPerformanceController extends Controller
     /**
      * Metric Calculation for Square Cards
      */
+
     private function calculateWitelAnalysis($mergedData, $snapshot1, $snapshot2)
     {
         // 1. Inisialisasi
         $stats = [
             'total_ams' => 0,
-            'sum_progress_1' => 0, 'sum_progress_2' => 0,
-            'sum_result_2' => 0,
+            'sum_change_p' => 0, 'sum_change_r' => 0, 'sum_change_avg' => 0,
             'active_ams' => 0,
-            // New Stats
             'total_offerings' => 0,
             'total_customers' => 0,
             'total_visited' => 0,
@@ -265,34 +264,34 @@ class HighFiveAMPerformanceController extends Controller
         ];
 
         $witelStats = [];
-        $topAM = null;      // Improvement Tertinggi
-        $topWinAM = null;   // Jumlah Win Terbanyak
+        $topAM = null;      // MVP Improver
+        $topWinAM = null;   // Top Sales AM
 
         // 2. Looping Data
         foreach ($mergedData as $row) {
             $stats['total_ams']++;
-            $stats['sum_progress_1'] += $row['progress_1'];
-            $stats['sum_progress_2'] += $row['progress_2'];
-            $stats['sum_result_2'] += $row['result_2'];
+            $stats['sum_change_p'] += $row['change_progress'];
+            $stats['sum_change_r'] += $row['change_result'];
+            $stats['sum_change_avg'] += $row['change_avg'];
+            
             if ($row['progress_2'] > 0) $stats['active_ams']++;
 
-            // Accumulate TREG3 Stats
+            // Data TREG3 (Tetap Dipertahankan)
             $amStats = $row['stats'] ?? [];
             $stats['total_offerings'] += $amStats['offerings'] ?? 0;
             $stats['total_customers'] += $amStats['total_customers'] ?? 0;
-            $stats['total_visited'] += $amStats['visited'] ?? 0; // CC Visited
+            $stats['total_visited'] += $amStats['visited'] ?? 0;
             $stats['total_wins'] += $amStats['win'] ?? 0;
             $stats['total_loses'] += $amStats['lose'] ?? 0;
 
-            // A. Cari MVP Improvement
+            // TREG3 MVP Improver
             if (!$topAM || $row['change_avg'] > $topAM['change_avg']) {
                 $topAM = $row;
             }
 
-            // B. Cari Top Sales (Most Win)
+            // TREG3 Top Sales AM
             $amWin = $amStats['win'] ?? 0;
             $currentTopWin = $topWinAM['stats']['win'] ?? 0;
-            // Jika win lebih banyak, ATAU win sama tapi result % lebih tinggi
             if (!$topWinAM || $amWin > $currentTopWin || ($amWin == $currentTopWin && $row['result_2'] > $topWinAM['result_2'])) {
                 $topWinAM = $row;
             }
@@ -302,61 +301,59 @@ class HighFiveAMPerformanceController extends Controller
             if (!isset($witelStats[$witel])) {
                 $witelStats[$witel] = [
                     'name' => $witel, 
-                    'sum_p1' => 0, 
-                    'sum_p2' => 0, 
-                    'sum_r1' => 0, 
-                    'sum_r2' => 0, 
-                    'count' => 0
+                    'sum_change_p' => 0, 
+                    'sum_change_r' => 0, 
+                    'sum_change_avg' => 0, 
+                    'count' => 0,
+                    'top_am' => $row,
+                    'least_am' => $row
                 ];
             }
-            $witelStats[$witel]['sum_p1'] += $row['progress_1'];
-            $witelStats[$witel]['sum_p2'] += $row['progress_2'];
-            $witelStats[$witel]['sum_r1'] += $row['result_1'];
-            $witelStats[$witel]['sum_r2'] += $row['result_2'];
+            $witelStats[$witel]['sum_change_p'] += $row['change_progress'];
+            $witelStats[$witel]['sum_change_r'] += $row['change_result'];
+            $witelStats[$witel]['sum_change_avg'] += $row['change_avg'];
             $witelStats[$witel]['count']++;
+
+            if ($row['change_avg'] > $witelStats[$witel]['top_am']['change_avg']) $witelStats[$witel]['top_am'] = $row;
+            if ($row['change_avg'] < $witelStats[$witel]['least_am']['change_avg']) $witelStats[$witel]['least_am'] = $row;
         }
 
-        // 3. Agregasi Witel
+        // 3. Kalkulasi Rata-rata & Gap
+        $total = $stats['total_ams'] ?: 1;
+        $TREG3Imp = $stats['sum_change_avg'] / $total;
+        $TREG3ImpP = $stats['sum_change_p'] / $total;
+        $TREG3ImpR = $stats['sum_change_r'] / $total;
+
         $witelFinal = [];
         foreach ($witelStats as $w => $d) {
-            $avgP1 = $d['count'] > 0 ? $d['sum_p1'] / $d['count'] : 0;
-            $avgP2 = $d['count'] > 0 ? $d['sum_p2'] / $d['count'] : 0;
-            $avgR1 = $d['count'] > 0 ? $d['sum_r1'] / $d['count'] : 0;
-            $avgR2 = $d['count'] > 0 ? $d['sum_r2'] / $d['count'] : 0;
-            
-            $progressChange = $avgP2 - $avgP1;
-            $resultChange = $avgR2 - $avgR1;
-            $avgImprovement = ($progressChange + $resultChange) / 2;
-            
+            $wCount = $d['count'] ?: 1;
             $witelFinal[] = [
                 'name' => $w,
-                'avg_progress' => $avgP2,
-                'avg_improvement' => $avgImprovement,
-                'growth' => $avgP2 - $avgP1,
-                'am_count' => $d['count']
+                'avg_imp' => $d['sum_change_avg'] / $wCount,
+                'avg_p' => $d['sum_change_p'] / $wCount,
+                'avg_r' => $d['sum_change_r'] / $wCount,
+                'top_am' => $d['top_am'],
+                'least_am' => $d['least_am']
             ];
         }
+        usort($witelFinal, fn($a, $b) => $b['avg_imp'] <=> $a['avg_imp']);
+        $mostWitel = $witelFinal[0];
+        $leastWitel = end($witelFinal);
 
-        // Sort Witel by average improvement
-        usort($witelFinal, fn($a, $b) => $b['avg_improvement'] <=> $a['avg_improvement']);
-        $mostWitel = $witelFinal[0] ?? ['name' => '-', 'avg_progress' => 0, 'avg_improvement' => 0, 'growth' => 0];
-        $leastWitel = end($witelFinal) ?: ['name' => '-', 'avg_progress' => 0, 'avg_improvement' => 0, 'growth' => 0];
+        // Helper formatting sign
+        $fSign = fn($v) => ($v > 0 ? '+' : '') . number_format($v, 1) . '%';
+        $fSign2 = fn($v) => ($v > 0 ? '+' : '') . number_format($v, 2) . '%';
 
-        // Global Stats
-        $total = $stats['total_ams'] ?: 1;
-        $avgProg2 = $stats['sum_progress_2'] / $total;
-        $deltaProg = $avgProg2 - ($stats['sum_progress_1'] / $total);
-
-        // 4. Siapkan 5 Metriks
+        // 4. Siapkan Metrics Cards Utama
         $metrics = [
             'TREG3' => [
                 'label' => 'TREG3 Pulse',
-                'value' => number_format($avgProg2, 1) . '%',
-                'sub_label' => 'Avg Progress',
-                'trend' => $deltaProg,
-                'trend_text' => ($deltaProg >= 0 ? '+' : '') . number_format($deltaProg, 1) . '% vs last period',
-                'color' => $deltaProg >= 0 ? 'success' : 'danger',
-                // New Detailed Stats for Frontend
+                'value' => $fSign($TREG3Imp),
+                'sub_label' => 'Avg Improvement',
+                'trend' => $TREG3Imp,
+                'trend_text' => 'vs Data Lama',
+                'color' => $TREG3Imp >= 0 ? 'success' : 'danger',
+                // Data TREG3 tetap ada sesuai permintaan
                 'offerings' => number_format($stats['total_offerings']),
                 'total_customers' => number_format($stats['total_customers']),
                 'visited' => number_format($stats['total_visited']),
@@ -367,237 +364,134 @@ class HighFiveAMPerformanceController extends Controller
                 'label' => 'Witel Champion',
                 'value' => $mostWitel['name'],
                 'sub_label' => 'Highest Improvement',
-                'main_stat' => number_format($mostWitel['avg_improvement'], 1) . '% Avg Improvement',
+                'main_stat' => $fSign($mostWitel['avg_imp']) . ' Avg Improvement',
             ],
             'least_witel' => [
                 'label' => 'Focus Area',
                 'value' => $leastWitel['name'],
                 'sub_label' => 'Lowest Improvement',
-                'main_stat' => number_format($leastWitel['avg_improvement'], 1) . '% Avg Improvement',
+                'main_stat' => $fSign($leastWitel['avg_imp']) . ' Avg Improvement',
             ],
             'top_am' => [
                 'label' => 'MVP Improver',
-                'value' => $topAM ? $topAM['am'] : '-',
-                'sub_label' => $topAM ? $topAM['witel'] : '-',
-                'main_stat' => $topAM ? number_format($topAM['change_avg'], 1) . '% Avg Improvement' : '0%',
+                'value' => $topAM['am'] ?? '-',
+                'sub_label' => $topAM['witel'] ?? '-',
+                'main_stat' => $fSign($topAM['change_avg']) . ' Improvement',
             ],
             'am_most_win' => [
                 'label' => 'Top Sales AM',
-                'value' => $topWinAM ? $topWinAM['am'] : '-',
-                'sub_label' => $topWinAM ? $topWinAM['witel'] : '-',
+                'value' => $topWinAM['am'] ?? '-',
+                'sub_label' => $topWinAM['witel'] ?? '-',
                 'main_stat' => ($topWinAM['stats']['win'] ?? 0) . ' Wins',
             ]
         ];
 
-        // 5. Generate Detailed Insights HTML
-        $winRate = $stats['total_offerings'] > 0 ? ($stats['total_wins'] / $stats['total_offerings']) * 100 : 0;
-        $winRate = ($stats['total_wins'] + $stats['total_loses']) > 0 
-            ? ($stats['total_wins'] / ($stats['total_wins'] + $stats['total_loses'])) * 100 
-            : 0;
-
-        // 1. INSIGHT TREG3
-        $trendColor = $deltaProg >= 0 ? 'text-green-600' : 'text-red-600';
-        $trendIcon = $deltaProg >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-        $trendSign = $deltaProg >= 0 ? '+' : '';
+        // 5. Generate Modal Insight Data
         
+        // --- INSIGHT TREG3 ---
         $insightTREG3 = "
-            <div style='margin-bottom: 16px;'>
-                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0 0 4px 0;'>TREG3 Overview</h4>
-                <p style='font-size:12px; color:#64748b; margin:0;'>Snapshot performa TREG3 saat ini.</p>
-            </div>
-
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>TREG3 Overview</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>Avg Progress</span>
-                    <span class='insight-metric-value'>" . number_format($avgProg2, 2) . "%</span>
-                    <span class='insight-metric-sub'>Global Average</span>
-                </div>
-                <div class='insight-metric-item " . ($deltaProg >= 0 ? 'im-success' : 'im-danger') . "'>
-                    <span class='insight-metric-label'>Growth</span>
-                    <span class='insight-metric-value'>{$trendSign}" . number_format($deltaProg, 2) . "%</span>
-                    <span class='insight-metric-sub'>vs Last Period</span>
-                </div>
-
-                 <div class='insight-metric-item'>
-                    <span class='insight-metric-label'>Participation</span>
-                    <span class='insight-metric-value'>" . number_format(($stats['active_ams'] / $total) * 100, 0) . "%</span>
-                    <span class='insight-metric-sub'>Active AMs</span>
-                </div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($TREG3ImpP)}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($TREG3ImpR)}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item'><span class='insight-metric-label'>Participation</span><span class='insight-metric-value'>" . number_format(($stats['active_ams'] / $total) * 100, 0) . "%</span><span class='insight-metric-sub'>AM Berprogres</span></div>
             </div>
-
             <div class='insight-narrative-box blue-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-info-circle'></i> Analisis & Rekomendasi</div>
+                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Secara TREG3, tren performa bergerak <strong>" . ($deltaProg >= 0 ? "positif" : "negatif") . "</strong>. 
-                    Tingkat konversi (Win Rate) berada di angka <strong>" . number_format($winRate, 1) . "%</strong>. 
-                    Fokus utama minggu ini adalah meningkatkan partisipasi AM yang masih pasif dan mengawal " . number_format($stats['total_offerings']) . " offerings yang sedang berjalan.
+                    Angka rata-rata improvement TREG3 sebesar <strong>{$fSign($TREG3Imp)}</strong> diperoleh dari agregasi peningkatan progres (<strong>{$fSign2($TREG3ImpP)}</strong>) dan peningkatan result (<strong>{$fSign2($TREG3ImpR)}</strong>). 
+                    Data ini mencerminkan dinamika <strong>" . number_format($stats['total_offerings']) . "</strong> penawaran aktif yang sedang berjalan di seluruh wilayah.
                 </p>
             </div>";
 
-        // 2. INSIGHT WITEL CHAMPION
+        // --- INSIGHT WITEL CHAMPION ---
+        $gapMost = $mostWitel['avg_imp'] - $TREG3Imp;
         $insightMost = "
-             <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
-                <div style='background:#dbeafe; padding:8px; border-radius:8px; color:#2563eb;'><i class='fas fa-crown fa-lg'></i></div>
-                <div>
-                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$mostWitel['name']}</h4>
-                    <p style='font-size:12px; color:#64748b; margin:0;'>Top Performer Witel</p>
-                </div>
-            </div>
-
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$mostWitel['name']}</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'>
-                    <span class='insight-metric-label'>Avg Progress</span>
-                    <span class='insight-metric-value'>" . number_format($mostWitel['avg_progress'], 2) . "%</span>
-                    <span class='insight-metric-sub'>Highest Rank</span>
-                </div>
-                <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>Growth</span>
-                    <span class='insight-metric-value'>+" . number_format($mostWitel['growth'], 2) . "%</span>
-                    <span class='insight-metric-sub'>Improvement</span>
-                </div>
-                <div class='insight-metric-item'>
-                    <span class='insight-metric-label'>Sales Force</span>
-                    <span class='insight-metric-value'>{$mostWitel['am_count']}</span>
-                    <span class='insight-metric-sub'>Total AM</span>
-                </div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_p'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_r'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item'><span class='insight-metric-label'>Top Improvement AM</span><span class='insight-metric-value' style='font-size:14px;'>" . $mostWitel['top_am']['am'] . "</span></div>
             </div>
-
             <div class='insight-narrative-box green-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-check-circle'></i> Key Success Factor</div>
+                <div class='insight-narrative-title'><i class='fas fa-chart-line'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Witel {$mostWitel['name']} berhasil memimpin dengan konsistensi input yang tinggi. 
-                    Gap positif sebesar <strong>+" . number_format($mostWitel['avg_progress'] - $avgProg2, 1) . "%</strong> di atas rata-rata TREG3 menunjukkan manajemen pipeline yang sangat sehat.
+                    Witel {$mostWitel['name']} mencatatkan improvement tertinggi sebesar <strong>{$fSign($mostWitel['avg_imp'])}</strong>, yang didapatkan dari rata-rata peningkatan progres (<strong>{$fSign2($mostWitel['avg_p'])}</strong>) dan result (<strong>{$fSign2($mostWitel['avg_r'])}</strong>). 
+                    Wilayah ini memiliki gap positif sebesar <strong>" . $fSign($gapMost) . "</strong> dari seluruh witel, dipicu oleh akselerasi AM <strong>" . $mostWitel['top_am']['am'] . "</strong>.
                 </p>
             </div>";
 
-        // 3. INSIGHT FOCUS AREA
-        $gapMinus = number_format($avgProg2 - $leastWitel['avg_progress'], 1);
+        // --- INSIGHT FOCUS AREA ---
+        $gapLeast = $leastWitel['avg_imp'] - $TREG3Imp;
         $insightLeast = "
-            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
-                <div style='background:#fef3c7; padding:8px; border-radius:8px; color:#d97706;'><i class='fas fa-exclamation-triangle fa-lg'></i></div>
-                <div>
-                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$leastWitel['name']}</h4>
-                    <p style='font-size:12px; color:#64748b; margin:0;'>Memerlukan Atensi Khusus</p>
-                </div>
-            </div>
-
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$leastWitel['name']}</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-danger'>
-                    <span class='insight-metric-label'>Avg Progress</span>
-                    <span class='insight-metric-value'>" . number_format($leastWitel['avg_progress'], 2) . "%</span>
-                    <span class='insight-metric-sub'>Lowest Rank</span>
-                </div>
-                <div class='insight-metric-item im-warning'>
-                    <span class='insight-metric-label'>Gap to TREG3</span>
-                    <span class='insight-metric-value'>-{$gapMinus}%</span>
-                    <span class='insight-metric-sub'>Difference</span>
-                </div>
-                <div class='insight-metric-item'>
-                    <span class='insight-metric-label'>Sales Force</span>
-                    <span class='insight-metric-value'>{$leastWitel['am_count']}</span>
-                    <span class='insight-metric-sub'>Total AM</span>
-                </div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_p'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_r'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item'><span class='insight-metric-label'>Least Improver</span><span class='insight-metric-value' style='font-size:14px;'>" . $leastWitel['least_am']['am'] . "</span></div>
             </div>
-
             <div class='insight-narrative-box'>
-                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Action Plan</div>
+                <div class='insight-narrative-title'><i class='fas fa-exclamation-circle'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Performa Witel {$leastWitel['name']} tertinggal signifikan. 
-                    Diperlukan <strong>coaching clinic</strong> intensif untuk AM yang belum update progress. 
-                    Prioritaskan update status LOP/MyTens minggu ini untuk mengejar gap.
+                    Witel {$leastWitel['name']} berada di posisi terbawah dalam hal performa dengan nilai improvement sebesar <strong>{$fSign($leastWitel['avg_imp'])}</strong> (Progres: <strong>{$fSign2($leastWitel['avg_p'])}</strong>, Result: <strong>{$fSign2($leastWitel['avg_r'])}</strong>). 
+                    Angka ini menghasilkan gap negatif sebesar <strong>" . number_format($gapLeast, 1) . "%</strong> dari Improvement TREG3, dipengaruhi oleh performa AM <strong>" . $leastWitel['least_am']['am'] . "</strong> yang memerlukan supervisi tambahan.
                 </p>
             </div>";
 
-        // 4. INSIGHT MVP AM
-        $topAmScore = $topAM ? number_format($topAM['change_avg'], 1) : 0;
-        $topAmProg = $topAM ? number_format($topAM['progress_2'], 1) : 0;
-        
-        $amName = $topAM['am'] ?? '-';
-        $amWitel = $topAM['witel'] ?? '-';
-
+        // --- INSIGHT MVP IMPROVER (AM) ---
+        $gapResultAM = $topAM['result_2'] - $topAM['result_1'];
         $insightAM = "
-            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
-                <div style='background:#f3e8ff; padding:8px; border-radius:8px; color:#9333ea;'><i class='fas fa-rocket fa-lg'></i></div>
-                <div>
-                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$amName}</h4>
-                    <p style='font-size:12px; color:#64748b; margin:0;'>MVP Improver ({$amWitel})</p>
-                </div>
+            <div style='margin-bottom: 16px;'>
+                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$topAM['am']}</h4>
             </div>
-
             <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
                 <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>Improvement Score</span>
-                    <span class='insight-metric-value'>+{$topAmScore}%</span>
-                    <span class='insight-metric-sub'>Minggu ini</span>
+                    <span class='insight-metric-label'>Total Improvement</span>
+                    <span class='insight-metric-value'>{$fSign($topAM['change_avg'])}</span>
+                    <span class='insight-metric-sub'>Benchmark TREG3</span>
                 </div>
-                <div class='insight-metric-item im-success'>
-                    <span class='insight-metric-label'>Current Progress</span>
-                    <span class='insight-metric-value'>{$topAmProg}%</span>
-                    <span class='insight-metric-sub'>Capaian Akhir</span>
+                <div class='insight-metric-item " . ($gapResultAM >= 0 ? 'im-success' : 'im-danger') . "'>
+                    <span class='insight-metric-label'>Gap Result</span>
+                    <span class='insight-metric-value'>{$fSign($gapResultAM)}</span>
+                    <span class='insight-metric-sub'>vs Periode Lalu</span>
                 </div>
             </div>
-
             <div class='insight-narrative-box blue-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-star'></i> Achievement</div>
+                <div class='insight-narrative-title'><i class='fas fa-rocket'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    AM ini mencatatkan lonjakan performa (Improvement) tertinggi minggu ini sebesar <strong>+{$topAmScore}%</strong>. 
-                    Progress saat ini telah mencapai angka <strong>{$topAmProg}%</strong>, menunjukkan akselerasi yang signifikan dibanding periode sebelumnya.
+                    AM <strong>{$topAM['am']}</strong> mencapai skor improvement tertinggi sebesar <strong>{$fSign($topAM['change_avg'])}</strong>. 
+                    Angka ini diperoleh dari rata-rata lonjakan progres individu sebesar <strong>{$fSign2($topAM['change_progress'])}</strong> dan gap peningkatan result sebesar <strong>{$fSign2($gapResultAM)}</strong> dibanding periode sebelumnya. 
+                    Hal ini menunjukkan efektivitas eksekusi yang sangat progresif dalam mengonversi peluang menjadi capaian nyata.
                 </p>
             </div>";
 
-        // 5. INSIGHT TOP SALES
-        $salesName = $topWinAM['am'] ?? '-';
-        $salesWitel = $topWinAM['witel'] ?? '-';
-        $winCount = $topWinAM['stats']['win'] ?? 0;
-        $offerCount = $topWinAM['stats']['offerings'] ?? 0;
-        $winSales = $offerCount > 0 ? ($winCount/$offerCount)*100 : 0;
-
+        // --- INSIGHT TOP SALES AM ---
+        $totalWins = $stats['total_wins'] ?: 1;
+        $dominance = (($topWinAM['stats']['win'] ?? 0) / $totalWins) * 100;
         $insightTopSales = "
-            <div style='margin-bottom: 16px; display:flex; align-items:center; gap:10px;'>
-                <div style='background:#ecfdf5; padding:8px; border-radius:8px; color:#059669;'><i class='fas fa-trophy fa-lg'></i></div>
-                <div>
-                    <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$salesName}</h4>
-                    <p style='font-size:12px; color:#64748b; margin:0;'>Top Sales ({$salesWitel})</p>
-                </div>
-            </div>
-
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$topWinAM['am']} ({$topWinAM['witel']})</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'>
-                    <span class='insight-metric-label'>Total Wins</span>
-                    <span class='insight-metric-value'>{$winCount}</span>
-                    <span class='insight-metric-sub'>Project Closed</span>
-                </div>
-                <div class='insight-metric-item'>
-                    <span class='insight-metric-label'>Offerings</span>
-                    <span class='insight-metric-value'>{$offerCount}</span>
-                    <span class='insight-metric-sub'>Total Proposed</span>
-                </div>
-                <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>win Rate</span>
-                    <span class='insight-metric-value'>" . number_format($winSales, 0) . "%</span>
-                    <span class='insight-metric-sub'>Win / Offerings</span>
-                </div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . ($topWinAM['stats']['win'] ?? 0) . "</span><span class='insight-metric-sub'>Deals Closed</span></div>
+                <div class='insight-metric-item'><span class='insight-metric-label'>Customer Handled</span><span class='insight-metric-value'>" . ($topWinAM['stats']['total_customers'] ?? 0) . "</span><span class='insight-metric-sub'>Total CC</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Dominance</span><span class='insight-metric-value'>" . number_format($dominance, 1) . "%</span><span class='insight-metric-sub'>dari Semua Win</span></div>
             </div>
-
             <div class='insight-narrative-box green-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-thumbs-up'></i> Sales Effectiveness</div>
+                <div class='insight-narrative-title'><i class='fas fa-medal'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Efektivitas closing yang luar biasa. AM ini berhasil mengonversi peluang menjadi revenue nyata. 
-                    Strategi pendekatan customer yang dilakukan patut menjadi benchmark bagi AM lainnya.
+                    AM <strong>{$topWinAM['am']}</strong> berhasil memenangkan <strong>" . ($topWinAM['stats']['win'] ?? 0) . "</strong> wins dari <strong>" . ($topWinAM['stats']['total_customers'] ?? 0) . "</strong> customer yang dihandle. 
+                    Kontribusi (dominance) sebesar <strong>" . number_format($dominance, 1) . "%</strong> menunjukkan AM ini adalah penyumbang kemenangan terbesar bagi TREG3 saat ini.
                 </p>
             </div>";
-
-        $insightsData = [
-            'TREG3' => $insightTREG3,
-            'most_witel' => $insightMost,
-            'least_witel' => $insightLeast,
-            'top_am' => $insightAM,
-            'am_most_win' => $insightTopSales
-        ];
 
         return [
             'metrics' => $metrics,
-            'insights_data' => $insightsData
+            'insights_data' => [
+                'TREG3' => $insightTREG3,
+                'most_witel' => $insightMost,
+                'least_witel' => $insightLeast,
+                'top_am' => $insightAM,
+                'am_most_win' => $insightTopSales
+            ]
         ];
     }
 
