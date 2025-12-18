@@ -167,9 +167,14 @@
                 </div>
                 <div class="field-group">
                     <label><i class="fas fa-clock"></i> JAM (WIB)</label>
-                    <div style="position: relative;">
-                        <input type="text" id="autoFetchTime" class="native-select" placeholder="Pilih Jam" readonly style="padding-left: 36px; cursor: pointer;">
-                        <i class="fas fa-clock" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="autoFetchHour" class="native-select time-input" placeholder="HH" maxlength="2" style="padding-left: 12px; text-align: center;">
+                        </div>
+                        <span style="font-weight: bold; color: #64748b;">:</span>
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="autoFetchMinute" class="native-select time-input" placeholder="MM" maxlength="2" style="padding-left: 12px; text-align: center;">
+                        </div>
                     </div>
                 </div>
                 <div class="field-group">
@@ -2197,13 +2202,13 @@ $(document).ready(function() {
                                         <span class="link-meta" style="font-size: 11px; color: var(--gray-500);">${link.total_snapshots || 0} snapshots | Last: ${link.last_fetched || 'Never'}</span>
                                     </div>
                                     <div class="link-actions" style="display: flex; gap: 10px; align-items: center;">
-                                        <button class="btn-link-edit" onclick="editLink(${link.id}, '${linkUrl.replace(/'/g, "\\'")}')" title="Edit Link" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                        <button class="btn-action-icon btn-edit-link" onclick="editLink(${link.id}, '${linkUrl.replace(/'/g, "\\'")}')" title="Edit Link">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn-link-toggle" onclick="toggleSnapshots(${link.id})" title="Lihat Snapshots" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-400); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                        <button class="btn-action-icon btn-toggle-link" onclick="toggleSnapshots(${link.id})" title="Lihat Snapshots">
                                             <i class="fas fa-chevron-down" id="toggle-icon-${link.id}"></i>
                                         </button>
-                                        <button class="btn-link-delete" onclick="deleteLink(${link.id})" title="Hapus Link" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                        <button class="btn-action-icon btn-delete-link" onclick="deleteLink(${link.id})" title="Hapus Link">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -2269,10 +2274,10 @@ $(document).ready(function() {
                                     <span class="snapshot-fetched" style="font-size: 10px; color: var(--gray-500); font-style: italic;">Fetched: ${snapshot.fetched_at}</span>
                                 </div>
                                 <div class="snapshot-actions" style="display: flex; gap: 8px;">
-                                    <button class="btn-snapshot-edit" onclick="editSnapshotDate(${snapshot.id}, '${snapshot.snapshot_date}', ${linkId})" title="Edit Tanggal" style="width: 36px; height: 36px; border-radius: 6px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                    <button class="btn-snapshot-action btn-edit" onclick="editSnapshotDate(${snapshot.id}, '${snapshot.snapshot_date}', ${linkId})" title="Edit Tanggal">
                                         <i class="fas fa-calendar-alt"></i>
                                     </button>
-                                    <button class="btn-snapshot-delete" onclick="deleteSnapshot(${snapshot.id}, ${linkId})" title="Hapus Snapshot" style="width: 36px; height: 36px; border-radius: 6px; border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                    <button class="btn-snapshot-action btn-delete" onclick="deleteSnapshot(${snapshot.id}, ${linkId})" title="Hapus Snapshot">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -2392,7 +2397,14 @@ $(document).ready(function() {
                 // Set values
                 $('#autoFetchDay').val(data.day);
                 $('#autoFetchTime').val(data.time);
-                $('#autoFetchToggle').prop('checked', data.is_active);
+                if (data.time) {
+                    const parts = data.time.split(':');
+                    if (parts.length === 2) {
+                        $('#autoFetchHour').val(parts[0]);
+                        $('#autoFetchMinute').val(parts[1]);
+                    }
+                }
+                // $('#autoFetchTime').val(data.time).prop('disabled', !data.is_active); // OLD
                 $('#nextRunText').text(data.next_run + ' (' + data.next_run_diff + ')');
 
                 // Update UI state
@@ -2418,13 +2430,13 @@ $(document).ready(function() {
                 'opacity': '1',
                 'pointer-events': 'auto'
             });
-            $('#autoFetchDay, #autoFetchTime').prop('disabled', false);
+            $('#autoFetchDay, #autoFetchHour, #autoFetchMinute').prop('disabled', false);
         } else {
             controls.css({
                 'opacity': '0.6',
                 'pointer-events': 'none'
             });
-            $('#autoFetchDay, #autoFetchTime').prop('disabled', true);
+            $('#autoFetchDay, #autoFetchHour, #autoFetchMinute').prop('disabled', true);
         }
     }
 
@@ -2470,7 +2482,10 @@ $(document).ready(function() {
 
     window.saveAutoFetchSettings = function() {
         const day = $('#autoFetchDay').val();
-        const time = $('#autoFetchTime').val();
+        // Gabungkan Hour & Minute
+        const hour = $('#autoFetchHour').val().padStart(2, '0');
+        const minute = $('#autoFetchMinute').val().padStart(2, '0');
+        const time = `${hour}:${minute}`;
         const isActive = $('#autoFetchToggle').is(':checked');
         
         // DEBUG REMOVED
@@ -2505,7 +2520,152 @@ $(document).ready(function() {
         });
     };
 
+// START: TIME INPUT LOGIC
+    const hourInput = $('#autoFetchHour');
+    const minuteInput = $('#autoFetchMinute');
+
+    // Auto-focus logic
+    hourInput.on('input', function() {
+        // Hapus karakter non-angka
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // Auto pindah kalau sudah 2 digit
+        if (this.value.length === 2) {
+            minuteInput.focus();
+        }
+    });
+
+    minuteInput.on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Validation logic (on blur)
+    hourInput.on('blur', function() {
+        let val = parseInt(this.value);
+        if (isNaN(val)) val = 0;
+        
+        // Limit 0-23
+        if (val > 23) val = 23;
+        if (val < 0) val = 0;
+        
+        // Pad 0 if needed (e.g. 1 -> 01)
+        this.value = val.toString().padStart(2, '0');
+    });
+
+    minuteInput.on('blur', function() {
+        let val = parseInt(this.value);
+        if (isNaN(val)) val = 0;
+        
+        // Limit 0-59
+        if (val > 59) val = 59;
+        if (val < 0) val = 0;
+        
+        this.value = val.toString().padStart(2, '0');
+    });
+    // END: TIME INPUT LOGIC
+
 });
 </script>
+
+<style>
+    /* CSS untuk Link Action Buttons (Top) */
+    .btn-action-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 14px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Slight shadow */
+    }
+
+    .btn-edit-link {
+        background: #f0f9ff;
+        color: #0284c7; /* Sky blue */
+        border: 1px solid #bae6fd;
+    }
+    .btn-edit-link:hover {
+        background: #0284c7;
+        color: #fff;
+        border-color: #0284c7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(2, 132, 199, 0.2);
+    }
+
+    .btn-toggle-link {
+        background: #f8fafc;
+        color: #475569; /* Slate gray */
+        border: 1px solid #cbd5e1;
+    }
+    .btn-toggle-link:hover {
+        background: #475569;
+        color: #fff;
+        border-color: #475569;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(71, 85, 105, 0.2);
+    }
+
+    .btn-delete-link {
+        background: #fef2f2;
+        color: #ef4444; /* Red */
+        border: 1px solid #fecaca;
+    }
+    .btn-delete-link:hover {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    }
+
+
+    /* CSS untuk Snapshot Buttons */
+    .btn-snapshot-action {
+        width: 36px; 
+        height: 36px; 
+        border-radius: 8px; 
+        border: none;
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 14px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .btn-edit {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+    .btn-edit:hover {
+        background: #0284c7;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(2, 132, 199, 0.2);
+    }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+    .btn-delete:hover {
+        background: #ef4444;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Time Input Styles */
+    .time-input:focus {
+        border-color: var(--telkom-red) !important;
+        background: #fff !important;
+        box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.1);
+    }
+</style>
 </div><!-- End .highfive-main-content -->
 @endsection
