@@ -400,7 +400,7 @@
                         
                         <div class="metric-sq-card card-tall theme-primary clickable-card" id="cardProdPulse" onclick="showMetricInsight('prod_pulse')" data-insight="prod_pulse">
                             <div class="sq-icon"><i class="fas fa-boxes"></i></div>
-                            <div class="sq-label" style="font-size: 14px;">Product Proposed Rate</div>
+                            <div class="sq-label" style="font-size: 14px;">ACTIVE OFFERINGS RATE</div>
                             <div class="sq-stat" id="metricProdPulseValue" style="margin-bottom: 0;">-</div>
                             <div class="sq-sub" id="metricProdPulseSub" style="margin-bottom: 8px;">-</div>
 
@@ -411,7 +411,7 @@
                                         <span id="valProdOfferings" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">PROPOSED PRODUCTS</span>
+                                        <span style="color: #64748b; display: block; font-size: 10px;">ACTIVE OFFERINGS</span>
                                         <span id="valProdVisited" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                 </div>
@@ -421,7 +421,7 @@
                                         <span id="valUniqueCC" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                     <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">UNIQUE PRODUCTS</span>
+                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL PRODUCTS</span>
                                         <span id="valUniqueProd" style="font-weight: 700; color: #1e293b;">-</span>
                                     </div>
                                 </div>
