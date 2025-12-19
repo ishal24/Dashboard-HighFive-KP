@@ -338,68 +338,79 @@ class HighFiveProductPerformanceController extends Controller
         $winRate = $totalClosedDecision > 0 ? ($stats['count_win'] / $totalClosedDecision) * 100 : 0;
         $dominance = $stats['count_win'] > 0 ? ($topProduct['wins'] / $stats['count_win']) * 100 : 0;
 
-        // 5. Generate Modal HTML Insights
+        // 1. PRODUCTIVITY PULSE
         $insightPulse = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Productivity Pulse</h4></div>
             <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-success'><span class='insight-metric-label'>Active Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_active']) . "</span><span class='insight-metric-sub'>Sedang Berjalan</span></div>
-                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Inactive Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_inactive']) . "</span><span class='insight-metric-sub'>Belum Ditawarkan</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Closed Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_closed_global']) . "</span><span class='insight-metric-sub'>Win & Lose</span></div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Pending Prospects</span><span class='insight-metric-value'>" . number_format($stats['count_inactive']) . "</span><span class='insight-metric-sub'>Belum Ditawarkan</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Finalized Deals</span><span class='insight-metric-value'>" . number_format($stats['count_closed_global']) . "</span><span class='insight-metric-sub'>Win & Lose</span></div>
             </div>
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Saat ini, <strong>" . number_format($activeRate, 1) . "%</strong> dari total offerings sedang aktif diproses. Terdapat <strong>" . number_format($stats['count_inactive']) . "</strong> offerings masih belum ditawarkan, dan <strong>" . number_format($stats['count_closed_global']) . "</strong> offerings telah mencapai kesepakatan akhir (Closed).
+                    Tingkat produktivitas saat ini berada di angka <strong>" . number_format($activeRate, 1) . "%</strong> dengan fokus pada pemrosesan offerings aktif. Perlu diperhatikan terdapat <strong>" . number_format($stats['count_inactive']) . "</strong> offerings yang masih berstatus <em>idle (belum ditawarkan)</em>, sementara <strong>" . number_format($stats['count_closed_global']) . "</strong> offerings telah berhasil difinalisasi.
                 </p>
             </div>";
 
-        $stagnantSubHTML = $mostStagnantProduct['name'] ? "<div class='insight-metric-item im-warning'><span class='insight-metric-label'>Most Stagnant</span><span class='insight-metric-value' style='font-size:14px;'>{$mostStagnantProduct['name']}</span><span class='insight-metric-sub'>{$mostStagnantProduct['count']} Zero Improvement</span></div>" : "";
+        // 2. STAGNANCY ANALYSIS
+        $stagnantSubHTML = $mostStagnantProduct['name'] ? "<div class='insight-metric-item im-warning'><span class='insight-metric-label'>Critical Focus</span><span class='insight-metric-value' style='font-size:14px;'>{$mostStagnantProduct['name']}</span><span class='insight-metric-sub'>{$mostStagnantProduct['count']} Zero Improvement</span></div>" : "";
         $insightStagnant = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Stagnancy Analysis</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Stagnant</span><span class='insight-metric-value'>" . number_format($stats['count_stagnant']) . "</span><span class='insight-metric-sub'>Zero Improvement</span></div>
-                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>Stagnant Rate</span><span class='insight-metric-value'>" . number_format($stagnantRate, 1) . "%</span><span class='insight-metric-sub'>Ratio</span></div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Stagnant</span><span class='insight-metric-value'>" . number_format($stats['count_stagnant']) . "</span><span class='insight-metric-sub'>Tanpa Progress</span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>Stagnant Rate</span><span class='insight-metric-value'>" . number_format($stagnantRate, 1) . "%</span><span class='insight-metric-sub'>Rasio Hambatan</span></div>
                 {$stagnantSubHTML}
             </div>
             <div class='insight-narrative-box'>
-                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
-                <p class='insight-narrative-text'>Terdapat <strong>" . number_format($stats['count_stagnant']) . "</strong> offerings yang stagnan (<strong>" . number_format($stagnantRate, 1) . "%</strong>), di mana tidak ditemukan adanya improvement dari periode sebelumnya.</p>
+                <div class='insight-narrative-title'><i class='fas fa-exclamation-circle'></i> Analisis Insight</div>
+                <p class='insight-narrative-text'>
+                    Terdapat <strong>" . number_format($stats['count_stagnant']) . "</strong> offerings yang stagnan (<strong>" . number_format($stagnantRate, 1) . "%</strong>) tanpa adanya <em>improvement</em> dibanding periode sebelumnya. Perlu evaluasi mendalam pada produk <strong>{$mostStagnantProduct['name']}</strong> sebagai penyumbang stagnansi tertinggi.
+                </p>
             </div>";
 
+        // 3. TOP SELLING PRODUCT
         $insightTopProduct = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Top Selling Product</h4></div>
             <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($topProduct['wins']) . "</span><span class='insight-metric-sub'>Deals Secured</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Dominance</span><span class='insight-metric-value'>" . number_format($dominance, 1) . "%</span><span class='insight-metric-sub'>Share of Wins</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($topProduct['wins']) . "</span><span class='insight-metric-sub'>Offerings Secured</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Market Share</span><span class='insight-metric-value'>" . number_format($dominance, 1) . "%</span><span class='insight-metric-sub'>Kontribusi TREG3</span></div>
             </div>
             <div class='insight-narrative-box purple-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
-                <p class='insight-narrative-text'>Produk <strong>{$topProduct['name']}</strong> menjadi top selling product pada periode ini dengan total <strong>{$topProduct['wins']}</strong> kemenangan, dengan kontribusi sebesar <strong>" . number_format($dominance, 1) . "%</strong> dari total seluruh win TREG3.</p>
+                <div class='insight-narrative-title'><i class='fas fa-trophy'></i> Analisis Insight</div>
+                <p class='insight-narrative-text'>
+                    Produk <strong>{$topProduct['name']}</strong> mengukuhkan posisinya sebagai <em>market leader</em> periode ini dengan meraih <strong>{$topProduct['wins']}</strong> kemenangan, menyumbang <strong>" . number_format($dominance, 1) . "%</strong> dari total keberhasilan seluruh offerings di wilayah TREG3.
+                </p>
             </div>";
 
+        // 4. SUBMIT SPH STATUS
         $insightCompleted = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Submit SPH Status</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Submit SPH</span><span class='insight-metric-value'>" . number_format($stats['count_completed']) . "</span><span class='insight-metric-sub'>Progres 100%</span></div>
-                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>Negotiation</span><span class='insight-metric-value'>" . number_format($stats['count_sph_negotiation']) . "</span><span class='insight-metric-sub'>Belum Win/Lose</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Closed (SPH)</span><span class='insight-metric-value'>" . number_format($stats['count_sph_closed']) . "</span><span class='insight-metric-sub'>Win/Lose Result</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Submit SPH</span><span class='insight-metric-value'>" . number_format($stats['count_completed']) . "</span><span class='insight-metric-sub'>Offerings 100%</span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>In-Progress SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_negotiation']) . "</span><span class='insight-metric-sub'>Negotiation Phase</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Finalized SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_closed']) . "</span><span class='insight-metric-sub'>Win/Lose Result</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
-                <p class='insight-narrative-text'>Dari <strong>" . number_format($stats['count_completed']) . "</strong> item SPH, <strong>" . number_format($stats['count_sph_negotiation']) . "</strong> masih dalam tahap negosiasi, sementara <strong>" . number_format($stats['count_sph_closed']) . "</strong> lainnya telah mencapai keputusan final.</p>
+                <div class='insight-narrative-title'><i class='fas fa-file-invoice'></i> Analisis Insight</div>
+                <p class='insight-narrative-text'>
+                    Dari total <strong>" . number_format($stats['count_completed']) . "</strong> offerings yang telah submit SPH, sebanyak <strong>" . number_format($stats['count_sph_negotiation']) . "</strong> masih dalam tahap negosiasi intensif, sementara <strong>" . number_format($stats['count_sph_closed']) . "</strong> lainnya telah mencapai keputusan final.
+                </p>
             </div>";
 
-        // PERBAIKAN DI SINI (INSIGHT 5)
+        // 5. WIN RATE EFFICIENCY
         $insightWin = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Win Rate Efficiency</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Win Rate</span><span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span><span class='insight-metric-sub'>% Win/Closed</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($stats['count_win']) . "</span><span class='insight-metric-sub'>Items</span></div>
-                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Loses</span><span class='insight-metric-value'>" . number_format($stats['count_lose']) . "</span><span class='insight-metric-sub'>Items</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Win Rate</span><span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span><span class='insight-metric-sub'>Efficiency Ratio</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($stats['count_win']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Loses</span><span class='insight-metric-value'>" . number_format($stats['count_lose']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
-                <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
-                <p class='insight-narrative-text'>Tingkat keberhasilan (Win Rate) sebesar <strong>" . number_format($winRate, 1) . "%</strong> mencerminkan rasio kemenangan dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah selesai (Closed).</p>
+                <div class='insight-narrative-title'><i class='fas fa-chart-line'></i> Analisis Insight</div>
+                <p class='insight-narrative-text'>
+                    Efisiensi konversi berada pada tingkat <strong>" . number_format($winRate, 1) . "%</strong>. Angka ini mencerminkan rasio kemenangan tim dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah mencapai tahap keputusan akhir (Closed).
+                </p>
             </div>";
 
         // 6. Return Metrics (Teks 'Win Efficiency' diganti jadi Total Wins)

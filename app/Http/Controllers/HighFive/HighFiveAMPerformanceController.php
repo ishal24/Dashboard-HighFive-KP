@@ -351,7 +351,7 @@ class HighFiveAMPerformanceController extends Controller
                 'value' => $fSign($TREG3Imp),
                 'sub_label' => 'Avg Improvement',
                 'trend' => $TREG3Imp,
-                'trend_text' => 'vs Data Lama',
+                'trend_text' => ' ',
                 'color' => $TREG3Imp >= 0 ? 'success' : 'danger',
                 // Data TREG3 tetap ada sesuai permintaan
                 'offerings' => number_format($stats['total_offerings']),
@@ -392,8 +392,8 @@ class HighFiveAMPerformanceController extends Controller
         $insightTREG3 = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>TREG3 Overview</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($TREG3ImpP)}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($TREG3ImpR)}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($TREG3ImpP)}</span><span class='insight-metric-sub'> </span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($TREG3ImpR)}</span><span class='insight-metric-sub'> </span></div>
                 <div class='insight-metric-item'><span class='insight-metric-label'>Participation</span><span class='insight-metric-value'>" . number_format(($stats['active_ams'] / $total) * 100, 0) . "%</span><span class='insight-metric-sub'>AM Berprogres</span></div>
             </div>
             <div class='insight-narrative-box blue-theme'>
@@ -409,8 +409,8 @@ class HighFiveAMPerformanceController extends Controller
         $insightMost = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$mostWitel['name']}</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_p'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_r'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_p'])}</span><span class='insight-metric-sub'> </span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($mostWitel['avg_r'])}</span><span class='insight-metric-sub'> </span></div>
                 <div class='insight-metric-item'><span class='insight-metric-label'>Top Improvement AM</span><span class='insight-metric-value' style='font-size:14px;'>" . $mostWitel['top_am']['am'] . "</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
@@ -426,8 +426,8 @@ class HighFiveAMPerformanceController extends Controller
         $insightLeast = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$leastWitel['name']}</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_p'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
-                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_r'])}</span><span class='insight-metric-sub'>vs Data Lama</span></div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>IMPROVEMENT Progress</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_p'])}</span><span class='insight-metric-sub'> </span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>IMPROVEMENT Result</span><span class='insight-metric-value'>{$fSign2($leastWitel['avg_r'])}</span><span class='insight-metric-sub'> </span></div>
                 <div class='insight-metric-item'><span class='insight-metric-label'>Least Improver</span><span class='insight-metric-value' style='font-size:14px;'>" . $leastWitel['least_am']['am'] . "</span></div>
             </div>
             <div class='insight-narrative-box'>
@@ -446,21 +446,20 @@ class HighFiveAMPerformanceController extends Controller
             </div>
             <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
                 <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>Total Improvement</span>
+                    <span class='insight-metric-label'>AVG Improvement</span>
                     <span class='insight-metric-value'>{$fSign($topAM['change_avg'])}</span>
-                    <span class='insight-metric-sub'>Benchmark TREG3</span>
                 </div>
                 <div class='insight-metric-item " . ($gapResultAM >= 0 ? 'im-success' : 'im-danger') . "'>
-                    <span class='insight-metric-label'>Gap Result</span>
+                    <span class='insight-metric-label'>Improvement Result</span>
                     <span class='insight-metric-value'>{$fSign($gapResultAM)}</span>
-                    <span class='insight-metric-sub'>vs Periode Lalu</span>
+                    <span class='insight-metric-sub'> Periode Lalu</span>
                 </div>
             </div>
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-rocket'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    AM <strong>{$topAM['am']}</strong> mencapai skor improvement tertinggi sebesar <strong>{$fSign($topAM['change_avg'])}</strong>. 
-                    Angka ini diperoleh dari rata-rata lonjakan progres individu sebesar <strong>{$fSign2($topAM['change_progress'])}</strong> dan gap peningkatan result sebesar <strong>{$fSign2($gapResultAM)}</strong> dibanding periode sebelumnya. 
+                    AM <strong>{$topAM['am']}</strong> mencapai skor rata-rata improvement tertinggi sebesar <strong>{$fSign($topAM['change_avg'])}</strong>. 
+                    Angka ini diperoleh dari rata-rata lonjakan progres individu sebesar <strong>{$fSign2($topAM['change_progress'])}</strong> dan peningkatan result sebesar <strong>{$fSign2($gapResultAM)}</strong> dibanding . 
                     Hal ini menunjukkan efektivitas eksekusi yang sangat progresif dalam mengonversi peluang menjadi capaian nyata.
                 </p>
             </div>";
