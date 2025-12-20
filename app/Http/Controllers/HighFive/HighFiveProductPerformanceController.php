@@ -58,6 +58,9 @@ class HighFiveProductPerformanceController extends Controller
             $productLeaderboard = $this->generateProductLeaderboard($productData);
             $improvementLeaderboard = $this->generateImprovementLeaderboard($productData);
 
+            // ➕ 4. NEW: Perhitungan Statistik Status untuk Chart (Kategori Produk)
+            $statusStats = $this->calculateProductStatusStats($data1, $data2);
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -77,6 +80,7 @@ class HighFiveProductPerformanceController extends Controller
                     'products' => $productData,
                     'product_leaderboard' => $productLeaderboard,
                     'improvement_leaderboard' => $improvementLeaderboard,
+                    'status_stats' => $statusStats, // Data tambahan untuk Chart
                 ]
             ]);
 
@@ -89,7 +93,53 @@ class HighFiveProductPerformanceController extends Controller
     }
 
     /**
-     * ✅ REVISED: Calculate product performance
+     * ➕ NEW METHOD: Menghitung kuantitas status progres berdasarkan Kategori Produk
+     */
+    private function calculateProductStatusStats($data1, $data2)
+    {
+        $stats = ['ss1' => [], 'ss2' => []];
+        $categories = ['PDP', 'Connectivity', 'Digital Product', 'NeuCentrix', 'Cyber Security'];
+
+        $categorizeStatus = function($row) {
+            $p = floatval($row['progress_percentage'] ?? 0);
+            if ($p >= 100) return 'sph';
+            if ($p >= 75)  return 'presentasi';
+            if ($p >= 50)  return 'mytens';
+            if ($p > 0)    return 'visit';
+            return 'idle';
+        };
+
+        $getProductCat = function($productName) use ($categories) {
+            $name = strtoupper($productName);
+            foreach ($categories as $cat) {
+                if (strpos($name, strtoupper($cat)) !== false) return $cat;
+            }
+            return 'Connectivity'; 
+        };
+
+        foreach (['ss1' => $data1, 'ss2' => $data2] as $key => $dataset) {
+            foreach ($dataset as $row) {
+                $catProduct = $getProductCat($row['product'] ?? '');
+                $status = $categorizeStatus($row);
+
+                if ($status === 'idle') continue;
+
+                if (!isset($stats[$key][$catProduct])) {
+                    $stats[$key][$catProduct] = ['visit' => 0, 'mytens' => 0, 'presentasi' => 0, 'sph' => 0];
+                }
+                if (!isset($stats[$key]['Total'])) {
+                    $stats[$key]['Total'] = ['visit' => 0, 'mytens' => 0, 'presentasi' => 0, 'sph' => 0];
+                }
+
+                $stats[$key][$catProduct][$status]++;
+                $stats[$key]['Total'][$status]++;
+            }
+        }
+        return $stats;
+    }
+
+    /**
+     * ✅ PRESERVED: Calculate product performance
      */
     private function calculateProductPerformance($data1, $data2)
     {
@@ -243,35 +293,28 @@ class HighFiveProductPerformanceController extends Controller
     }
 
     /**
-     * 🔥 NEW: Calculate Analysis with Mini Cards HTML
-     */
-    /**
-     * 🔥 REVISED: Calculate Analysis with:
-     * 1. Smart Top Selling Product (Win Terbanyak -> Efisiensi Tertinggi)
-     * 2. Stagnancy Metric Swapped (Main: %, Sub: Count)
+     * ✅ PRESERVED: Calculate Analysis with Full HTML Modal Templates
      */
     private function calculateProductAnalysis($mergedData, $snapshot1, $snapshot2)
     {
-        // 1. Inisialisasi Variabel Statistik
         $stats = [
             'total_rows' => count($mergedData),
             'total_progress' => 0,
-            'count_active' => 0,      // Progres > 0 && Belum Win/Lose
-            'count_inactive' => 0,    // Progres == 0
-            'count_closed_global' => 0, // Win/Lose (tanpa filter progres)
-            'count_stagnant' => 0,     
-            'count_win' => 0,          
-            'count_lose' => 0,         
-            'count_completed' => 0,    // Progres == 100
-            'count_sph_negotiation' => 0, // Progres 100 tapi belum Win/Lose
-            'count_sph_closed' => 0,      // Progres 100 DAN Win/Lose
+            'count_active' => 0, 
+            'count_inactive' => 0,
+            'count_closed_global' => 0,
+            'count_stagnant' => 0, 
+            'count_win' => 0, 
+            'count_lose' => 0, 
+            'count_completed' => 0, 
+            'count_sph_negotiation' => 0,
+            'count_sph_closed' => 0,
             'unique_products' => [],
             'unique_cc' => [],
         ];
 
         $productStats = [];
 
-        // 2. Loop Data untuk Agregasi
         foreach ($mergedData as $row) {
             $stats['total_progress'] += $row['progress_2'];
             
@@ -301,11 +344,8 @@ class HighFiveProductPerformanceController extends Controller
 
             if ($isCompleted) {
                 $stats['count_completed']++;
-                if ($isClosed) {
-                    $stats['count_sph_closed']++;
-                } else {
-                    $stats['count_sph_negotiation']++;
-                }
+                if ($isClosed) $stats['count_sph_closed']++;
+                else $stats['count_sph_negotiation']++;
             }
 
             $pName = $row['product'] ?? 'Unknown';
@@ -317,7 +357,6 @@ class HighFiveProductPerformanceController extends Controller
             if ($row['change_avg'] == 0) $productStats[$pName]['stagnant']++;
         }
 
-        // 3. Logic Top Selling & Stagnant
         $topProduct = ['name' => 'None', 'wins' => -1, 'total' => 999999];
         $mostStagnantProduct = ['name' => null, 'count' => 0];
         foreach ($productStats as $name => $ps) {
@@ -329,7 +368,6 @@ class HighFiveProductPerformanceController extends Controller
             }
         }
 
-        // 4. Kalkulasi Metrik Global
         $total = $stats['total_rows'] ?: 1;
         $activeRate = ($stats['count_active'] / $total) * 100;
         $stagnantRate = ($stats['count_stagnant'] / $total) * 100;
@@ -338,7 +376,7 @@ class HighFiveProductPerformanceController extends Controller
         $winRate = $totalClosedDecision > 0 ? ($stats['count_win'] / $totalClosedDecision) * 100 : 0;
         $dominance = $stats['count_win'] > 0 ? ($topProduct['wins'] / $stats['count_win']) * 100 : 0;
 
-        // 1. PRODUCTIVITY PULSE
+        // --- FULL HTML INSIGHTS (KEINGINAN ANDA) ---
         $insightPulse = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Productivity Pulse</h4></div>
             <div class='insight-metrics-grid'>
@@ -353,14 +391,12 @@ class HighFiveProductPerformanceController extends Controller
                 </p>
             </div>";
 
-        // 2. STAGNANCY ANALYSIS
-        $stagnantSubHTML = $mostStagnantProduct['name'] ? "<div class='insight-metric-item im-warning'><span class='insight-metric-label'>Critical Focus</span><span class='insight-metric-value' style='font-size:14px;'>{$mostStagnantProduct['name']}</span><span class='insight-metric-sub'>{$mostStagnantProduct['count']} Zero Improvement</span></div>" : "";
         $insightStagnant = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Stagnancy Analysis</h4></div>
             <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Stagnant</span><span class='insight-metric-value'>" . number_format($stats['count_stagnant']) . "</span><span class='insight-metric-sub'>Tanpa Progress</span></div>
                 <div class='insight-metric-item im-warning'><span class='insight-metric-label'>Stagnant Rate</span><span class='insight-metric-value'>" . number_format($stagnantRate, 1) . "%</span><span class='insight-metric-sub'>Rasio Hambatan</span></div>
-                {$stagnantSubHTML}
+                " . ($mostStagnantProduct['name'] ? "<div class='insight-metric-item im-warning'><span class='insight-metric-label'>Critical Focus</span><span class='insight-metric-value' style='font-size:14px;'>{$mostStagnantProduct['name']}</span><span class='insight-metric-sub'>{$mostStagnantProduct['count']} Zero Improvement</span></div>" : "") . "
             </div>
             <div class='insight-narrative-box'>
                 <div class='insight-narrative-title'><i class='fas fa-exclamation-circle'></i> Analisis Insight</div>
@@ -369,7 +405,6 @@ class HighFiveProductPerformanceController extends Controller
                 </p>
             </div>";
 
-        // 3. TOP SELLING PRODUCT
         $insightTopProduct = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Top Selling Product</h4></div>
             <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
@@ -383,7 +418,6 @@ class HighFiveProductPerformanceController extends Controller
                 </p>
             </div>";
 
-        // 4. SUBMIT SPH STATUS
         $insightCompleted = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Submit SPH Status</h4></div>
             <div class='insight-metrics-grid'>
@@ -398,7 +432,6 @@ class HighFiveProductPerformanceController extends Controller
                 </p>
             </div>";
 
-        // 5. WIN RATE EFFICIENCY
         $insightWin = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Win Rate Efficiency</h4></div>
             <div class='insight-metrics-grid'>
@@ -413,49 +446,25 @@ class HighFiveProductPerformanceController extends Controller
                 </p>
             </div>";
 
-        // 6. Return Metrics (Teks 'Win Efficiency' diganti jadi Total Wins)
-        $metrics = [
-            'prod_pulse' => [
-                'value' => number_format($activeRate, 1) . '%',
-                'trend_text' => 'dari Semua Offerings',
-                'total_offerings' => number_format($stats['total_rows']),
-                'active_count' => number_format($stats['count_active']),
-                'unique_cc' => count($stats['unique_cc']),
-                'unique_products' => count($stats['unique_products']),
-                'visited_count' => number_format($stats['count_active']),
-                'wins' => number_format($stats['count_win']),
-                'loses' => number_format($stats['count_lose']),
-            ],
-            'stagnancy' => [
-                'value' => number_format($stagnantRate, 1) . '%',
-                'main_stat' => number_format($stats['count_stagnant']) . ' Items',
-            ],
-            'win' => [
-                'value' => number_format($winRate, 1) . '%',
-                'main_stat' => number_format($stats['count_win']) . ' Total Wins', // GANTI DI SINI
-            ],
-            'win_offerings' => [ 
-                'value' => $topProduct['name'],      
-                'main_stat' => $topProduct['wins'] . ' Wins', 
-            ],
-            'completed' => [
-                'value' => number_format($stats['count_completed']),
-                'main_stat' => number_format($completionRate, 1) . '% SPH Submit',
-            ]
-        ];
-
         return [
-            'metrics' => $metrics,
+            'metrics' => [
+                'prod_pulse' => [
+                    'value' => number_format($activeRate, 1) . '%', 'trend_text' => 'dari Semua Offerings',
+                    'total_offerings' => number_format($stats['total_rows']), 'active_count' => number_format($stats['count_active']),
+                    'unique_cc' => count($stats['unique_cc']), 'unique_products' => count($stats['unique_products']),
+                    'wins' => number_format($stats['count_win']), 'loses' => number_format($stats['count_lose']),
+                ],
+                'stagnancy' => ['value' => number_format($stagnantRate, 1) . '%', 'main_stat' => number_format($stats['count_stagnant']) . ' Items'],
+                'win' => ['value' => number_format($winRate, 1) . '%', 'main_stat' => number_format($stats['count_win']) . ' Total Wins'],
+                'win_offerings' => ['value' => $topProduct['name'], 'main_stat' => $topProduct['wins'] . ' Wins'],
+                'completed' => ['value' => number_format($stats['count_completed']), 'main_stat' => number_format($completionRate, 1) . '% SPH Submit']
+            ],
             'insights_data' => [
-                'prod_pulse' => $insightPulse,
-                'stagnancy' => $insightStagnant,
-                'win' => $insightWin,
-                'win_offerings' => $insightTopProduct, 
-                'completed' => $insightCompleted,
+                'prod_pulse' => $insightPulse, 'stagnancy' => $insightStagnant,
+                'win' => $insightWin, 'win_offerings' => $insightTopProduct, 'completed' => $insightCompleted,
             ]
         ];
     }
-    
 
     /**
      * ✅ PRESERVED: Generate product leaderboard
@@ -463,61 +472,32 @@ class HighFiveProductPerformanceController extends Controller
     private function generateProductLeaderboard($productData)
     {
         $productGrouped = [];
-
         foreach ($productData as $row) {
             $product = $row['product'];
-
             if (!isset($productGrouped[$product])) {
-                $productGrouped[$product] = [
-                    'product' => $product,
-                    'total_progress' => 0,
-                    'total_result' => 0,
-                    'count' => 0,
-                    'wins' => 0,
-                ];
+                $productGrouped[$product] = ['product' => $product, 'total_progress' => 0, 'total_result' => 0, 'count' => 0, 'wins' => 0];
             }
-
             $productGrouped[$product]['total_progress'] += $row['progress_2'];
             $productGrouped[$product]['total_result'] += $row['result_2'];
             $productGrouped[$product]['count']++;
-
-            if ($row['result_2'] == 100) {
-                $productGrouped[$product]['wins']++;
-            }
+            if ($row['result_2'] == 100) $productGrouped[$product]['wins']++;
         }
 
         $leaderboard = [];
         foreach ($productGrouped as $product => $data) {
             $avgProgress = $data['count'] > 0 ? round($data['total_progress'] / $data['count'], 2) : 0;
             $avgResult = $data['count'] > 0 ? round($data['total_result'] / $data['count'], 2) : 0;
-            $avgTotal = round(($avgProgress + $avgResult) / 2, 2);
-
             $leaderboard[] = [
-                'product' => $product,
-                'avg_progress' => $avgProgress,
-                'avg_result' => $avgResult,
-                'avg_total' => $avgTotal,
-                'total_offerings' => $data['count'],
-                'wins' => $data['wins'],
+                'product' => $product, 'avg_progress' => $avgProgress, 'avg_result' => $avgResult,
+                'avg_total' => round(($avgProgress + $avgResult) / 2, 2), 'total_offerings' => $data['count'], 'wins' => $data['wins'],
             ];
         }
 
-        usort($leaderboard, function($a, $b) {
-            if ($a['wins'] != $b['wins']) {
-                return $b['wins'] <=> $a['wins'];
-            }
-            return $a['total_offerings'] <=> $b['total_offerings'];
-        });
-
+        usort($leaderboard, fn($a, $b) => $b['wins'] <=> $a['wins'] ?: $a['total_offerings'] <=> $b['total_offerings']);
         $top10 = array_slice($leaderboard, 0, 10);
-        foreach ($top10 as $index => $row) {
-            $top10[$index]['rank'] = $index + 1;
-        }
+        foreach ($top10 as $index => $row) $top10[$index]['rank'] = $index + 1;
 
-        return [
-            'top_10' => $top10,
-            'all_products' => $leaderboard,
-        ];
+        return ['top_10' => $top10, 'all_products' => $leaderboard];
     }
 
     /**
@@ -526,15 +506,9 @@ class HighFiveProductPerformanceController extends Controller
     private function generateImprovementLeaderboard($productData)
     {
         $leaderboard = $productData;
-        usort($leaderboard, function($a, $b) {
-            return $b['change_avg'] <=> $a['change_avg'];
-        });
-
+        usort($leaderboard, fn($a, $b) => $b['change_avg'] <=> $a['change_avg']);
         $top10 = array_slice($leaderboard, 0, 10);
-        foreach ($top10 as $index => $row) {
-            $top10[$index]['rank'] = $index + 1;
-        }
-
+        foreach ($top10 as $index => $row) $top10[$index]['rank'] = $index + 1;
         return $top10;
     }
 }

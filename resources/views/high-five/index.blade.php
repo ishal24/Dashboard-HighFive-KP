@@ -50,6 +50,94 @@
     input:checked + .slider:before {
         transform: translateX(20px);
     }
+    /* Kontainer utama grid */
+    .highlight-grid-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    /* Baris 1: Chart (Lebar) dan Card Utama (Kecil) */
+    .row-1-layout {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr;
+        gap: 20px;
+        align-items: stretch; /* PENTING: Memaksa kolom kiri dan kanan sama tinggi */
+    }
+
+    /* Baris 2: 4 Card Kecil */
+    .row-2-layout {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .chart-card-wrapper {
+        background: white;
+        border-radius: 15px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid var(--gray-200);
+    }
+    /* Pastikan Wrapper Chart dan CardTall mengisi 100% tinggi kolom */
+     
+    .metric-sq-card.card-tall {
+        height: 100%;
+        margin-bottom: 0; /* Hapus margin bawah agar tidak pincang */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 2. Overide class .card-tall agar patuh pada Row 1 saja */
+    .metric-sq-card.card-tall {
+        grid-row: auto !important; /* Batalkan span 2 dari file CSS eksternal */
+        height: 100% !important;   /* Paksa isi 100% tinggi kolom */
+        margin: 0 !important;       /* Hapus margin yang mengganggu */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Sebar konten ke atas dan bawah agar rapi */
+        padding: 24px;
+        box-sizing: border-box;
+    }
+    
+    /* Memastikan Canvas chart tidak meluber */
+    .chart-container-inner {
+        flex-grow: 1;
+        min-height: 300px;
+        position: relative;
+    }
+
+
+    /* 3. Pastikan chart wrapper juga mengisi tinggi penuh */
+    .chart-card-wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    /* 4. Pastikan canvas chart mengambil sisa ruang yang ada */
+    .chart-card-wrapper canvas {
+        flex-grow: 1;
+        max-height: 320px; /* Batasi agar tidak mendorong row 2 terlalu jauh */
+    }
+
+    /* 5. Rapihkan isi dalam Card Tall */
+    .metric-sq-card.card-tall .sq-icon {
+        margin-bottom: 10px;
+    }
+    
+    .metric-sq-card.card-tall .sq-stat {
+        line-height: 1.2;
+        margin: 10px 0;
+    }
+    /* Responsif untuk layar kecil */
+    @media (max-width: 1024px) {
+        .row-1-layout { grid-template-columns: 1fr; }
+        .row-2-layout { grid-template-columns: repeat(2, 1fr); }
+    }
+
 </style>
 @endsection
 
@@ -238,72 +326,64 @@
             </div>
 
             <div id="amLevelContent" class="tab-content">
-                <div class="cards-section">
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Performance Highlights</h4>
-                        <p style="margin: 0; font-size: 12px; color: #64748b;">Overview & Key Metrics</p>
-                    </div>
+                <div class="highlight-grid-container">
+                    <div class="row-1-layout">
+                        <div class="chart-card-wrapper">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="m-0 font-bold" style="color: #1e293b; font-size: 16px;">Distribusi Progres</h5>
+                                    <p class="m-0 text-muted" style="font-size: 12px;">Periode Lama vs Periode Baru</p>
+                                </div>
+                                <select id="chartFilterWitelAM" class="native-select" style="width: auto; min-width: 160px; height: 35px; font-size: 13px;">
+                                    <option value="Total">Seluruh TREG3</option>
+                                </select>
+                            </div>
+                            <div style="height: 320px; position: relative;"><canvas id="progressChartAM"></canvas></div>
+                        </div>
 
-                    <div class="cards-grid-3-cols">
-                        
-                        <div class="metric-sq-card card-tall theme-success clickable-card" id="cardTREG3" onclick="showMetricInsight('TREG3')" data-insight="TREG3">
+                        <div class="metric-sq-card card-tall theme-success clickable-card" id="cardTREG3" onclick="showMetricInsight('TREG3')">
                             <div class="sq-icon"><i class="fas fa-globe-asia"></i></div>
                             <div class="sq-label" style="font-size: 14px;">TREG3 Avg Improvement</div>
                             <div class="sq-stat" id="metricNatValue" style="margin-bottom: 0;">-</div>
                             <div class="sq-sub" id="metricNatTrend" style="margin-bottom: 8px;">-</div>
-
-                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
-                                    <div style="text-align: left;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL OFFERINGS</span>
-                                        <span id="valOfferings" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">CC VISITED</span>
-                                        <span id="valVisited" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
+                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 6px; border-radius: 6px;">
+                                    <div style="text-align: left;"><span style="color: #64748b; display: block; font-size: 9px;">TOTAL OFFERINGS</span><span id="valOfferings" style="font-weight: 700; color: #1e293b;">-</span></div>
+                                    <div style="text-align: right;"><span style="color: #64748b; display: block; font-size: 9px;">CC VISITED</span><span id="valVisited" style="font-weight: 700; color: #1e293b;">-</span></div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
-                                    <div style="text-align: left;">
-                                        <span style="color: #059669; display: block; font-size: 10px; font-weight: 700;">TOTAL WINS</span>
-                                        <span id="valWins" style="font-weight: 700; color: #059669;">-</span>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <span style="color: #dc2626; display: block; font-size: 10px; font-weight: 700;">TOTAL LOSSES</span>
-                                        <span id="valLoses" style="font-weight: 700; color: #dc2626;">-</span>
-                                    </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 6px; border-radius: 6px;">
+                                    <div style="text-align: left;"><span style="color: #059669; display: block; font-size: 9px; font-weight: 700;">TOTAL WINS</span><span id="valWins" style="font-weight: 700; color: #059669;">-</span></div>
+                                    <div style="text-align: right;"><span style="color: #dc2626; display: block; font-size: 9px; font-weight: 700;">TOTAL LOSSES</span><span id="valLoses" style="font-weight: 700; color: #dc2626;">-</span></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')" data-insight="most_witel">
+                    <div class="row-2-layout">
+                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardMostWitel" onclick="showMetricInsight('most_witel')">
                             <div class="sq-icon"><i class="fas fa-crown"></i></div>
                             <div class="sq-label">Top Improvement Witel</div>
                             <div class="sq-value" id="metricMostName">-</div>
                             <div class="sq-sub" id="metricMostStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')" data-insight="least_witel">
+                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardLeastWitel" onclick="showMetricInsight('least_witel')">
                             <div class="sq-icon"><i class="fas fa-exclamation-triangle"></i></div>
                             <div class="sq-label">Least Improvement Witel</div>
                             <div class="sq-value" id="metricLeastName">-</div>
                             <div class="sq-sub" id="metricLeastStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')" data-insight="top_am">
+                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardTopAM" onclick="showMetricInsight('top_am')">
                             <div class="sq-icon"><i class="fas fa-user"></i></div>
                             <div class="sq-label">Top Improvement AM</div>
                             <div class="sq-value" id="metricTopAMName">-</div>
                             <div class="sq-sub" id="metricTopAMStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')" data-insight="am_most_win">
+                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardAmWin" onclick="showMetricInsight('am_most_win')">
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
                             <div class="sq-label">Top Win AM</div>
                             <div class="sq-value" id="metricAmWinName">-</div>
                             <div class="sq-sub" id="metricAmWinStat">-</div>
                         </div>
-
                     </div>
                 </div>
 
@@ -390,66 +470,64 @@
             </div>
 
             <div id="productLevelContent" class="tab-content">
-               <div class="cards-section">
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Product Performance Highlights</h4>
-                        <p style="margin: 0; font-size: 12px; color: #64748b;">Overview & Product Key Metrics</p>
-                    </div>
+                <div class="highlight-grid-container">
+                    <div class="row-1-layout">
+                        <div class="chart-card-wrapper">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="m-0 font-bold" style="color: #1e293b; font-size: 16px;">Distribusi Progres</h5>
+                                    <p class="m-0 text-muted" style="font-size: 12px;">Periode Lama vs Periode Baru</p>
+                                </div>
+                                <select id="chartFilterCategoryProd" class="native-select" style="width: auto; min-width: 180px; height: 35px; font-size: 13px;">
+                                    <option value="Total">Semua Kategori</option>
+                                    <option value="PDP">PDP</option>
+                                    <option value="Connectivity">Connectivity</option>
+                                    <option value="Digital Product">Digital Product</option>
+                                    <option value="NeuCentrix">NeuCentrix</option>
+                                    <option value="Cyber Security">Cyber Security</option>
+                                </select>
+                            </div>
+                            <div style="height: 320px; position: relative;"><canvas id="progressChartProd"></canvas></div>
+                        </div>
 
-                    <div class="cards-grid-3-cols">
-                        
-                        <div class="metric-sq-card card-tall theme-primary clickable-card" id="cardProdPulse" onclick="showMetricInsight('prod_pulse')" data-insight="prod_pulse">
+                        <div class="metric-sq-card card-tall theme-primary clickable-card" id="cardProdPulse" onclick="showMetricInsight('prod_pulse')">
                             <div class="sq-icon"><i class="fas fa-boxes"></i></div>
                             <div class="sq-label" style="font-size: 14px;">ACTIVE OFFERINGS RATE</div>
-                            <div class="sq-stat" id="metricProdPulseValue" style="margin-bottom: 0;">-</div>
-                            <div class="sq-sub" id="metricProdPulseSub" style="margin-bottom: 8px;">-</div>
-
-                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
-                                    <div style="text-align: left;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL OFFERINGS</span>
-                                        <span id="valProdOfferings" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">ACTIVE OFFERINGS</span>
-                                        <span id="valProdVisited" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
+                            <div class="sq-stat" id="metricProdPulseValue">-</div>
+                            <div class="sq-sub" id="metricProdPulseSub">-</div>
+                            <div style="border-top: 1px dashed #e2e8f0; width: 100%; padding-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 6px; border-radius: 6px;">
+                                    <div style="text-align: left;"><span style="color: #64748b; display: block; font-size: 9px;">OFFERINGS</span><span id="valProdOfferings" style="font-weight: 700;">-</span></div>
+                                    <div style="text-align: right;"><span style="color: #64748b; display: block; font-size: 9px;">ACTIVE</span><span id="valProdVisited" style="font-weight: 700;">-</span></div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; background: #f8fafc; padding: 8px; border-radius: 6px;">
-                                    <div style="text-align: left;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL CC</span>
-                                        <span id="valUniqueCC" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <span style="color: #64748b; display: block; font-size: 10px;">TOTAL PRODUCTS</span>
-                                        <span id="valUniqueProd" style="font-weight: 700; color: #1e293b;">-</span>
-                                    </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 6px; border-radius: 6px;">
+                                    <div style="text-align: left;"><span style="color: #64748b; display: block; font-size: 9px;">TOTAL CC</span><span id="valUniqueCC" style="font-weight: 700;">-</span></div>
+                                    <div style="text-align: right;"><span style="color: #64748b; display: block; font-size: 9px;">PRODUCTS</span><span id="valUniqueProd" style="font-weight: 700;">-</span></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardStagnancy" onclick="showMetricInsight('stagnancy')" data-insight="stagnancy">
+                    <div class="row-2-layout">
+                        <div class="metric-sq-card card-horizontal theme-warning clickable-card" id="cardStagnancy" onclick="showMetricInsight('stagnancy')">
                             <div class="sq-icon"><i class="fas fa-anchor"></i></div>
                             <div class="sq-label">Stagnant Offering</div>
                             <div class="sq-value" id="metricStagnantValue">-</div>
                             <div class="sq-sub" id="metricStagnantStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardwin" onclick="showMetricInsight('win')" data-insight="win">
+                        <div class="metric-sq-card card-horizontal theme-success clickable-card" id="cardwin" onclick="showMetricInsight('win')">
                             <div class="sq-icon"><i class="fas fa-percent"></i></div>
-                            <div class="sq-label">win Rate</div>
+                            <div class="sq-label">Win Rate</div>
                             <div class="sq-value" id="metricwinValue">-</div>
                             <div class="sq-sub" id="metricwinStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardWinOffer" onclick="showMetricInsight('win_offerings')" data-insight="win_offerings">
+                        <div class="metric-sq-card card-horizontal theme-purple clickable-card" id="cardWinOffer" onclick="showMetricInsight('win_offerings')">
                             <div class="sq-icon"><i class="fas fa-trophy"></i></div>
                             <div class="sq-label">Top Selling Product</div>
                             <div class="sq-value" id="metricWinOfferValue">-</div>
                             <div class="sq-sub" id="metricWinOfferStat">-</div>
                         </div>
-
-                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardCompleted" onclick="showMetricInsight('completed')" data-insight="completed">
+                        <div class="metric-sq-card card-horizontal theme-primary clickable-card" id="cardCompleted" onclick="showMetricInsight('completed')">
                             <div class="sq-icon"><i class="fas fa-check-double"></i></div>
                             <div class="sq-label">Submit SPH</div>
                             <div class="sq-value" id="metricCompletedValue">-</div>
@@ -649,6 +727,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
 <script>
@@ -656,6 +735,10 @@ $(document).ready(function() {
     // ================================
     // INITIALIZATION
     // ================================
+    let amProgressChart = null;
+    let prodProgressChart = null;
+    let globalStatusStatsAM = null;
+    let globalStatusStatsProd = null;
 
     // Initialize Flatpickr for manual fetch
     let datePickerInstance = flatpickr("#manualSnapshotDate", {
@@ -1320,9 +1403,68 @@ $(document).ready(function() {
         applyAMFilters();
     });
 
-    // ==========================================
-    // RENDER AM PERFORMANCE (FIXED & OPTIMIZED)
-    // ==========================================
+  
+    // FUNGSI RENDER CHART.JS
+    function updateProgressChart(canvasId, statsData, filterValue, type) {
+        if (!statsData) return;
+
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        const ss1 = statsData.ss1[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
+        const ss2 = statsData.ss2[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
+
+        const chartData = {
+            labels: ['Visit', 'Input MyTens', 'Presentasi', 'Submit SPH'],
+            datasets: [
+                {
+                    label: 'Snapshot 1 (Lama)',
+                    data: [ss1.visit, ss1.mytens, ss1.presentasi, ss1.sph],
+                    backgroundColor: '#cbd5e1',
+                    borderRadius: 6,
+                },
+                {
+                    label: 'Snapshot 2 (Baru)',
+                    data: [ss2.visit, ss2.mytens, ss2.presentasi, ss2.sph],
+                    backgroundColor: type === 'am' ? '#ef4444' : '#3b82f6', 
+                    borderRadius: 6,
+                }
+            ]
+        };
+
+        if (type === 'am' && amProgressChart) amProgressChart.destroy();
+        if (type === 'prod' && prodProgressChart) prodProgressChart.destroy();
+
+        const chartConfig = {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        };
+
+        if (type === 'am') amProgressChart = new Chart(ctx, chartConfig);
+        if (type === 'prod') prodProgressChart = new Chart(ctx, chartConfig);
+    }
+
+    // EVENT LISTENER UNTUK DROPDOWN FILTER
+    $(document).on('change', '#chartFilterWitelAM', function() {
+        updateProgressChart('progressChartAM', globalStatusStatsAM, $(this).val(), 'am');
+    });
+
+    $(document).on('change', '#chartFilterCategoryProd', function() {
+        updateProgressChart('progressChartProd', globalStatusStatsProd, $(this).val(), 'prod');
+    });
+
     // ==========================================
     // RENDER AM PERFORMANCE (FIXED MAPPING)
     // ==========================================
@@ -1374,6 +1516,24 @@ $(document).ready(function() {
             $('#metricAmWinName').text(m.am_most_win.value);
             $('#metricAmWinStat').text(m.am_most_win.main_stat);
         }
+
+        // === TAMBAHKAN KODE INI ===
+        globalStatusStatsAM = data.status_stats; 
+        
+        // Update daftar Witel di dropdown filter chart
+        let filterOptions = '<option value="Total">Seluruh TREG3</option>';
+        if(globalStatusStatsAM && globalStatusStatsAM.ss2) {
+            const witels = Object.keys(globalStatusStatsAM.ss2)
+                .filter(w => w !== 'Total')
+                .sort();
+            witels.forEach(w => {
+                filterOptions += `<option value="${w}">${w}</option>`;
+            });
+        }
+        $('#chartFilterWitelAM').html(filterOptions);
+
+        // Jalankan render chart pertama kali
+        updateProgressChart('progressChartAM', globalStatusStatsAM, 'Total', 'am');
 
         // ... (Simpan Insight & Render Table sama) ...
         globalInsightsData = data.witel_analysis.insights_data; 
@@ -1468,7 +1628,7 @@ $(document).ready(function() {
             
             // Detail statistik kecil di dalam kartu
             $('#valProdOfferings').text(m.prod_pulse.total_offerings);
-            $('#valProdVisited').text(m.prod_pulse.visited_count);
+            $('#valProdVisited').text(m.prod_pulse.active_count); // Ambil dari active_count
             $('#valUniqueCC').text(m.prod_pulse.unique_cc);
             $('#valUniqueProd').text(m.prod_pulse.unique_products);
         }
@@ -1523,6 +1683,11 @@ $(document).ready(function() {
         const improvementResult = renderLeaderboard(improvementLeaderboardData, 1, ITEMS_PER_PAGE, 'improvement');
         $('#improvementLeaderboardTableBody').html(improvementResult.html);
         $('#improvementLeaderboardPagination').html(improvementResult.pagination);
+
+        globalStatusStatsProd = data.status_stats; 
+        
+        // Langsung render chart (filter kategori sudah hardcode di HTML)
+        updateProgressChart('progressChartProd', globalStatusStatsProd, 'Total', 'prod');
     }
 
     // ================================

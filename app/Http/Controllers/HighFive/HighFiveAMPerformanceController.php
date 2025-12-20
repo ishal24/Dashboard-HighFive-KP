@@ -53,6 +53,9 @@ class HighFiveAMPerformanceController extends Controller
             // 4. Leaderboard
             $leaderboard = $this->generateLeaderboard($mergedData);
 
+            // 5. ➕ NEW: Perhitungan Statistik Status Progres untuk Chart
+            $statusStats = $this->calculateProgressStatusStats($data1, $data2);
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -71,6 +74,7 @@ class HighFiveAMPerformanceController extends Controller
                     'witel_analysis' => $witelAnalysis,
                     'benchmarking' => $mergedData,
                     'leaderboard' => $leaderboard,
+                    'status_stats' => $statusStats, // Digunakan oleh Chart.js di frontend
                 ]
             ]);
 
@@ -80,6 +84,43 @@ class HighFiveAMPerformanceController extends Controller
                 'message' => 'Gagal memproses data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * ➕ NEW METHOD: Menghitung kuantitas data berdasarkan fase progres per Witel
+     */
+    private function calculateProgressStatusStats($data1, $data2)
+    {
+        $stats = ['ss1' => [], 'ss2' => []];
+
+        $categorize = function($row) {
+            $p = floatval($row['progress_percentage'] ?? 0);
+            if ($p >= 100) return 'sph';
+            if ($p >= 75)  return 'presentasi';
+            if ($p >= 50)  return 'mytens';
+            if ($p > 0)    return 'visit';
+            return 'idle';
+        };
+
+        foreach (['ss1' => $data1, 'ss2' => $data2] as $key => $dataset) {
+            foreach ($dataset as $row) {
+                $witel = trim($row['witel'] ?? 'Unknown');
+                $cat = $categorize($row);
+                
+                if ($cat === 'idle') continue;
+
+                if (!isset($stats[$key][$witel])) {
+                    $stats[$key][$witel] = ['visit' => 0, 'mytens' => 0, 'presentasi' => 0, 'sph' => 0];
+                }
+                if (!isset($stats[$key]['Total'])) {
+                    $stats[$key]['Total'] = ['visit' => 0, 'mytens' => 0, 'presentasi' => 0, 'sph' => 0];
+                }
+
+                $stats[$key][$witel][$cat]++;
+                $stats[$key]['Total'][$cat]++;
+            }
+        }
+        return $stats;
     }
 
     private function calculateAMAverage($data)
@@ -124,7 +165,6 @@ class HighFiveAMPerformanceController extends Controller
                 $custName = $row['customer_name'];
                 $stats['cust_list'][$custName] = true;
                 
-                // Track if this customer has any progress
                 if (($row['progress_percentage'] ?? 0) > 0) {
                     $stats['visited_customers'][$custName] = true;
                 }
@@ -201,7 +241,6 @@ class HighFiveAMPerformanceController extends Controller
             ];
         }
 
-        // Sort by Witel (A-Z), then Improvement (Top to Least)
         usort($merged, function($a, $b) {
             $witelCompare = strcmp($a['witel'], $b['witel']);
             if ($witelCompare !== 0) return $witelCompare;
@@ -245,13 +284,8 @@ class HighFiveAMPerformanceController extends Controller
         }
     }
 
-    /**
-     * Metric Calculation for Square Cards
-     */
-
     private function calculateWitelAnalysis($mergedData, $snapshot1, $snapshot2)
     {
-        // 1. Inisialisasi
         $stats = [
             'total_ams' => 0,
             'sum_change_p' => 0, 'sum_change_r' => 0, 'sum_change_avg' => 0,
@@ -264,10 +298,9 @@ class HighFiveAMPerformanceController extends Controller
         ];
 
         $witelStats = [];
-        $topAM = null;      // MVP Improver
-        $topWinAM = null;   // Top Sales AM
+        $topAM = null;      
+        $topWinAM = null;   
 
-        // 2. Looping Data
         foreach ($mergedData as $row) {
             $stats['total_ams']++;
             $stats['sum_change_p'] += $row['change_progress'];
@@ -276,7 +309,6 @@ class HighFiveAMPerformanceController extends Controller
             
             if ($row['progress_2'] > 0) $stats['active_ams']++;
 
-            // Data TREG3 (Tetap Dipertahankan)
             $amStats = $row['stats'] ?? [];
             $stats['total_offerings'] += $amStats['offerings'] ?? 0;
             $stats['total_customers'] += $amStats['total_customers'] ?? 0;
@@ -284,19 +316,16 @@ class HighFiveAMPerformanceController extends Controller
             $stats['total_wins'] += $amStats['win'] ?? 0;
             $stats['total_loses'] += $amStats['lose'] ?? 0;
 
-            // TREG3 MVP Improver
             if (!$topAM || $row['change_avg'] > $topAM['change_avg']) {
                 $topAM = $row;
             }
 
-            // TREG3 Top Sales AM
             $amWin = $amStats['win'] ?? 0;
             $currentTopWin = $topWinAM['stats']['win'] ?? 0;
             if (!$topWinAM || $amWin > $currentTopWin || ($amWin == $currentTopWin && $row['result_2'] > $topWinAM['result_2'])) {
                 $topWinAM = $row;
             }
 
-            // Grouping Witel
             $witel = $row['witel'];
             if (!isset($witelStats[$witel])) {
                 $witelStats[$witel] = [
@@ -318,7 +347,6 @@ class HighFiveAMPerformanceController extends Controller
             if ($row['change_avg'] < $witelStats[$witel]['least_am']['change_avg']) $witelStats[$witel]['least_am'] = $row;
         }
 
-        // 3. Kalkulasi Rata-rata & Gap
         $total = $stats['total_ams'] ?: 1;
         $TREG3Imp = $stats['sum_change_avg'] / $total;
         $TREG3ImpP = $stats['sum_change_p'] / $total;
@@ -340,11 +368,9 @@ class HighFiveAMPerformanceController extends Controller
         $mostWitel = $witelFinal[0];
         $leastWitel = end($witelFinal);
 
-        // Helper formatting sign
         $fSign = fn($v) => ($v > 0 ? '+' : '') . number_format($v, 1) . '%';
         $fSign2 = fn($v) => ($v > 0 ? '+' : '') . number_format($v, 2) . '%';
 
-        // 4. Siapkan Metrics Cards Utama
         $metrics = [
             'TREG3' => [
                 'label' => 'TREG3 Pulse',
@@ -353,7 +379,6 @@ class HighFiveAMPerformanceController extends Controller
                 'trend' => $TREG3Imp,
                 'trend_text' => ' ',
                 'color' => $TREG3Imp >= 0 ? 'success' : 'danger',
-                // Data TREG3 tetap ada sesuai permintaan
                 'offerings' => number_format($stats['total_offerings']),
                 'total_customers' => number_format($stats['total_customers']),
                 'visited' => number_format($stats['total_visited']),
@@ -386,9 +411,7 @@ class HighFiveAMPerformanceController extends Controller
             ]
         ];
 
-        // 5. Generate Modal Insight Data
-        
-        // --- INSIGHT TREG3 ---
+        // --- KONTEN INSIGHTS MODAL (BAWAAN LAMA) ---
         $insightTREG3 = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>TREG3 Overview</h4></div>
             <div class='insight-metrics-grid'>
@@ -404,7 +427,6 @@ class HighFiveAMPerformanceController extends Controller
                 </p>
             </div>";
 
-        // --- INSIGHT WITEL CHAMPION ---
         $gapMost = $mostWitel['avg_imp'] - $TREG3Imp;
         $insightMost = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$mostWitel['name']}</h4></div>
@@ -421,7 +443,6 @@ class HighFiveAMPerformanceController extends Controller
                 </p>
             </div>";
 
-        // --- INSIGHT FOCUS AREA ---
         $gapLeast = $leastWitel['avg_imp'] - $TREG3Imp;
         $insightLeast = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Witel {$leastWitel['name']}</h4></div>
@@ -438,33 +459,20 @@ class HighFiveAMPerformanceController extends Controller
                 </p>
             </div>";
 
-        // --- INSIGHT MVP IMPROVER (AM) ---
-        $gapResultAM = $topAM['result_2'] - $topAM['result_1'];
         $insightAM = "
-            <div style='margin-bottom: 16px;'>
-                <h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$topAM['am']}</h4>
-            </div>
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$topAM['am']}</h4></div>
             <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
-                <div class='insight-metric-item im-primary'>
-                    <span class='insight-metric-label'>AVG Improvement</span>
-                    <span class='insight-metric-value'>{$fSign($topAM['change_avg'])}</span>
-                </div>
-                <div class='insight-metric-item " . ($gapResultAM >= 0 ? 'im-success' : 'im-danger') . "'>
-                    <span class='insight-metric-label'>Improvement Result</span>
-                    <span class='insight-metric-value'>{$fSign($gapResultAM)}</span>
-                    <span class='insight-metric-sub'> Periode Lalu</span>
-                </div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>AVG Improvement</span><span class='insight-metric-value'>{$fSign($topAM['change_avg'])}</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Improvement Result</span><span class='insight-metric-value'>{$fSign($topAM['change_result'])}</span><span class='insight-metric-sub'> Periode Lalu</span></div>
             </div>
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-rocket'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
                     AM <strong>{$topAM['am']}</strong> mencapai skor rata-rata improvement tertinggi sebesar <strong>{$fSign($topAM['change_avg'])}</strong>. 
-                    Angka ini diperoleh dari rata-rata lonjakan progres individu sebesar <strong>{$fSign2($topAM['change_progress'])}</strong> dan peningkatan result sebesar <strong>{$fSign2($gapResultAM)}</strong> dibanding . 
                     Hal ini menunjukkan efektivitas eksekusi yang sangat progresif dalam mengonversi peluang menjadi capaian nyata.
                 </p>
             </div>";
 
-        // --- INSIGHT TOP SALES AM ---
         $totalWins = $stats['total_wins'] ?: 1;
         $dominance = (($topWinAM['stats']['win'] ?? 0) / $totalWins) * 100;
         $insightTopSales = "
@@ -477,8 +485,8 @@ class HighFiveAMPerformanceController extends Controller
             <div class='insight-narrative-box green-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-medal'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    AM <strong>{$topWinAM['am']}</strong> berhasil memenangkan <strong>" . ($topWinAM['stats']['win'] ?? 0) . "</strong> wins dari <strong>" . ($topWinAM['stats']['total_customers'] ?? 0) . "</strong> customer yang dihandle. 
-                    Kontribusi (dominance) sebesar <strong>" . number_format($dominance, 1) . "%</strong> menunjukkan AM ini adalah penyumbang kemenangan terbesar bagi TREG3 saat ini.
+                    AM <strong>{$topWinAM['am']}</strong> berhasil memenangkan <strong>" . ($topWinAM['stats']['win'] ?? 0) . "</strong> wins. 
+                    Kontribusi sebesar <strong>" . number_format($dominance, 1) . "%</strong> menunjukkan AM ini adalah penyumbang kemenangan terbesar bagi TREG3 saat ini.
                 </p>
             </div>";
 
