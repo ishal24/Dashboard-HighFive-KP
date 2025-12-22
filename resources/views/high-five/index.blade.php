@@ -77,7 +77,6 @@
         background: white;
         border-radius: 15px;
         padding: 24px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         border: 1px solid var(--gray-200);
         display: flex;
         flex-direction: column;
@@ -1410,7 +1409,6 @@ $(document).ready(function() {
         applyAMFilters();
     });
 
-  
     // FUNGSI RENDER CHART.JS
     function updateProgressChart(canvasId, statsData, filterValue, type) {
         if (!statsData) return;
@@ -1421,6 +1419,14 @@ $(document).ready(function() {
         
         const ss1 = statsData.ss1[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
         const ss2 = statsData.ss2[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
+
+        // ✅ Calculate delta for each category
+        const deltas = {
+            visit: ss2.visit - ss1.visit,
+            mytens: ss2.mytens - ss1.mytens,
+            presentasi: ss2.presentasi - ss1.presentasi,
+            sph: ss2.sph - ss1.sph
+        };
 
         const chartData = {
             labels: ['Visit', 'Input MyTens', 'Presentasi', 'Submit SPH'],
@@ -1443,6 +1449,35 @@ $(document).ready(function() {
         if (type === 'am' && amProgressChart) amProgressChart.destroy();
         if (type === 'prod' && prodProgressChart) prodProgressChart.destroy();
 
+        // ✅ Plugin to render delta above snapshot 2 bars
+        const deltaPlugin = {
+            id: 'deltaLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx, chartArea: { top }, scales: { x, y } } = chart;
+                const meta = chart.getDatasetMeta(1); // Dataset index 1 = Snapshot 2
+                
+                ctx.save();
+                ctx.font = 'bold 14px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                
+                // ✅ Use chart color instead of green/red
+                const deltaColor = type === 'am' ? '#ef4444' : '#3b82f6';
+                
+                meta.data.forEach((bar, index) => {
+                    const delta = Object.values(deltas)[index];
+                    if (delta === 0) return; // Don't show if no change
+                    
+                    const text = delta > 0 ? `+${delta}` : `${delta}`;
+                    
+                    ctx.fillStyle = deltaColor;
+                    ctx.fillText(text, bar.x, bar.y - 5);
+                });
+                
+                ctx.restore();
+            }
+        };
+
         const chartConfig = {
             type: 'bar',
             data: chartData,
@@ -1450,6 +1485,11 @@ $(document).ready(function() {
                 responsive: true,
                 maintainAspectRatio: false, // Memungkinkan chart menyesuaikan tinggi container
                 resizeDelay: 200, // Menunda resize sedikit untuk performa saat zoom
+                layout: {
+                    padding: {
+                        top: 25 // ✅ Add padding to prevent delta labels from being clipped
+                    }
+                },
                 plugins: {
                     legend: { 
                         position: 'bottom', 
@@ -1463,7 +1503,8 @@ $(document).ready(function() {
                         ticks: { stepSize: 1 } 
                     }
                 }
-            }
+            },
+            plugins: [deltaPlugin] // ✅ Register delta plugin
         };
 
         if (type === 'am') amProgressChart = new Chart(ctx, chartConfig);
