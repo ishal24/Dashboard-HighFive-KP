@@ -390,13 +390,13 @@ class HighFiveProductPerformanceController extends Controller
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Status Offerings Overview</h4></div>
             <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-success'><span class='insight-metric-label'>Active Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_active']) . "</span><span class='insight-metric-sub'>Sedang Berjalan</span></div>
-                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Pending Prospects</span><span class='insight-metric-value'>" . number_format($stats['count_inactive']) . "</span><span class='insight-metric-sub'>Belum Ditawarkan</span></div>
+                <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Idle Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_inactive']) . "</span><span class='insight-metric-sub'>Belum Ditawarkan</span></div>
                 <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Closed Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_closed_global']) . "</span><span class='insight-metric-sub'>Win & Lose</span></div>
             </div>
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Tingkat produktivitas saat ini berada di angka <strong>" . number_format($activeRate, 1) . "%</strong> dengan fokus pada pemrosesan offerings aktif. Perlu diperhatikan terdapat <strong>" . number_format($stats['count_inactive']) . "</strong> offerings yang masih berstatus <em>idle (belum ditawarkan)</em>, sementara <strong>" . number_format($stats['count_closed_global']) . "</strong> offerings telah berhasil difinalisasi.
+                    Tingkat produktivitas saat ini berada di angka <strong>" . number_format($activeRate, 1) . "% (". number_format($stats['count_active']) . ")</strong> dengan fokus pada pemrosesan offerings aktif. Perlu diperhatikan terdapat <strong>" . number_format($stats['count_inactive']) . "</strong> offerings yang masih berstatus <em>idle (belum ditawarkan)</em>, sementara <strong>" . number_format($stats['count_closed_global']) . "</strong> offerings telah berhasil difinalisasi.
                 </p>
             </div>";
 
@@ -410,7 +410,7 @@ class HighFiveProductPerformanceController extends Controller
             <div class='insight-narrative-box'>
                 <div class='insight-narrative-title'><i class='fas fa-exclamation-circle'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Terdapat <strong>" . number_format($stats['count_stagnant']) . "</strong> offerings yang stagnan (<strong>" . number_format($stagnantRate, 1) . "%</strong>) tanpa adanya <em>improvement</em> dibanding periode sebelumnya. Perlu evaluasi mendalam pada produk <strong>{$mostStagnantProduct['name']}</strong> sebagai penyumbang stagnansi tertinggi.
+                    Terdapat <strong>" . number_format($stats['count_stagnant']) . "</strong> offerings (yang belum closed) yang stagnan (<strong>" . number_format($stagnantRate, 1) . "%</strong>) tanpa adanya <em>improvement</em> dibanding periode sebelumnya. Perlu evaluasi mendalam pada produk <strong>{$mostStagnantProduct['name']}</strong> sebagai penyumbang stagnansi tertinggi.
                 </p>
             </div>";
 

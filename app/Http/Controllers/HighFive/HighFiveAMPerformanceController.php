@@ -425,7 +425,7 @@ class HighFiveAMPerformanceController extends Controller
                 <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
                     Angka rata-rata improvement TREG3 sebesar <strong>{$fSign($TREG3Imp)}</strong> diperoleh dari agregasi peningkatan progres (<strong>{$fSign2($TREG3ImpP)}</strong>) dan peningkatan result (<strong>{$fSign2($TREG3ImpR)}</strong>). 
-                    Data ini mencerminkan dinamika <strong>" . number_format($stats['total_offerings']) . "</strong> penawaran aktif yang sedang berjalan di seluruh wilayah.
+                    Data ini mencerminkan dinamika <strong>" . number_format($stats['total_offerings']) . "</strong> offerings yang sedang berjalan di seluruh wilayah.
                 </p>
             </div>";
 
@@ -441,7 +441,7 @@ class HighFiveAMPerformanceController extends Controller
                 <div class='insight-narrative-title'><i class='fas fa-chart-line'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
                     Witel {$mostWitel['name']} mencatatkan improvement tertinggi sebesar <strong>{$fSign($mostWitel['avg_imp'])}</strong>, yang didapatkan dari rata-rata peningkatan progres (<strong>{$fSign2($mostWitel['avg_p'])}</strong>) dan result (<strong>{$fSign2($mostWitel['avg_r'])}</strong>). 
-                    Wilayah ini memiliki gap positif sebesar <strong>" . $fSign($gapMost) . "</strong> dari seluruh witel, dipicu oleh akselerasi AM <strong>" . $mostWitel['top_am']['am'] . "</strong>.
+                    Wilayah ini memiliki gap positif sebesar <strong>" . $fSign($gapMost) . "</strong> dari rata-rata seluruh witel, dipicu oleh akselerasi AM <strong>" . $mostWitel['top_am']['am'] . "</strong>.
                 </p>
             </div>";
 
@@ -457,7 +457,7 @@ class HighFiveAMPerformanceController extends Controller
                 <div class='insight-narrative-title'><i class='fas fa-exclamation-circle'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
                     Witel {$leastWitel['name']} berada di posisi terbawah dalam hal performa dengan nilai improvement sebesar <strong>{$fSign($leastWitel['avg_imp'])}</strong> (Progres: <strong>{$fSign2($leastWitel['avg_p'])}</strong>, Result: <strong>{$fSign2($leastWitel['avg_r'])}</strong>). 
-                    Angka ini menghasilkan gap negatif sebesar <strong>" . number_format($gapLeast, 1) . "%</strong> dari Improvement TREG3, dipengaruhi oleh performa AM <strong>" . $leastWitel['least_am']['am'] . "</strong> yang memerlukan supervisi tambahan.
+                    Angka ini menghasilkan gap negatif sebesar <strong>" . number_format($gapLeast, 1) . "%</strong> dari rata-rata seluruh witel, dipengaruhi oleh performa AM <strong>" . $leastWitel['least_am']['am'] . "</strong> yang memerlukan supervisi tambahan.
                 </p>
             </div>";
 
