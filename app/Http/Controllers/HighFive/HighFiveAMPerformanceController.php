@@ -379,7 +379,7 @@ class HighFiveAMPerformanceController extends Controller
                 'value' => $fSign($TREG3Imp),
                 'sub_label' => 'Avg Improvement',
                 'trend' => $TREG3Imp,
-                'trend_text' => ' ',
+                'trend_text' => 'Seluruh AM',
                 'color' => $TREG3Imp >= 0 ? 'success' : 'danger',
                 'offerings' => number_format($stats['total_offerings']),
                 'total_customers' => number_format($stats['total_customers']),
