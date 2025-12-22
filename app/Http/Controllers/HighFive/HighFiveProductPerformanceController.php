@@ -378,11 +378,11 @@ class HighFiveProductPerformanceController extends Controller
 
         // --- FULL HTML INSIGHTS (KEINGINAN ANDA) ---
         $insightPulse = "
-            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Productivity Pulse</h4></div>
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Status Offerings Overview</h4></div>
             <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-success'><span class='insight-metric-label'>Active Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_active']) . "</span><span class='insight-metric-sub'>Sedang Berjalan</span></div>
                 <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Pending Prospects</span><span class='insight-metric-value'>" . number_format($stats['count_inactive']) . "</span><span class='insight-metric-sub'>Belum Ditawarkan</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Finalized Deals</span><span class='insight-metric-value'>" . number_format($stats['count_closed_global']) . "</span><span class='insight-metric-sub'>Win & Lose</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Closed Offerings</span><span class='insight-metric-value'>" . number_format($stats['count_closed_global']) . "</span><span class='insight-metric-sub'>Win & Lose</span></div>
             </div>
             <div class='insight-narrative-box blue-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-lightbulb'></i> Analisis Insight</div>
@@ -414,16 +414,16 @@ class HighFiveProductPerformanceController extends Controller
             <div class='insight-narrative-box purple-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-trophy'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Produk <strong>{$topProduct['name']}</strong> mengukuhkan posisinya sebagai <em>market leader</em> periode ini dengan meraih <strong>{$topProduct['wins']}</strong> kemenangan, menyumbang <strong>" . number_format($dominance, 1) . "%</strong> dari total keberhasilan seluruh offerings di wilayah TREG3.
+                    Produk <strong>{$topProduct['name']}</strong> menjadi <em>market leader</em> periode ini karena meraih <strong>{$topProduct['wins']}</strong> wins, menyumbang <strong>" . number_format($dominance, 1) . "%</strong> dari total wins seluruh offerings di wilayah TREG3.
                 </p>
             </div>";
 
         $insightCompleted = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Submit SPH Status</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Submit SPH</span><span class='insight-metric-value'>" . number_format($stats['count_completed']) . "</span><span class='insight-metric-sub'>Offerings 100%</span></div>
-                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>In-Progress SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_negotiation']) . "</span><span class='insight-metric-sub'>Negotiation Phase</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Finalized SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_closed']) . "</span><span class='insight-metric-sub'>Win/Lose Result</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Submit SPH</span><span class='insight-metric-value'>" . number_format($stats['count_completed']) . "</span><span class='insight-metric-sub'>Progress 100%</span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>In-Progress SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_negotiation']) . "</span><span class='insight-metric-sub'>In Negotiation</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Finalized SPH</span><span class='insight-metric-value'>" . number_format($stats['count_sph_closed']) . "</span><span class='insight-metric-sub'>Win/Lose</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-file-invoice'></i> Analisis Insight</div>
@@ -433,9 +433,9 @@ class HighFiveProductPerformanceController extends Controller
             </div>";
 
         $insightWin = "
-            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Win Rate Efficiency</h4></div>
+            <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Win Rate</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Win Rate</span><span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span><span class='insight-metric-sub'>Efficiency Ratio</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Win Rate</span><span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span><span class='insight-metric-sub'>Ratio</span></div>
                 <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($stats['count_win']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
                 <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Loses</span><span class='insight-metric-value'>" . number_format($stats['count_lose']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
             </div>

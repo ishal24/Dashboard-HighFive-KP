@@ -79,6 +79,11 @@
         padding: 24px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         border: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+        width: 100%; /* Pastikan lebar 100% */
+        min-width: 0;   /* Penting agar chart bisa mengecil di dalam grid */
+        overflow: hidden; 
     }
     /* Pastikan Wrapper Chart dan CardTall mengisi 100% tinggi kolom */
      
@@ -101,11 +106,13 @@
         box-sizing: border-box;
     }
     
-    /* Memastikan Canvas chart tidak meluber */
+    /* Container canvas harus relatif dan fleksibel */
     .chart-container-inner {
-        flex-grow: 1;
-        min-height: 300px;
         position: relative;
+        flex-grow: 1;
+        width: 100%;
+        min-height: 250px; /* Gunakan min-height, jangan height tetap */
+        max-height: 320px;
     }
 
 
@@ -1441,13 +1448,20 @@ $(document).ready(function() {
             data: chartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: false, // Memungkinkan chart menyesuaikan tinggi container
+                resizeDelay: 200, // Menunda resize sedikit untuk performa saat zoom
                 plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { boxWidth: 12, usePointStyle: true } 
+                    },
                     tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    }
                 }
             }
         };
