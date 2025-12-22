@@ -103,11 +103,11 @@ class HighFiveReportController extends Controller
 
             // ✅ PRESERVED: Generate PDF (unchanged)
             $pdf = Pdf::loadView('high-five.report-pdf', $reportData)
-                ->setPaper('a4', 'landscape')
-                ->setOption('margin-top', 10)
-                ->setOption('margin-bottom', 10)
-                ->setOption('margin-left', 10)
-                ->setOption('margin-right', 10);
+                ->setPaper('a4', 'portrait')  // Portrait orientation as reference
+                ->setOption('margin-top', '25.4mm')     // 2.54cm = 25.4mm = 1 inch
+                ->setOption('margin-bottom', '25.4mm')
+                ->setOption('margin-left', '25.4mm')
+                ->setOption('margin-right', '25.4mm');
 
             // ✅ PRESERVED: Filename format (only changed dataset → snapshot reference)
             $filename = 'Laporan_HighFive_' .
@@ -201,11 +201,11 @@ class HighFiveReportController extends Controller
 
             // ✅ PRESERVED: Generate PDF with stream() instead of download()
             $pdf = Pdf::loadView('high-five.report-pdf', $reportData)
-                ->setPaper('a4', 'landscape')
-                ->setOption('margin-top', 10)
-                ->setOption('margin-bottom', 10)
-                ->setOption('margin-left', 10)
-                ->setOption('margin-right', 10);
+                ->setPaper('a4', 'portrait')  // Portrait orientation as reference
+                ->setOption('margin-top', '25.4mm')     // 2.54cm = 25.4mm = 1 inch
+                ->setOption('margin-bottom', '25.4mm')
+                ->setOption('margin-left', '25.4mm')
+                ->setOption('margin-right', '25.4mm');
 
             $filename = 'Laporan_HighFive_' .
                         str_replace(' ', '_', $snapshot1->divisi->kode ?? 'Unknown') . '_' .

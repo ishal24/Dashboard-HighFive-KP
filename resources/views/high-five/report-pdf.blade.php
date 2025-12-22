@@ -12,443 +12,472 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            font-size: 11px;
-            line-height: 1.4;
-            color: #374151;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            color: #000000;
+            line-height: 1.5;
+            padding: 25.4mm;  /* 2.54cm margin via padding since DomPDF ignores margin option */
         }
 
-        .header {
-            background: linear-gradient(135deg, #ea1d25 0%, #c41e24 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .header-section {
             margin-bottom: 20px;
         }
 
-        .header h1 {
-            font-size: 20px;
+        .header-section table {
+            width: 100%;
+            border: none;
+            margin-bottom: 15px;
+        }
+
+        .header-section td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .header-title {
+            font-size: 18pt;
             font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .logo-cell {
+            text-align: right;
+            width: 150px;
+        }
+
+        .logo-img {
+            height: 60px;
+            width: auto;
+        }
+
+        .metadata {
+            margin-bottom: 25px;
+            font-size: 11pt;
+        }
+
+        .metadata p {
+            margin-bottom: 3px;
+        }
+
+        .highlight {
+            background: #ffcccc;
+            padding: 0 3px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .key-metrics {
+            margin-bottom: 15px;
+        }
+
+        .key-metrics p {
             margin-bottom: 5px;
         }
 
-        .header p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .meta-info {
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .meta-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .meta-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .meta-label {
-            font-weight: bold;
-            color: #6b7280;
-        }
-
-        .meta-value {
-            color: #374151;
-            font-weight: 600;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ea1d25;
-            margin: 20px 0 10px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #ea1d25;
-        }
-
-        .analysis-cards {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .analysis-card {
-            flex: 1;
-            background: #f9fafb;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            text-align: center;
-        }
-
-        .analysis-card h4 {
-            font-size: 10px;
-            color: #6b7280;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .analysis-card .value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ea1d25;
-            margin-bottom: 4px;
-        }
-
-        .analysis-card .label {
-            font-size: 10px;
-            color: #374151;
-        }
-
-        table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 10px;
+            margin: 15px 0 20px 0;
+            font-size: 10pt;
         }
 
-        table thead {
+        .data-table th {
             background: #f3f4f6;
-        }
-
-        table th {
-            padding: 8px;
+            padding: 8px 6px;
             text-align: left;
             font-weight: bold;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-            font-size: 9px;
-            text-transform: uppercase;
+            border: 1px solid #000;
+            font-size: 10pt;
         }
 
-        table td {
-            padding: 8px;
-            border: 1px solid #e5e7eb;
-            color: #4b5563;
+        .data-table td {
+            padding: 8px 6px;
+            border: 1px solid #000;
+            font-size: 10pt;
+            word-wrap: break-word;
         }
 
-        table tbody tr:nth-child(even) {
+        .data-table .average-row {
+            font-weight: bold;
             background: #f9fafb;
         }
 
-        .progress-bar {
-            height: 6px;
-            background: #e5e7eb;
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ea1d25, #f04851);
-            border-radius: 3px;
-        }
-
-        .progress-fill.result {
-            background: linear-gradient(90deg, #059669, #10b981);
-        }
-
-        .change-positive {
-            color: #059669;
-            font-weight: bold;
-        }
-
-        .change-negative {
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-        }
-
-        .leaderboard-item.gold {
-            background: #fef9e7;
-            border-color: #f5c542;
-        }
-
-        .leaderboard-item.silver {
-            background: #f3f4f6;
-            border-color: #9fa6b2;
-        }
-
-        .leaderboard-item.bronze {
-            background: #fef3c7;
-            border-color: #c07a2b;
-        }
-
-        .leaderboard-rank {
-            font-size: 16px;
-            font-weight: bold;
-            min-width: 40px;
+        .data-table .center {
             text-align: center;
-            color: #6b7280;
         }
 
-        .leaderboard-item.gold .leaderboard-rank {
-            color: #f5c542;
-        }
-
-        .leaderboard-item.silver .leaderboard-rank {
-            color: #9fa6b2;
-        }
-
-        .leaderboard-item.bronze .leaderboard-rank {
-            color: #c07a2b;
-        }
-
-        .leaderboard-info {
-            flex: 1;
-            margin-left: 10px;
-        }
-
-        .leaderboard-name {
-            font-weight: bold;
-            color: #374151;
-            font-size: 11px;
-        }
-
-        .leaderboard-detail {
-            font-size: 9px;
-            color: #6b7280;
-        }
-
-        .leaderboard-score {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ea1d25;
-            min-width: 60px;
-            text-align: right;
-        }
-
-        .footer {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #e5e7eb;
+        .data-table .no-col {
+            width: 30px;
             text-align: center;
-            font-size: 9px;
-            color: #6b7280;
+        }
+
+        ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        ul li {
+            margin-bottom: 5px;
         }
 
         .page-break {
-            page-break-after: always;
+            page-break-before: always;
         }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .text-bold {
-            font-weight: bold;
-        }
-
-        .mt-10 {
-            margin-top: 10px;
-        }
-
-        .mb-10 {
-            margin-bottom: 10px;
+        @page {
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <!-- Page 1: Cover & AM Performance -->
-    <div class="header">
-        <h1>{{ $title }}</h1>
-        <p>{{ $subtitle }}</p>
+    {{-- PAGE 1: EXECUTIVE SUMMARY --}}
+    
+    {{-- Header with Logo --}}
+    <div class="header-section">
+        <table>
+            <tr>
+                <td>
+                    <div class="header-title">
+                        Executive Summary:<br>High Five Performance
+                    </div>
+                </td>
+                <td class="logo-cell">
+                    @php
+                        $logoPath = public_path('images/telkom-logo.png');
+                        if (file_exists($logoPath)) {
+                            $logoData = base64_encode(file_get_contents($logoPath));
+                            $logoSrc = 'data:image/png;base64,' . $logoData;
+                        } else {
+                            $logoSrc = null;
+                        }
+                    @endphp
+                    @if($logoSrc)
+                    <img src="{{ $logoSrc }}" alt="Telkom Indonesia" class="logo-img">
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <div class="meta-info">
-        <div class="meta-row">
-            <span class="meta-label">Tanggal Laporan:</span>
-            <span class="meta-value">{{ $generated_at }}</span>
-        </div>
-        <div class="meta-row">
-            <span class="meta-label">Divisi:</span>
-            <span class="meta-value">{{ $divisi }}</span>
-        </div>
-        <div class="meta-row">
-            <span class="meta-label">Dataset Pertama:</span>
-            <span class="meta-value">{{ $snapshot_1['name'] }} ({{ $snapshot_1['date'] }})</span>
-        </div>
-        <div class="meta-row">
-            <span class="meta-label">Dataset Kedua:</span>
-            <span class="meta-value">{{ $snapshot_2['name'] }} ({{ $snapshot_2['date'] }})</span>
-        </div>
+    {{-- Metadata --}}
+    <div class="metadata">
+        <p><strong>Periode</strong> : {{ $snapshot_1['date'] }} vs {{ $snapshot_2['date'] }}</p>
+        <p><strong>Divisi</strong> : <span class="highlight">{{ $divisi }}</span></p>
     </div>
 
-    <div class="section-title">PERFORMA ACCOUNT MANAGER (AM LEVEL)</div>
+    {{-- SECTION I: REGIONAL PERFORMANCE OVERVIEW --}}
+    <h2>I. Regional Performance Overview</h2>
 
-    <div class="analysis-cards">
-        @if(isset($am_performance['witel_analysis']['cards']['dataset_2']['most_progress']))
-        <div class="analysis-card">
-            <h4>Most Progress</h4>
-            <div class="value">{{ $am_performance['witel_analysis']['cards']['dataset_2']['most_progress']['witel'] }}</div>
-            <div class="label">{{ number_format($am_performance['witel_analysis']['cards']['dataset_2']['most_progress']['avg_progress'], 2) }}%</div>
-        </div>
-        @endif
+    @php
+        // Calculate metrics from actual data
+        $totalWins = 0;
+        $totalLosses = 0;
+        $totalAMs = count($am_performance['benchmarking'] ?? []);
+        $totalCCs = 0;
+        $uniqueCCs = [];
+        
+        // Count from AM benchmarking data
+        foreach ($am_performance['benchmarking'] ?? [] as $am) {
+            $totalWins += $am['stats']['win'] ?? 0;
+            $totalLosses += $am['stats']['lose'] ?? 0;
+        }
+        
+        // Count from product data
+        $totalOfferings = count($product_performance['products'] ?? []);
+        foreach ($product_performance['products'] ?? [] as $product) {
+            if (!empty($product['customer'])) {
+                $uniqueCCs[$product['customer']] = true;
+            }
+        }
+        $totalCCs = count($uniqueCCs);
+        
+        $totalClosed = $totalWins + $totalLosses;
+        $winRate = $totalClosed > 0 ? round(($totalWins / $totalClosed) * 100, 1) : 0;
+        
+        // Calculate TREG3 avg improvement from AM data (weighted by AM count)
+        $totalImprovementSum = 0;
+        foreach ($am_performance['benchmarking'] ?? [] as $am) {
+            $totalImprovementSum += $am['change_avg'] ?? 0;
+        }
+        $avgImprovement = $totalAMs > 0 ? round($totalImprovementSum / $totalAMs, 2) : 0;
+        
+        // Calculate coverage
+        $coverage = $totalCCs > 0 ? "$totalCCs/$totalCCs CC visited (total $totalOfferings product offerings)" : "-";
+    @endphp
 
-        @if(isset($am_performance['witel_analysis']['cards']['dataset_2']['least_progress']))
-        <div class="analysis-card">
-            <h4>Least Progress</h4>
-            <div class="value">{{ $am_performance['witel_analysis']['cards']['dataset_2']['least_progress']['witel'] }}</div>
-            <div class="label">{{ number_format($am_performance['witel_analysis']['cards']['dataset_2']['least_progress']['avg_progress'], 2) }}%</div>
-        </div>
-        @endif
+    <div class="key-metrics">
+        <p><strong>Coverage Ratio</strong> : {{ $coverage }}</p>
+        <p><strong>TREG 3 avg improvement</strong> : {{ $avgImprovement > 0 ? '+' : '' }}{{ number_format($avgImprovement, 2) }}%</p>
+        <p><strong>Win Rate</strong> : {{ number_format($winRate, 1) }}% (Total {{ $totalWins }} wins and {{ $totalLosses }} loses)</p>
     </div>
 
-    <table>
+    <h3>Witel Performance Movement (Progress and Result):</h3>
+    
+    @php
+        // Group benchmarking data by Witel
+        $witelData = [];
+        $totalAllAMs = 0; // Track total AM count across all Witels
+        
+        foreach ($am_performance['benchmarking'] ?? [] as $am) {
+            $witel = $am['witel'];
+            if (!isset($witelData[$witel])) {
+                $witelData[$witel] = [
+                    'sum_avg_1' => 0,  // Sum of average (progress_1 + result_1)/2 for all AMs in this witel
+                    'sum_avg_2' => 0,  // Sum of average (progress_2 + result_2)/2 for all AMs in this witel
+                    'count' => 0
+                ];
+            }
+            
+            // Calculate average of progress and result for each AM at each date
+            $avg1 = ($am['progress_1'] + $am['result_1']) / 2;
+            $avg2 = ($am['progress_2'] + $am['result_2']) / 2;
+            
+            $witelData[$witel]['sum_avg_1'] += $avg1;
+            $witelData[$witel]['sum_avg_2'] += $avg2;
+            $witelData[$witel]['count']++;
+            $totalAllAMs++;
+        }
+        
+        // Calculate averages per Witel and improvement
+        $witelDataWithAvg = [];
+        $grandTotalAvg1 = 0; // Sum of ALL AM averages for date 1
+        $grandTotalAvg2 = 0; // Sum of ALL AM averages for date 2
+        $grandTotalImprovement = 0; // Sum of ALL AM improvements
+        
+        foreach ($witelData as $witel => $data) {
+            $avgDate1 = $data['count'] > 0 ? $data['sum_avg_1'] / $data['count'] : 0;
+            $avgDate2 = $data['count'] > 0 ? $data['sum_avg_2'] / $data['count'] : 0;
+            $improvement = $avgDate2 - $avgDate1; // Improvement = kolom 3 - kolom 2
+            
+            // Accumulate TOTAL from all AMs (not just Witel averages)
+            $grandTotalAvg1 += $data['sum_avg_1']; // Sum of individual AM values
+            $grandTotalAvg2 += $data['sum_avg_2']; // Sum of individual AM values
+            $grandTotalImprovement += ($data['sum_avg_2'] - $data['sum_avg_1']); // Total improvement
+            
+            $witelDataWithAvg[$witel] = [
+                'avg_date_1' => $avgDate1,
+                'avg_date_2' => $avgDate2,
+                'improvement' => $improvement,
+                'count' => $data['count']
+            ];
+        }
+        
+        // Sort by improvement descending
+        uasort($witelDataWithAvg, function($a, $b) {
+            return $b['improvement'] <=> $a['improvement'];
+        });
+        
+        $witelData = $witelDataWithAvg;
+        $witelCount = count($witelData);
+    @endphp
+
+    <table class="data-table">
         <thead>
             <tr>
                 <th>Witel</th>
-                <th>Account Manager</th>
-                <th>Avg Progress<br>({{ $snapshot_1['date'] }})</th>
-                <th>Avg Progress<br>({{ $snapshot_2['date'] }})</th>
-                <th>Avg Result<br>({{ $snapshot_1['date'] }})</th>
-                <th>Avg Result<br>({{ $snapshot_2['date'] }})</th>
-                <th>Change</th>
+                <th class="center">{{ $snapshot_1['date'] }}</th>
+                <th class="center">{{ $snapshot_2['date'] }}</th>
+                <th class="center">Avg Improvement</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($am_performance['benchmarking'] as $row)
+            @foreach($witelData as $witel => $data)
             <tr>
-                <td>{{ $row['witel'] }}</td>
-                <td><strong>{{ $row['am'] }}</strong></td>
-                <td>{{ number_format($row['progress_1'], 2) }}%</td>
-                <td>{{ number_format($row['progress_2'], 2) }}%</td>
-                <td>{{ number_format($row['result_1'], 2) }}%</td>
-                <td>{{ number_format($row['result_2'], 2) }}%</td>
-                <td class="{{ $row['change_progress'] >= 0 ? 'change-positive' : 'change-negative' }}">
-                    {{ $row['change_progress'] >= 0 ? '+' : '' }}{{ number_format($row['change_progress'], 2) }}%
-                </td>
+                <td>{{ $witel }}</td>
+                <td class="center">{{ $data['avg_date_1'] > 0 ? '+' : '' }}{{ number_format($data['avg_date_1'], 2) }}%</td>
+                <td class="center">{{ $data['avg_date_2'] > 0 ? '+' : '' }}{{ number_format($data['avg_date_2'], 2) }}%</td>
+                <td class="center">{{ $data['improvement'] > 0 ? '+' : '' }}{{ number_format($data['improvement'], 2) }}%</td>
             </tr>
             @endforeach
+            <tr class="average-row">
+                <td><strong>Average (from all AMs) :</strong></td>
+                <td class="center">{{ $totalAllAMs > 0 ? '+' : '' }}{{ $totalAllAMs > 0 ? number_format($grandTotalAvg1 / $totalAllAMs, 2) : '0.00' }}%</td>
+                <td class="center">{{ $totalAllAMs > 0 ? '+' : '' }}{{ $totalAllAMs > 0 ? number_format($grandTotalAvg2 / $totalAllAMs, 2) : '0.00' }}%</td>
+                <td class="center">{{ $totalAllAMs > 0 ? '+' : '' }}{{ $totalAllAMs > 0 ? number_format($grandTotalImprovement / $totalAllAMs, 2) : '0.00' }}%</td>
+            </tr>
         </tbody>
     </table>
 
-    <div class="section-title">LEADERBOARD ACCOUNT MANAGER (TOP 10)</div>
-
-    @foreach(array_slice($am_performance['leaderboard'], 0, 10) as $index => $am)
-    @php
-        $rank = $index + 1;
-        $class = $rank === 1 ? 'gold' : ($rank === 2 ? 'silver' : ($rank === 3 ? 'bronze' : ''));
-    @endphp
-    <div class="leaderboard-item {{ $class }}">
-        <div class="leaderboard-rank">{{ $rank }}</div>
-        <div class="leaderboard-info">
-            <div class="leaderboard-name">{{ $am['am'] }}</div>
-            <div class="leaderboard-detail">{{ $am['witel'] }}</div>
-        </div>
-        <div class="leaderboard-score">{{ number_format($am['progress_2'], 2) }}%</div>
-    </div>
-    @endforeach
-
+    {{-- PAGE 2: SALES FORCE IMPROVEMENT --}}
     <div class="page-break"></div>
 
-    <!-- Page 2: Product Performance -->
-    <div class="header">
-        <h1>{{ $title }}</h1>
-        <p>{{ $subtitle }}</p>
-    </div>
+    <h2>II. Sales Force Improvement</h2>
 
-    <div class="section-title">PERFORMA PER PRODUK (PRODUCT LEVEL)</div>
-
-    <div class="analysis-cards">
-        @if(isset($product_performance['statistics']['coverage']))
-        <div class="analysis-card">
-            <h4>Corporate Customer Visited</h4>
-            <div class="value">{{ $product_performance['statistics']['coverage']['visited'] }}/{{ $product_performance['statistics']['coverage']['total'] }}</div>
-            <div class="label">{{ number_format($product_performance['statistics']['coverage']['percentage'], 2) }}% Coverage</div>
-        </div>
-        @else
-        <div class="analysis-card">
-            <h4>Corporate Customer Visited</h4>
-            <div class="value">-</div>
-            <div class="label">-</div>
-        </div>
+    <h3>Top and Least Improvement Witel</h3>
+    @php
+        $metrics = $am_performance['witel_analysis']['metrics'] ?? [];
+    @endphp
+    <ul>
+        @if(isset($metrics['most_witel']))
+        <li>{{ $metrics['most_witel']['value'] }} : {{ $metrics['most_witel']['main_stat'] }}</li>
         @endif
-
-        @if(isset($product_performance['statistics']['am_without_progress']))
-        <div class="analysis-card">
-            <h4>AM Tanpa Progress</h4>
-            <div class="value">{{ $product_performance['statistics']['am_without_progress'] }}</div>
-            <div class="label">Account Manager</div>
-        </div>
-        @else
-        <div class="analysis-card">
-            <h4>AM Tanpa Progress</h4>
-            <div class="value">-</div>
-            <div class="label">Account Manager</div>
-        </div>
+        @if(isset($metrics['least_witel']))
+        <li>{{ $metrics['least_witel']['value'] }} : {{ $metrics['least_witel']['main_stat'] }}</li>
         @endif
-    </div>
+    </ul>
 
-    <table>
+    <h3>Top 10 Best Improvement</h3>
+    <table class="data-table">
         <thead>
             <tr>
-                <th>AM</th>
-                <th>Customer</th>
-                <th>Product</th>
-                <th>Progress<br>({{ $snapshot_1['date'] }})</th>
-                <th>Progress<br>({{ $snapshot_2['date'] }})</th>
-                <th>Result<br>({{ $snapshot_1['date'] }})</th>
-                <th>Result<br>({{ $snapshot_2['date'] }})</th>
+                <th class="no-col">No.</th>
+                <th>Account Manager</th>
+                <th>Witel</th>
+                <th class="center">Improvement</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(array_slice($product_performance['products'], 0, 30) as $row)
+            @foreach(array_slice($am_performance['leaderboard'] ?? [], 0, 10) as $index => $am)
             <tr>
-                <td>{{ $row['am'] }}</td>
-                <td>{{ $row['customer'] ?? '-' }}</td>
-                <td>{{ $row['product'] }}</td>
-                <td>{{ $row['progress_1'] }}%</td>
-                <td>{{ $row['progress_2'] }}%</td>
-                <td>{{ $row['result_1'] }}%</td>
-                <td>{{ $row['result_2'] }}%</td>
+                <td class="center">{{ $index + 1 }}</td>
+                <td style="max-width: 150px;">{{ $am['am'] }}</td>
+                <td>{{ $am['witel'] }}</td>
+                <td class="center">{{ $am['change_avg'] > 0 ? '+' : '' }}{{ number_format($am['change_avg'], 1) }}%</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    @if(count($product_performance['products']) > 30)
-    <p class="text-center mt-10"><em>Menampilkan 30 dari {{ count($product_performance['products']) }} data. Data lengkap dapat diakses di dashboard.</em></p>
+    @php
+        $zeroMovementAMs = [];
+        foreach ($am_performance['benchmarking'] ?? [] as $am) {
+            if (($am['change_avg'] ?? 0) == 0) {
+                $zeroMovementAMs[] = $am['am'];
+            }
+        }
+    @endphp
+
+    @if(count($zeroMovementAMs) > 0)
+    <h3>Zero Movement (0% Improvement)</h3>
+    <ul>
+        @foreach(array_slice($zeroMovementAMs, 0, 10) as $am)
+        <li>{{ $am }}</li>
+        @endforeach
+    </ul>
     @endif
 
-    <div class="section-title mt-10">LEADERBOARD PRODUK (TOP 10)</div>
+    {{-- PAGE 3: PRODUCT MARKET FIT --}}
+    <div class="page-break"></div>
 
-    @foreach(array_slice($product_performance['product_leaderboard']['top_10'] ?? [], 0, 10) as $index => $product)
+    <h2>III. Product Market Fit</h2>
+
     @php
-        $rank = $index + 1;
-        $class = $rank === 1 ? 'gold' : ($rank === 2 ? 'silver' : ($rank === 3 ? 'bronze' : ''));
+        $productMetrics = $product_performance['product_analysis']['metrics'] ?? [];
+        $topProduct = $productMetrics['win_offerings']['value'] ?? '-';
+        
+        // Count stagnant, closed, not offered, and ACTIVE from product data
+        $stagnantCount = 0;
+        $closedCount = 0;
+        $notOfferedCount = 0;
+        $activeCount = 0;
+        $totalProductOfferings = count($product_performance['products'] ?? []);
+        
+        // Track stagnant products by name for finding the top one
+        $stagnantByProduct = [];
+        
+        // ✅ NEW: Track Submit SPH (progress_2 = 100%)
+        $totalSubmitSPH = 0;
+        $sphNegotiation = 0; // SPH but not closed yet
+        $sphClosed = 0;      // SPH and closed (Win or Lose)
+        
+        foreach ($product_performance['products'] ?? [] as $product) {
+            $result = strtolower($product['result'] ?? '');
+            $progress2 = $product['progress_2'] ?? 0;
+            $productName = $product['product'] ?? 'Unknown';
+            
+            // Detect Win/Lose status
+            $isWin = strpos($result, 'win') !== false;
+            $isLose = strpos($result, 'lose') !== false;
+            $isClosed = $isWin || $isLose;
+            
+            // Count closed (win or lose)
+            if ($isClosed) {
+                $closedCount++;
+            }
+            
+            // Count not offered (progress = 0)
+            if ($progress2 == 0) {
+                $notOfferedCount++;
+            } else {
+                // If offered and not closed = active
+                if (!$isClosed) {
+                    $activeCount++;
+                }
+            }
+            
+            // ✅ NEW: Count Submit SPH
+            if ($progress2 >= 100) {
+                $totalSubmitSPH++;
+                if ($isClosed) {
+                    $sphClosed++;
+                } else {
+                    $sphNegotiation++;
+                }
+            }
+            
+            // ✅ FIX: Count stagnant ONLY for non-closed offerings with zero improvement
+            // Closed offerings (Win/Lose) should NOT be counted as stagnant
+            $changeAvg = (($product['change_progress'] ?? 0) + ($product['change_result'] ?? 0)) / 2;
+            if ($changeAvg == 0 && !$isClosed) {
+                $stagnantCount++;
+                if (!isset($stagnantByProduct[$productName])) {
+                    $stagnantByProduct[$productName] = 0;
+                }
+                $stagnantByProduct[$productName]++;
+            }
+        }
+        
+        // Find top stagnant product
+        arsort($stagnantByProduct);
+        $topStagnantProduct = '';
+        $topStagnantCount = 0;
+        if (count($stagnantByProduct) > 0) {
+            $topStagnantProduct = array_key_first($stagnantByProduct);
+            $topStagnantCount = $stagnantByProduct[$topStagnantProduct];
+        }
     @endphp
-    <div class="leaderboard-item {{ $class }}">
-        <div class="leaderboard-rank">{{ $rank }}</div>
-        <div class="leaderboard-info">
-            <div class="leaderboard-name">{{ $product['product'] }}</div>
-            <div class="leaderboard-detail">{{ $product['total_offerings'] ?? 0 }} penawaran</div>
-        </div>
-        <div class="leaderboard-score">{{ number_format($product['avg_progress'] ?? 0, 2) }}%</div>
-    </div>
-    @endforeach
 
-    <div class="footer">
-        <p>Laporan ini dibuat secara otomatis oleh sistem High Five RLEGS TR3</p>
-        <p>Telkom Regional 3 - {{ $generated_at }}</p>
-    </div>
+    <h3>Product Highlights</h3>
+    <ul>
+        <li>Total Submit SPH: {{ $totalSubmitSPH }} ({{ $sphNegotiation }} in negotiation, {{ $sphClosed }} closed)</li>
+        <li>Active Offerings : {{ $activeCount }} Products ({{ $notOfferedCount }} not offered, {{ $closedCount }} closed)</li>
+        <li>Stagnant Offerings : {{ $stagnantCount }} products with 0% progress ({{ $topStagnantProduct }}: {{ $topStagnantCount }} offerings with 0% improvement)</li>
+    </ul>
+
+    <h3>Top 10 Best-Selling Products</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="no-col">No.</th>
+                <th>Product</th>
+                <th class="center">Total Offerings</th>
+                <th class="center">Win</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(array_slice($product_performance['product_leaderboard']['top_10'] ?? [], 0, 10) as $index => $product)
+            <tr>
+                <td class="center">{{ $index + 1 }}</td>
+                <td style="max-width: 200px;">{{ $product['product'] }}</td>
+                <td class="center">{{ $product['total_offerings'] ?? 0 }}</td>
+                <td class="center">{{ $product['wins'] ?? 0 }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
 </body>
 </html>

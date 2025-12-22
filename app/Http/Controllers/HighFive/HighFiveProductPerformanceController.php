@@ -321,8 +321,7 @@ class HighFiveProductPerformanceController extends Controller
             if (!empty($row['product'])) $stats['unique_products'][$row['product']] = true;
             if (!empty($row['customer'])) $stats['unique_cc'][$row['customer']] = true;
 
-            if ($row['change_avg'] == 0) $stats['count_stagnant']++;
-
+            // Deteksi Win/Lose TERLEBIH DAHULU sebelum hitung stagnant
             $resText = strtolower($row['result'] ?? ''); 
             $resVal = $row['result_2'] ?? 0;
 
@@ -330,6 +329,12 @@ class HighFiveProductPerformanceController extends Controller
             $isLose = (strpos($resText, 'lose') !== false);
             $isClosed = ($isWin || $isLose);
             $isCompleted = ($row['progress_2'] == 100);
+
+            // ✅ FIX: Hitung stagnant HANYA untuk offering yang BUKAN Win/Lose
+            // Offering yang sudah closed (Win/Lose) tidak boleh masuk hitungan stagnant
+            if ($row['change_avg'] == 0 && !$isClosed) {
+                $stats['count_stagnant']++;
+            }
 
             if ($isClosed) {
                 $stats['count_closed_global']++;
@@ -354,7 +359,11 @@ class HighFiveProductPerformanceController extends Controller
             }
             $productStats[$pName]['total']++;
             if ($isWin) $productStats[$pName]['wins']++;
-            if ($row['change_avg'] == 0) $productStats[$pName]['stagnant']++;
+            
+            // ✅ FIX: Per-product stagnant juga hanya hitung yang BUKAN Win/Lose
+            if ($row['change_avg'] == 0 && !$isClosed) {
+                $productStats[$pName]['stagnant']++;
+            }
         }
 
         $topProduct = ['name' => 'None', 'wins' => -1, 'total' => 999999];
@@ -485,11 +494,12 @@ class HighFiveProductPerformanceController extends Controller
 
         $leaderboard = [];
         foreach ($productGrouped as $product => $data) {
-            $avgProgress = $data['count'] > 0 ? round($data['total_progress'] / $data['count'], 2) : 0;
-            $avgResult = $data['count'] > 0 ? round($data['total_result'] / $data['count'], 2) : 0;
+            // ✅ FIX: No rounding - keep full precision
+            $avgProgress = $data['count'] > 0 ? $data['total_progress'] / $data['count'] : 0;
+            $avgResult = $data['count'] > 0 ? $data['total_result'] / $data['count'] : 0;
             $leaderboard[] = [
                 'product' => $product, 'avg_progress' => $avgProgress, 'avg_result' => $avgResult,
-                'avg_total' => round(($avgProgress + $avgResult) / 2, 2), 'total_offerings' => $data['count'], 'wins' => $data['wins'],
+                'avg_total' => ($avgProgress + $avgResult) / 2, 'total_offerings' => $data['count'], 'wins' => $data['wins'],
             ];
         }
 

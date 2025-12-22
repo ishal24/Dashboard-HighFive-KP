@@ -182,8 +182,9 @@ class HighFiveAMPerformanceController extends Controller
 
         $amAverage = [];
         foreach ($amGrouped as $key => $data) {
-            $avgProgress = $data['count'] > 0 ? round($data['total_progress'] / $data['count'], 2) : 0;
-            $avgResult = $data['count'] > 0 ? round($data['total_result'] / $data['count'], 2) : 0;
+            // ✅ FIX: No rounding here - keep full precision for accurate calculations
+            $avgProgress = $data['count'] > 0 ? $data['total_progress'] / $data['count'] : 0;
+            $avgResult = $data['count'] > 0 ? $data['total_result'] / $data['count'] : 0;
 
             $finalStats = [
                 'offerings' => $data['stats']['offerings'],
@@ -236,7 +237,8 @@ class HighFiveAMPerformanceController extends Controller
                 'result_2' => $result2,
                 'change_progress' => $progress2 - $progress1,
                 'change_result' => $result2 - $result1,
-                'change_avg' => round((($progress2 - $progress1) + ($result2 - $result1)) / 2, 2),
+                // ✅ FIX: No rounding - keep full precision
+                'change_avg' => (($progress2 - $progress1) + ($result2 - $result1)) / 2,
                 'stats' => $stats
             ];
         }
