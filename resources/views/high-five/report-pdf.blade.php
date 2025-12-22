@@ -186,8 +186,6 @@
         $totalWins = 0;
         $totalLosses = 0;
         $totalAMs = count($am_performance['benchmarking'] ?? []);
-        $totalCCs = 0;
-        $uniqueCCs = [];
         
         // Count from AM benchmarking data
         foreach ($am_performance['benchmarking'] ?? [] as $am) {
@@ -195,14 +193,28 @@
             $totalLosses += $am['stats']['lose'] ?? 0;
         }
         
-        // Count from product data
+        // ✅ FIX: Count unique CCs and visited CCs separately
         $totalOfferings = count($product_performance['products'] ?? []);
+        $uniqueCCs = [];         // All unique customers
+        $visitedCCs = [];        // Customers that were actually visited (progress > 0)
+        
         foreach ($product_performance['products'] ?? [] as $product) {
-            if (!empty($product['customer'])) {
-                $uniqueCCs[$product['customer']] = true;
+            $customerName = $product['customer'] ?? null;
+            $progress = $product['progress_2'] ?? 0;
+            
+            if (!empty($customerName)) {
+                // Track all unique customers
+                $uniqueCCs[$customerName] = true;
+                
+                // Track visited customers (progress > 0)
+                if ($progress > 0) {
+                    $visitedCCs[$customerName] = true;
+                }
             }
         }
+        
         $totalCCs = count($uniqueCCs);
+        $visitedCCCount = count($visitedCCs);
         
         $totalClosed = $totalWins + $totalLosses;
         $winRate = $totalClosed > 0 ? round(($totalWins / $totalClosed) * 100, 1) : 0;
@@ -215,7 +227,7 @@
         $avgImprovement = $totalAMs > 0 ? round($totalImprovementSum / $totalAMs, 2) : 0;
         
         // Calculate coverage
-        $coverage = $totalCCs > 0 ? "$totalCCs/$totalCCs CC visited (total $totalOfferings product offerings)" : "-";
+        $coverage = $totalCCs > 0 ? "$visitedCCCount/$totalCCs CC visited (total $totalOfferings product offerings)" : "-";
     @endphp
 
     <div class="key-metrics">
@@ -453,7 +465,7 @@
     <h3>Product Highlights</h3>
     <ul>
         <li>Total Submit SPH: {{ $totalSubmitSPH }} ({{ $sphNegotiation }} in negotiation, {{ $sphClosed }} closed)</li>
-        <li>Active Offerings : {{ $activeCount }} Products ({{ $notOfferedCount }} not offered, {{ $closedCount }} closed)</li>
+        <li>Total Offerings: {{ $activeCount }} active, {{ $notOfferedCount }} not offered, and {{ $closedCount }} closed</li>
         <li>Stagnant Offerings : {{ $stagnantCount }} products with 0% progress ({{ $topStagnantProduct }}: {{ $topStagnantCount }} offerings with 0% improvement)</li>
     </ul>
 
