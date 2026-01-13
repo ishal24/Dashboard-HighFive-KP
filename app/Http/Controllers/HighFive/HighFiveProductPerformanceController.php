@@ -98,7 +98,7 @@ class HighFiveProductPerformanceController extends Controller
     private function calculateProductStatusStats($data1, $data2)
     {
         $stats = ['ss1' => [], 'ss2' => []];
-        $categories = ['PDP', 'Connectivity', 'Digital Product', 'NeuCentrix', 'Cyber Security'];
+        $categories = ['PDP', 'Cyber Security', 'Digital Product', 'NEUCENTRIX', 'Connectivity Bandwidth'];
 
         $categorizeStatus = function($row) {
             $p = floatval($row['progress_percentage'] ?? 0);
@@ -109,12 +109,62 @@ class HighFiveProductPerformanceController extends Controller
             return 'idle';
         };
 
-        $getProductCat = function($productName) use ($categories) {
-            $name = strtoupper($productName);
-            foreach ($categories as $cat) {
-                if (strpos($name, strtoupper($cat)) !== false) return $cat;
-            }
-            return 'Connectivity'; 
+        // ✅ FIX: Proper product to category mapping based on exact product names
+        $getProductCat = function($productName) {
+            $name = trim($productName);
+            
+            // PDP Category
+            $pdpProducts = [
+                'FullGuided Comply PDP',
+                'Guided Comply PDP',
+                'Self Comply PDP',
+                'Template dokumen PDP Alacarte',
+                'Readyness Check PDP'
+            ];
+            
+            // Cyber Security Category  
+            $cyberProducts = [
+                'DDOS over Astinet',
+                'VAPT - Web',
+                'SOC - Cybersecurity',
+                'VAPT - Mobile',
+                'DDOS over IP Transit'
+            ];
+            
+            // Digital Product Category
+            $digitalProducts = [
+                'Antarez Easy',
+                'Usecase Bigbox - Doc Management'
+            ];
+            
+            // NEUCENTRIX Category
+            $neucentrixProducts = [
+                'NEUCENTRIX'
+            ];
+            
+            // Connectivity Bandwidth Category
+            $connectivityProducts = [
+                'Astinet + DDoS',
+                'Indibiz / Astinet',
+                'Astinet & WMS'
+            ];
+            
+            // Check exact match first
+            if (in_array($name, $pdpProducts)) return 'PDP';
+            if (in_array($name, $cyberProducts)) return 'Cyber Security';
+            if (in_array($name, $digitalProducts)) return 'Digital Product';
+            if (in_array($name, $neucentrixProducts)) return 'NEUCENTRIX';
+            if (in_array($name, $connectivityProducts)) return 'Connectivity Bandwidth';
+            
+            // Fallback: check if product name contains category keywords
+            $nameUpper = strtoupper($name);
+            if (strpos($nameUpper, 'PDP') !== false) return 'PDP';
+            if (strpos($nameUpper, 'CYBER') !== false || strpos($nameUpper, 'VAPT') !== false || strpos($nameUpper, 'DDOS') !== false || strpos($nameUpper, 'SOC') !== false) return 'Cyber Security';
+            if (strpos($nameUpper, 'ANTAREZ') !== false || strpos($nameUpper, 'BIGBOX') !== false) return 'Digital Product';
+            if (strpos($nameUpper, 'NEUCENTRIX') !== false) return 'NEUCENTRIX';
+            if (strpos($nameUpper, 'ASTINET') !== false || strpos($nameUpper, 'INDIBIZ') !== false || strpos($nameUpper, 'WMS') !== false) return 'Connectivity Bandwidth';
+            
+            return 'Connectivity Bandwidth'; // Default fallback
         };
 
         foreach (['ss1' => $data1, 'ss2' => $data2] as $key => $dataset) {
@@ -177,6 +227,7 @@ class HighFiveProductPerformanceController extends Controller
                 'result_1' => $result1,
                 'result_2' => $result2,
                 'result' => $item2['result'] ?? $item1['result'] ?? '',
+                'nilai' => $item2['nilai'] ?? $item1['nilai'] ?? 0, // ✅ Tambahkan NILAI
                 'change_progress' => $progress2 - $progress1,
                 'change_result' => $result2 - $result1,
                 'change_avg' => round((($progress2 - $progress1) + ($result2 - $result1)) / 2, 2),
@@ -230,6 +281,7 @@ class HighFiveProductPerformanceController extends Controller
                     'progress_percentage' => $row['progress_percentage'],
                     'result_percentage' => $row['result_percentage'],
                     'result' => $row['result'] ?? '',
+                    'nilai' => floatval($row['nilai'] ?? 0), // ✅ Tambahkan NILAI
                 ];
             }
         }
@@ -311,6 +363,7 @@ class HighFiveProductPerformanceController extends Controller
             'count_sph_closed' => 0,
             'unique_products' => [],
             'unique_cc' => [],
+            'total_nilai_win' => 0, // ✅ NEW: Total NILAI dari semua win
         ];
 
         $productStats = [];
@@ -344,7 +397,10 @@ class HighFiveProductPerformanceController extends Controller
                 $stats['count_inactive']++;
             }
 
-            if ($isWin) $stats['count_win']++;
+            if ($isWin) {
+                $stats['count_win']++;
+                $stats['total_nilai_win'] += floatval($row['nilai'] ?? 0); // ✅ Tambahkan NILAI untuk win
+            }
             elseif ($isLose) $stats['count_lose']++;
 
             if ($isCompleted) {
@@ -355,10 +411,19 @@ class HighFiveProductPerformanceController extends Controller
 
             $pName = $row['product'] ?? 'Unknown';
             if (!isset($productStats[$pName])) {
-                $productStats[$pName] = ['wins' => 0, 'total' => 0, 'stagnant' => 0];
+                $productStats[$pName] = [
+                    'wins' => 0, 
+                    'total' => 0, 
+                    'stagnant' => 0,
+                    'total_nilai_win' => 0 // ✅ NEW: Total NILAI per product
+                ];
             }
             $productStats[$pName]['total']++;
-            if ($isWin) $productStats[$pName]['wins']++;
+            
+            if ($isWin) {
+                $productStats[$pName]['wins']++;
+                $productStats[$pName]['total_nilai_win'] += floatval($row['nilai'] ?? 0); // ✅ Tambahkan NILAI
+            }
             
             // ✅ FIX: Per-product stagnant juga hanya hitung yang BUKAN Win/Lose
             if ($row['change_avg'] == 0 && !$isClosed) {
@@ -366,11 +431,16 @@ class HighFiveProductPerformanceController extends Controller
             }
         }
 
-        $topProduct = ['name' => 'None', 'wins' => -1, 'total' => 999999];
+        $topProduct = ['name' => 'None', 'wins' => -1, 'total' => 999999, 'total_nilai_win' => 0];
         $mostStagnantProduct = ['name' => null, 'count' => 0];
         foreach ($productStats as $name => $ps) {
             if ($ps['wins'] > $topProduct['wins'] || ($ps['wins'] == $topProduct['wins'] && $ps['total'] < $topProduct['total'])) {
-                $topProduct = ['name' => $name, 'wins' => $ps['wins'], 'total' => $ps['total']];
+                $topProduct = [
+                    'name' => $name, 
+                    'wins' => $ps['wins'], 
+                    'total' => $ps['total'],
+                    'total_nilai_win' => $ps['total_nilai_win'] // ✅ Simpan NILAI
+                ];
             }
             if ($ps['stagnant'] > $mostStagnantProduct['count']) {
                 $mostStagnantProduct = ['name' => $name, 'count' => $ps['stagnant']];
@@ -416,14 +486,15 @@ class HighFiveProductPerformanceController extends Controller
 
         $insightTopProduct = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Top Selling Product</h4></div>
-            <div class='insight-metrics-grid' style='grid-template-columns: repeat(2, 1fr);'>
+            <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($topProduct['wins']) . "</span><span class='insight-metric-sub'>Offerings Secured</span></div>
                 <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Market Share</span><span class='insight-metric-value'>" . number_format($dominance, 1) . "%</span><span class='insight-metric-sub'>Kontribusi TREG3</span></div>
+                <div class='insight-metric-item im-warning'><span class='insight-metric-label'>Total Nilai</span><span class='insight-metric-value'>Rp " . number_format($topProduct['total_nilai_win'], 0, ',', '.') . "</span><span class='insight-metric-sub'>Win Value</span></div>
             </div>
             <div class='insight-narrative-box purple-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-trophy'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Produk <strong>{$topProduct['name']}</strong> menjadi <em>market leader</em> periode ini karena meraih <strong>{$topProduct['wins']}</strong> wins, menyumbang <strong>" . number_format($dominance, 1) . "%</strong> dari total wins seluruh offerings di wilayah TREG3.
+                    Produk <strong>{$topProduct['name']}</strong> menjadi <em>market leader</em> periode ini karena meraih <strong>{$topProduct['wins']}</strong> wins dengan total nilai <strong>Rp " . number_format($topProduct['total_nilai_win'], 0, ',', '.') . "</strong>, menyumbang <strong>" . number_format($dominance, 1) . "%</strong> dari total wins seluruh offerings di wilayah TREG3.
                 </p>
             </div>";
 
@@ -444,16 +515,17 @@ class HighFiveProductPerformanceController extends Controller
         $insightWin = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>Win Rate</h4></div>
             <div class='insight-metrics-grid'>
-                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Win Rate</span><span class='insight-metric-value'>" . number_format($winRate, 1) . "%</span><span class='insight-metric-sub'>Ratio</span></div>
+                <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Nilai Win</span><span class='insight-metric-value'>Rp " . number_format($stats['total_nilai_win'], 0, ',', '.') . "</span><span class='insight-metric-sub'>Nilai Offerings</span></div>
                 <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . number_format($stats['count_win']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
                 <div class='insight-metric-item im-danger'><span class='insight-metric-label'>Total Loses</span><span class='insight-metric-value'>" . number_format($stats['count_lose']) . "</span><span class='insight-metric-sub'>Offerings</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-chart-line'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    Efisiensi konversi berada pada tingkat <strong>" . number_format($winRate, 1) . "%</strong>. Angka ini mencerminkan rasio kemenangan tim dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah mencapai tahap keputusan akhir (Closed).
+                    Total nilai dari offerings yang berhasil dimenangkan mencapai <strong>Rp " . number_format($stats['total_nilai_win'], 0, ',', '.') . "</strong> dari <strong>" . number_format($stats['count_win']) . "</strong> wins. Angka ini mencerminkan performa kemenangan tim dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah mencapai tahap keputusan akhir (Closed).
                 </p>
             </div>";
+
 
         return [
             'metrics' => [
@@ -464,8 +536,16 @@ class HighFiveProductPerformanceController extends Controller
                     'wins' => number_format($stats['count_win']), 'loses' => number_format($stats['count_lose']),
                 ],
                 'stagnancy' => ['value' => number_format($stagnantRate, 1) . '%', 'main_stat' => number_format($stats['count_stagnant']) . ' Items'],
-                'win' => ['value' => number_format($winRate, 1) . '%', 'main_stat' => number_format($stats['count_win']) . ' Total Wins'],
-                'win_offerings' => ['value' => $topProduct['name'], 'main_stat' => $topProduct['wins'] . ' Wins'],
+                'win' => [
+                    'value' => number_format($winRate, 1) . '%', // ✅ Card tetap tampilkan Win Rate %
+                    'main_stat' => number_format($stats['count_win']) . ' Total Wins',
+                    'total_nilai_win' => $stats['total_nilai_win'] // ✅ NILAI untuk modal insight
+                ],
+                'win_offerings' => [
+                    'value' => $topProduct['name'], 
+                    'main_stat' => $topProduct['wins'] . ' Wins',
+                    'total_nilai_win' => 'Rp ' . number_format($topProduct['total_nilai_win'], 0, ',', '.') // ✅ NILAI untuk modal insight
+                ],
                 'completed' => ['value' => number_format($stats['count_completed']), 'main_stat' => number_format($completionRate, 1) . '% SPH Submit']
             ],
             'insights_data' => [
