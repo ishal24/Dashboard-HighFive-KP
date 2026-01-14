@@ -341,7 +341,7 @@
         @endif
     </ul>
 
-    <h3>Top 10 Best Improvement</h3>
+    <h3>Top 10 Improvement</h3>
     <table class="data-table">
         <thead>
             <tr>
@@ -466,7 +466,8 @@
     <ul>
         <li>Total Submit SPH: {{ $totalSubmitSPH }} ({{ $sphNegotiation }} in negotiation, {{ $sphClosed }} closed)</li>
         <li>Total Offerings: {{ $activeCount }} active, {{ $notOfferedCount }} not offered, and {{ $closedCount }} closed</li>
-        <li>Stagnant Offerings : {{ $stagnantCount }} products with 0% progress ({{ $topStagnantProduct }}: {{ $topStagnantCount }} offerings with 0% improvement)</li>
+        <li>Stagnant Offerings : {{ $stagnantCount }} offerings with 0% improvement</li>
+        <li>Most Stagnant Product : {{ $topStagnantProduct }} ({{ $topStagnantCount }} offerings with 0% improvement)</li>
     </ul>
 
     <h3>Top 10 Best-Selling Products</h3>
