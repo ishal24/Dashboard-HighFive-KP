@@ -28,61 +28,61 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
                     <a href="{{ route('dashboard') }}" class="sidebar-link">
-                        <i class="lni lni-dashboard-square-1"></i><span>Overview Data</span>
+                        <i class="fas fa-th-large"></i><span>Overview Data</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('revenue.index') }}" class="sidebar-link">
-                        <i class="lni lni-file-pencil"></i><span>Data Revenue</span>
+                        <i class="fas fa-file-invoice-dollar"></i><span>Data Revenue</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('dashboard.treg3') }}" class="sidebar-link">
-                        <i class="lni lni-react"></i><span>TREG-3 React Dashboard</span>
+                        <i class="fas fa-chart-line"></i><span>TREG-3 React Dashboard</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse" data-bs-target="#performance" aria-expanded="false" aria-controls="performance">
-                        <i class="lni lni-bar-chart-dollar"></i><span>Performansi</span>
+                        <i class="fas fa-chart-bar"></i><span>Performansi</span>
                     </a>
                     <ul id="performance" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
                             <a href="{{ url('witel-perform') }}" class="sidebar-link">
-                                <i class="lni lni-react"></i><span>Witel</span>
+                                <i class="fas fa-chart-line"></i><span>Witel</span>
                             </a>
                         </li>
                         
                         <li class="sidebar-item">
                             <a href="{{ route('dashboard.treg3') }}" class="sidebar-link">
-                                <i class="lni lni-react"></i><span>TREG-3 React Dashboard</span>
+                                <i class="fas fa-chart-line"></i><span>TREG-3 React Dashboard</span>
                             </a>
                         </li>
                     </ul>
                 </li>
                 {{-- <li class="sidebar-item">
                     <a href="{{ route('monitoring-LOP') }}" class="sidebar-link">
-                        <i class="lni lni-user-multiple-4"></i><span>Top LOP</span>
+                        <i class="fas fa-users"></i><span>Top LOP</span>
                     </a>
                 </li> --}}
                 {{-- <li class="sidebar-item">
                     <a href="#" class="sidebar-link">
-                        <i class="lni lni-chromecast"></i><span>Aosodomoro</span>
+                        <i class="fas fa-broadcast-tower"></i><span>Aosodomoro</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="#" class="sidebar-link">
-                        <i class="lni lni-target-user"></i><span>EDK</span>
+                        <i class="fas fa-bullseye"></i><span>EDK</span>
                     </a>
                 </li>
             </ul> --}}
-            <div class="sidebar-footer">w
+            <div class="sidebar-footer">
                 <a href="{{ route('profile.edit') }}" class="sidebar-link">
-                    <i class="lni lni-gear-1"></i><span>Settings</span>
+                    <i class="fas fa-cog"></i><span>Settings</span>
                 </a>
             </div>
             <div class="sidebar-footer">
                 <a href="{{ route('logout') }}" class="sidebar-link">
-                    <i class="lni lni-exit"></i><span>Logout</span>
+                    <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                 </a>
             </div>
         </aside>

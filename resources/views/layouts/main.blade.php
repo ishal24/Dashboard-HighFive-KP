@@ -467,22 +467,22 @@
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
                     <a href="{{ route('dashboard') }}" class="sidebar-link">
-                        <i class="lni lni-dashboard-square-1"></i><span>Overview Data</span>
+                        <i class="fas fa-th-large"></i><span>Overview Data</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('revenue.index') }}" class="sidebar-link">
-                        <i class="lni lni-file-pencil"></i><span>Data Revenue</span>
+                        <i class="fas fa-file-invoice-dollar"></i><span>Data Revenue</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('witel-cc-index') }}" class="sidebar-link">
-                        <i class="lni lni-buildings-1"></i><span>CC & Witel</span>
+                        <i class="fas fa-building"></i><span>CC & Witel</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
                     <a href="{{ route('leaderboard') }}" class="sidebar-link">
-                        <i class="lni lni-hierarchy-1"></i><span>Leaderboard AM</span>
+                        <i class="fas fa-trophy"></i><span>Leaderboard AM</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
@@ -494,12 +494,12 @@
             </ul>
             <div class="sidebar-footer">
                 <a href="{{ route('profile.index') }}" class="sidebar-link">
-                    <i class="lni lni-gear-1"></i><span>Settings</span>
+                    <i class="fas fa-cog"></i><span>Settings</span>
                 </a>
             </div>
             <div class="sidebar-footer">
                 <a href="{{ route('logout') }}" class="sidebar-link">
-                    <i class="lni lni-exit"></i><span>Logout</span>
+                    <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                 </a>
             </div>
         </aside>
