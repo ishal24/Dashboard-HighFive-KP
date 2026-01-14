@@ -730,6 +730,37 @@
 <div id="linkModal" class="modal-overlay" style="display: none;">
     <div class="modal-container"><div class="modal-header"><h3>Kelola Link</h3><button class="modal-close" onclick="closeLinkModal()">X</button></div><div class="modal-body" id="existingLinksContainer"></div></div>
 </div>
+
+{{-- Modal Pilih Witel untuk Download Report --}}
+<div id="reportWitelModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeReportWitelModal();">
+    <div class="modal-container" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-download"></i> Pilih Scope Laporan</h3>
+            <button class="modal-close" onclick="closeReportWitelModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 20px; color: #64748b; font-size: 14px;">
+                Pilih wilayah untuk laporan yang akan diunduh:
+            </p>
+            
+            <div class="field-group">
+                <label><i class="fas fa-map-marked-alt"></i> WILAYAH</label>
+                <select class="native-select" id="reportWitelSelect" style="width: 100%;">
+                    <option value="all">📊 Laporan Overall (Semua Witel)</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; padding: 16px; border-top: 1px solid #e2e8f0;">
+            <button class="btn-save-dataset" onclick="closeReportWitelModal()" style="background: white; border: 1px solid #cbd5e1; color: #475569;">
+                Batal
+            </button>
+            <button class="btn-save-dataset" onclick="downloadReportWithWitel()" style="background: var(--telkom-red); color: white;">
+                <i class="fas fa-download"></i> Unduh Laporan
+            </button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1594,6 +1625,7 @@ $(document).ready(function() {
 
         // ... (Simpan Insight & Render Table sama) ...
         globalInsightsData = data.witel_analysis.insights_data; 
+        currentBenchmarkingData = data.benchmarking; // ✅ Store for Witel modal
         const tableHTML = renderAMTable(data.benchmarking);
         $('#amBenchmarkTableBody').html(tableHTML);
         // ... (Leaderboard render) ...
@@ -2389,8 +2421,10 @@ $(document).ready(function() {
     });
 
     // ================================
-    // DOWNLOAD REPORT
+    // DOWNLOAD REPORT WITH WITEL SELECTION
     // ================================
+
+    let currentBenchmarkingData = null; // Store benchmarking data for Witel options
 
     $('#downloadReportAM, #downloadReportProduct').on('click', function() {
         if (!selectedSnapshot1 || !selectedSnapshot2) {
@@ -2398,8 +2432,36 @@ $(document).ready(function() {
             return;
         }
 
-        window.location.href = "{{ route('high-five.report.download') }}?snapshot_1_id=" + selectedSnapshot1 + "&snapshot_2_id=" + selectedSnapshot2;
+        // Populate Witel options from current benchmarking data
+        const witelSelect = $('#reportWitelSelect');
+        witelSelect.html('<option value="all">📊 Laporan Overall (Semua Witel)</option>');
+        
+        if (currentBenchmarkingData && currentBenchmarkingData.length > 0) {
+            const witels = [...new Set(currentBenchmarkingData.map(row => row.witel))].sort();
+            witels.forEach(witel => {
+                witelSelect.append(`<option value="${witel}">📍 ${witel}</option>`);
+            });
+        }
+
+        // Open modal
+        $('#reportWitelModal').fadeIn(300);
     });
+
+    window.closeReportWitelModal = function() {
+        $('#reportWitelModal').fadeOut(300);
+    };
+
+    window.downloadReportWithWitel = function() {
+        const selectedWitel = $('#reportWitelSelect').val();
+        let url = "{{ route('high-five.report.download') }}?snapshot_1_id=" + selectedSnapshot1 + "&snapshot_2_id=" + selectedSnapshot2;
+        
+        if (selectedWitel && selectedWitel !== 'all') {
+            url += "&witel=" + encodeURIComponent(selectedWitel);
+        }
+        
+        window.location.href = url;
+        closeReportWitelModal();
+    };
 
     // ================================
     // MODAL MANAGEMENT FOR SNAPSHOTS
