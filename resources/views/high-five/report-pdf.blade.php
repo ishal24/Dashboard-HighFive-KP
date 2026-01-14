@@ -105,7 +105,10 @@
 
         .data-table td {
             padding: 8px 6px;
-            border: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
             font-size: 10pt;
             word-wrap: break-word;
         }
@@ -231,12 +234,50 @@
     @endphp
 
     <div class="key-metrics">
-        <p><strong>Coverage Ratio</strong> : {{ $coverage }}</p>
-        <p><strong>TREG 3 avg improvement</strong> : {{ $avgImprovement > 0 ? '+' : '' }}{{ number_format($avgImprovement, 2) }}%</p>
-        <p><strong>Win Rate</strong> : {{ number_format($winRate, 1) }}% (Total {{ $totalWins }} wins and {{ $totalLosses }} loses)</p>
+        @if($is_witel_specific)
+            {{-- Witel-specific metrics --}}
+            <p><strong>Coverage Ratio</strong> : {{ $witel_specific_metrics['coverage_ratio'] }}</p>
+            <p><strong>Avg Progress Improvement</strong> : {{ $witel_specific_metrics['avg_progress_improvement'] > 0 ? '+' : '' }}{{ number_format($witel_specific_metrics['avg_progress_improvement'], 2) }}%</p>
+            <p><strong>Avg Result Improvement</strong> : {{ $witel_specific_metrics['avg_result_improvement'] > 0 ? '+' : '' }}{{ number_format($witel_specific_metrics['avg_result_improvement'], 2) }}%</p>
+            <p><strong>Win Rate</strong> : {{ number_format($witel_specific_metrics['win_rate'], 1) }}% (Total {{ $witel_specific_metrics['total_wins'] }} wins and {{ $witel_specific_metrics['total_losses'] }} loses)</p>
+        @else
+            {{-- Overall metrics --}}
+            <p><strong>Coverage Ratio</strong> : {{ $coverage }}</p>
+            <p><strong>TREG 3 avg improvement</strong> : {{ $avgImprovement > 0 ? '+' : '' }}{{ number_format($avgImprovement, 2) }}%</p>
+            <p><strong>Win Rate</strong> : {{ number_format($winRate, 1) }}% (Total {{ $totalWins }} wins and {{ $totalLosses }} loses)</p>
+        @endif
     </div>
 
-    <h3>Witel Performance Movement (Progress and Result):</h3>
+    @if($is_witel_specific)
+        {{-- NEW: Account Manager Improvement Table for Witel-specific reports --}}
+        <h3>Account Manager Improvement</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="no-col">No</th>
+                    <th>Account Manager</th>
+                    <th class="center">Progress {{ $snapshot_2['date'] }}</th>
+                    <th class="center">Result {{ $snapshot_2['date'] }}</th>
+                    <th class="center">Avg Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($witel_am_list as $index => $am)
+                <tr>
+                    <td class="center">{{ $index + 1 }}</td>
+                    <td style="max-width: 150px;">{{ $am['am'] }}</td>
+                    <td class="center">{{ number_format($am['progress_2'], 2) }}%</td>
+                    <td class="center">{{ number_format($am['result_2'], 2) }}%</td>
+                    <td class="center">{{ $am['change_avg'] > 0 ? '+' : '' }}{{ number_format($am['change_avg'], 2) }}%</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+    
+    @if(!$is_witel_specific)
+        {{-- Witel Performance Movement Table (only for overall reports) --}}
+        <h3>Witel Performance Movement (Progress and Result):</h3>
     
     @php
         // Group benchmarking data by Witel
@@ -322,7 +363,116 @@
             </tr>
         </tbody>
     </table>
+    @endif
 
+    @if($is_witel_specific)
+        {{-- NEW SECTION: Detailed Product Data for Witel --}}
+        <div class="page-break"></div>
+        
+        <h2>II. Detail Data Offerings per Account Manager</h2>
+        
+        @php
+            // Calculate rowspan for AM and Customer grouping
+            $tableData = [];
+            foreach ($witel_product_details as $am => $customers) {
+                $amRowspan = 0;
+                $customerData = [];
+                
+                foreach ($customers as $customer => $products) {
+                    $customerRowspan = count($products);
+                    $amRowspan += $customerRowspan;
+                    $customerData[] = [
+                        'customer' => $customer,
+                        'rowspan' => $customerRowspan,
+                        'products' => $products
+                    ];
+                }
+                
+                $tableData[] = [
+                    'am' => $am,
+                    'rowspan' => $amRowspan,
+                    'customers' => $customerData
+                ];
+            }
+        @endphp
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">AM</th>
+                    <th rowspan="2">CUSTOMER</th>
+                    <th rowspan="2">PRODUCT</th>
+                    <th colspan="2" class="center">% PROGRESS</th>
+                    <th colspan="2" class="center">% RESULT</th>
+                    <th rowspan="2" class="center">PERUBAHAN</th>
+                </tr>
+                <tr>
+                    <th class="center">{{ $snapshot_1['date'] }}</th>
+                    <th class="center">{{ $snapshot_2['date'] }}</th>
+                    <th class="center">{{ $snapshot_1['date'] }}</th>
+                    <th class="center">{{ $snapshot_2['date'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php 
+                    $rowCount = 0;
+                    $prevAM = null;
+                    $prevCustomer = null;
+                @endphp
+                @foreach($tableData as $amData)
+                    @foreach($amData['customers'] as $customerData)
+                        @php 
+                            // Removed page break logic - let DomPDF handle it naturally
+                        @endphp
+                        @foreach($customerData['products'] as $productIndex => $product)
+                            @php
+                                // Check if this is the last product in customer group
+                                $isLastProductInCustomer = ($productIndex === count($customerData['products']) - 1);
+                                // Check if this is the last customer in AM group
+                                $customerIndex = array_search($customerData, $amData['customers']);
+                                $isLastCustomerInAM = ($customerIndex === count($amData['customers']) - 1) && $isLastProductInCustomer;
+                                
+                                // Border style for customer group
+                                $customerBorder = $isLastProductInCustomer ? '1px solid #000' : 'none';
+                                // Border style for AM group
+                                $amBorder = $isLastCustomerInAM ? '1px solid #000' : 'none';
+                            @endphp
+                            <tr>
+                                {{-- AM column: show text only if different from previous row --}}
+                                @if($amData['am'] !== $prevAM)
+                                    <td style="background: #ffe6e6; vertical-align: top; border-bottom: {{ $amBorder }} !important;">{{ $amData['am'] }}</td>
+                                    @php $prevAM = $amData['am']; @endphp
+                                @else
+                                    <td style="background: #ffe6e6; border-bottom: {{ $amBorder }} !important;"></td>
+                                @endif
+                                
+                                {{-- Customer column: show text only if different from previous row --}}
+                                @if($customerData['customer'] !== $prevCustomer)
+                                    <td style="background: #fff9e6; vertical-align: top; border-bottom: {{ $customerBorder }} !important;">{{ $customerData['customer'] }}</td>
+                                    @php $prevCustomer = $customerData['customer']; @endphp
+                                @else
+                                    <td style="background: #fff9e6; border-bottom: {{ $customerBorder }} !important;"></td>
+                                @endif
+                                
+                                {{-- All other columns also need conditional border --}}
+                                <td style="border-bottom: {{ $customerBorder }} !important;">{{ $product['product'] }}</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($product['progress_1'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($product['progress_2'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($product['result_1'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($product['result_2'], 2) }}%</td>
+                                <td class="center" style="color: {{ $product['change_avg'] > 0 ? '#059669' : ($product['change_avg'] < 0 ? '#dc2626' : '#000') }}; border-bottom: {{ $customerBorder }} !important;">
+                                    {{ $product['change_avg'] > 0 ? '+' : '' }}{{ number_format($product['change_avg'], 2) }}%
+                                </td>
+                            </tr>
+                            @php $rowCount++; @endphp
+                        @endforeach
+                    @endforeach
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
+    @if(!$is_witel_specific)
     {{-- PAGE 2: SALES FORCE IMPROVEMENT --}}
     <div class="page-break"></div>
 
@@ -491,6 +641,77 @@
             @endforeach
         </tbody>
     </table>
+    @endif
+    
+    {{-- SECTION IV: DETAIL AM-CUSTOMER PER WITEL (ONLY FOR OVERALL REPORTS) --}}
+    @if(!$is_witel_specific && !empty($overall_summary_data))
+        <div class="page-break"></div>
+        
+        <h2>IV. Detail Data AM-Customer per Witel</h2>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">AM</th>
+                    <th rowspan="2">CUSTOMER</th>
+                    <th colspan="2" class="center">AVG % PROGRESS</th>
+                    <th colspan="2" class="center">AVG % RESULT</th>
+                    <th rowspan="2" class="center">PERUBAHAN</th>
+                </tr>
+                <tr>
+                    <th class="center">{{ $snapshot_1['date'] }}</th>
+                    <th class="center">{{ $snapshot_2['date'] }}</th>
+                    <th class="center">{{ $snapshot_1['date'] }}</th>
+                    <th class="center">{{ $snapshot_2['date'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($overall_summary_data as $witel => $amData)
+                    {{-- Witel separator row --}}
+                    <tr style="background: #dbeafe;">
+                        <td colspan="7" style="font-weight: bold; text-align: center; padding: 10px; border-bottom: 2px solid #000 !important;">{{ $witel }}</td>
+                    </tr>
+                    
+                    @php
+                        $prevAM = null;
+                        $prevCustomer = null;
+                    @endphp
+                    
+                    @foreach($amData as $am => $customerData)
+                        @foreach($customerData as $customerName => $data)
+                            @php
+                                // Calculate if this is the last customer in AM
+                                $customerKeys = array_keys($customerData);
+                                $isLastCustomer = ($customerName === end($customerKeys));
+                                $customerBorder = $isLastCustomer ? '1px solid #000' : 'none';
+                            @endphp
+                            <tr>
+                                {{-- AM column: show text only if different from previous row --}}
+                                @if($am !== $prevAM)
+                                    <td style="background: #ffe6e6; vertical-align: top; border-bottom: {{ $isLastCustomer ? '1px solid #000' : 'none' }} !important;">{{ $am }}</td>
+                                    @php $prevAM = $am; @endphp
+                                @else
+                                    <td style="background: #ffe6e6; border-bottom: {{ $isLastCustomer ? '1px solid #000' : 'none' }} !important;"></td>
+                                @endif
+                                
+                                {{-- Customer column --}}
+                                <td style="background: #fff9e6; vertical-align: top; border-bottom: {{ $customerBorder }} !important;">{{ $customerName }}</td>
+                                
+                                {{-- Data columns --}}
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($data['avg_progress_1'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($data['avg_progress_2'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($data['avg_result_1'], 2) }}%</td>
+                                <td class="center" style="border-bottom: {{ $customerBorder }} !important;">{{ number_format($data['avg_result_2'], 2) }}%</td>
+                                <td class="center" style="color: {{ $data['avg_change'] > 0 ? '#059669' : ($data['avg_change'] < 0 ? '#dc2626' : '#000') }}; border-bottom: {{ $customerBorder }} !important;">
+                                    {{ $data['avg_change'] > 0 ? '+' : '' }}{{ number_format($data['avg_change'], 2) }}%
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
 </body>
 </html>

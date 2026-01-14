@@ -149,7 +149,8 @@ class HighFiveAMPerformanceController extends Controller
                         'win' => 0,
                         'lose' => 0,
                         'cust_list' => [],
-                        'visited_customers' => []
+                        'visited_customers' => [],
+                        'total_nilai_win' => 0 // ✅ NEW: Track total NILAI from wins
                     ]
                 ];
             }
@@ -175,6 +176,7 @@ class HighFiveAMPerformanceController extends Controller
 
             if (strpos($resText, 'win') !== false || $resVal == 100) {
                 $stats['win']++;
+                $stats['total_nilai_win'] += floatval($row['nilai'] ?? 0); // ✅ Sum NILAI for wins
             } elseif (strpos($resText, 'lose') !== false) {
                 $stats['lose']++;
             }
@@ -191,7 +193,8 @@ class HighFiveAMPerformanceController extends Controller
                 'total_customers' => count($data['stats']['cust_list']),
                 'visited' => count($data['stats']['visited_customers']),
                 'win' => $data['stats']['win'],
-                'lose' => $data['stats']['lose']
+                'lose' => $data['stats']['lose'],
+                'total_nilai_win' => $data['stats']['total_nilai_win'] // ✅ Pass NILAI to final stats
             ];
 
             $amAverage[$key] = [
@@ -225,7 +228,7 @@ class HighFiveAMPerformanceController extends Controller
 
             $statsSource = $am2 ?? $am1;
             $stats = $statsSource['stats'] ?? [
-                'offerings' => 0, 'total_customers' => 0, 'visited' => 0, 'win' => 0, 'lose' => 0
+                'offerings' => 0, 'total_customers' => 0, 'visited' => 0, 'win' => 0, 'lose' => 0, 'total_nilai_win' => 0
             ];
 
             $merged[$key] = [
@@ -476,19 +479,19 @@ class HighFiveAMPerformanceController extends Controller
             </div>";
 
         $totalWins = $stats['total_wins'] ?: 1;
-        $dominance = (($topWinAM['stats']['win'] ?? 0) / $totalWins) * 100;
+        $topWinNilai = $topWinAM['stats']['total_nilai_win'] ?? 0; // ✅ Get NILAI from top win AM
         $insightTopSales = "
             <div style='margin-bottom: 16px;'><h4 style='font-size:16px; font-weight:700; color:#1e293b; margin:0;'>{$topWinAM['am']} ({$topWinAM['witel']})</h4></div>
             <div class='insight-metrics-grid'>
                 <div class='insight-metric-item im-success'><span class='insight-metric-label'>Total Wins</span><span class='insight-metric-value'>" . ($topWinAM['stats']['win'] ?? 0) . "</span><span class='insight-metric-sub'>Deals Closed</span></div>
                 <div class='insight-metric-item'><span class='insight-metric-label'>Customer Handled</span><span class='insight-metric-value'>" . ($topWinAM['stats']['total_customers'] ?? 0) . "</span><span class='insight-metric-sub'>Total CC</span></div>
-                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Dominance</span><span class='insight-metric-value'>" . number_format($dominance, 1) . "%</span><span class='insight-metric-sub'>dari Semua Win</span></div>
+                <div class='insight-metric-item im-primary'><span class='insight-metric-label'>Nilai Offerings</span><span class='insight-metric-value'>Rp " . number_format($topWinNilai, 0, ',', '.') . "</span><span class='insight-metric-sub'>Total Nilai Win</span></div>
             </div>
             <div class='insight-narrative-box green-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-medal'></i> Analisis Insight</div>
                 <p class='insight-narrative-text'>
-                    AM <strong>{$topWinAM['am']}</strong> berhasil memenangkan <strong>" . ($topWinAM['stats']['win'] ?? 0) . "</strong> wins. 
-                    Kontribusi sebesar <strong>" . number_format($dominance, 1) . "%</strong> menunjukkan AM ini adalah penyumbang kemenangan terbesar bagi TREG3 saat ini.
+                    AM <strong>{$topWinAM['am']}</strong> berhasil memenangkan <strong>" . ($topWinAM['stats']['win'] ?? 0) . "</strong> wins dengan total nilai <strong>Rp " . number_format($topWinNilai, 0, ',', '.') . "</strong>. 
+                    Angka ini menunjukkan AM ini adalah penyumbang kemenangan terbesar bagi TREG3 saat ini.
                 </p>
             </div>";
 

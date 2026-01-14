@@ -487,9 +487,9 @@
                                 <select id="chartFilterCategoryProd" class="native-select" style="width: auto; min-width: 180px; height: 35px; font-size: 13px;">
                                     <option value="Total">Semua Kategori</option>
                                     <option value="PDP">PDP</option>
-                                    <option value="Connectivity">Connectivity</option>
+                                    <option value="Connectivity Bandwidth">Connectivity Bandwidth</option>
                                     <option value="Digital Product">Digital Product</option>
-                                    <option value="NeuCentrix">NeuCentrix</option>
+                                    <option value="NEUCENTRIX">NEUCENTRIX</option>
                                     <option value="Cyber Security">Cyber Security</option>
                                 </select>
                             </div>
@@ -730,6 +730,37 @@
 <div id="linkModal" class="modal-overlay" style="display: none;">
     <div class="modal-container"><div class="modal-header"><h3>Kelola Link</h3><button class="modal-close" onclick="closeLinkModal()">X</button></div><div class="modal-body" id="existingLinksContainer"></div></div>
 </div>
+
+{{-- Modal Pilih Witel untuk Download Report --}}
+<div id="reportWitelModal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeReportWitelModal();">
+    <div class="modal-container" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-download"></i> Pilih Scope Laporan</h3>
+            <button class="modal-close" onclick="closeReportWitelModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 20px; color: #64748b; font-size: 14px;">
+                Pilih wilayah untuk laporan yang akan diunduh:
+            </p>
+            
+            <div class="field-group">
+                <label><i class="fas fa-map-marked-alt"></i> WILAYAH</label>
+                <select class="native-select" id="reportWitelSelect" style="width: 100%;">
+                    <option value="all">📊 Laporan Overall (Semua Witel)</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; padding: 16px; border-top: 1px solid #e2e8f0;">
+            <button class="btn-save-dataset" onclick="closeReportWitelModal()" style="background: white; border: 1px solid #cbd5e1; color: #475569;">
+                Batal
+            </button>
+            <button class="btn-save-dataset" onclick="downloadReportWithWitel()" style="background: var(--telkom-red); color: white;">
+                <i class="fas fa-download"></i> Unduh Laporan
+            </button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1409,6 +1440,37 @@ $(document).ready(function() {
         applyAMFilters();
     });
 
+    // ✅ Delta Plugin Factory - Define once, reuse for each chart update
+    function createDeltaPlugin(deltas, chartType) {
+        return {
+            id: 'deltaLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(1); // Dataset index 1 = Snapshot 2
+                
+                ctx.save();
+                ctx.font = 'bold 14px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                
+                // Use chart color instead of green/red
+                const deltaColor = chartType === 'am' ? '#ef4444' : '#3b82f6';
+                
+                meta.data.forEach((bar, index) => {
+                    const delta = Object.values(deltas)[index];
+                    if (delta === 0) return; // Don't show if no change
+                    
+                    const text = delta > 0 ? `+${delta}` : `${delta}`;
+                    
+                    ctx.fillStyle = deltaColor;
+                    ctx.fillText(text, bar.x, bar.y - 5);
+                });
+                
+                ctx.restore();
+            }
+        };
+    }
+
     // FUNGSI RENDER CHART.JS
     function updateProgressChart(canvasId, statsData, filterValue, type) {
         if (!statsData) return;
@@ -1420,7 +1482,7 @@ $(document).ready(function() {
         const ss1 = statsData.ss1[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
         const ss2 = statsData.ss2[filterValue] || { visit: 0, mytens: 0, presentasi: 0, sph: 0 };
 
-        // ✅ Calculate delta for each category
+        // Calculate delta for each category
         const deltas = {
             visit: ss2.visit - ss1.visit,
             mytens: ss2.mytens - ss1.mytens,
@@ -1449,45 +1511,16 @@ $(document).ready(function() {
         if (type === 'am' && amProgressChart) amProgressChart.destroy();
         if (type === 'prod' && prodProgressChart) prodProgressChart.destroy();
 
-        // ✅ Plugin to render delta above snapshot 2 bars
-        const deltaPlugin = {
-            id: 'deltaLabels',
-            afterDatasetsDraw(chart) {
-                const { ctx, chartArea: { top }, scales: { x, y } } = chart;
-                const meta = chart.getDatasetMeta(1); // Dataset index 1 = Snapshot 2
-                
-                ctx.save();
-                ctx.font = 'bold 14px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                
-                // ✅ Use chart color instead of green/red
-                const deltaColor = type === 'am' ? '#ef4444' : '#3b82f6';
-                
-                meta.data.forEach((bar, index) => {
-                    const delta = Object.values(deltas)[index];
-                    if (delta === 0) return; // Don't show if no change
-                    
-                    const text = delta > 0 ? `+${delta}` : `${delta}`;
-                    
-                    ctx.fillStyle = deltaColor;
-                    ctx.fillText(text, bar.x, bar.y - 5);
-                });
-                
-                ctx.restore();
-            }
-        };
-
         const chartConfig = {
             type: 'bar',
             data: chartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Memungkinkan chart menyesuaikan tinggi container
-                resizeDelay: 200, // Menunda resize sedikit untuk performa saat zoom
+                maintainAspectRatio: false,
+                resizeDelay: 200,
                 layout: {
                     padding: {
-                        top: 25 // ✅ Add padding to prevent delta labels from being clipped
+                        top: 25
                     }
                 },
                 plugins: {
@@ -1504,7 +1537,7 @@ $(document).ready(function() {
                     }
                 }
             },
-            plugins: [deltaPlugin] // ✅ Register delta plugin
+            plugins: [createDeltaPlugin(deltas, type)] // ✅ Use factory to create fresh plugin
         };
 
         if (type === 'am') amProgressChart = new Chart(ctx, chartConfig);
@@ -1592,6 +1625,7 @@ $(document).ready(function() {
 
         // ... (Simpan Insight & Render Table sama) ...
         globalInsightsData = data.witel_analysis.insights_data; 
+        currentBenchmarkingData = data.benchmarking; // ✅ Store for Witel modal
         const tableHTML = renderAMTable(data.benchmarking);
         $('#amBenchmarkTableBody').html(tableHTML);
         // ... (Leaderboard render) ...
@@ -1991,9 +2025,9 @@ $(document).ready(function() {
             </td>`;
 
             html += renderProgressCell(avgProgress1, true);
-            html += renderProgressCell(avgProgress2, true);
+            html += renderProgressCell(avgProgress2, true, avgProgress1);
             html += renderProgressCell(avgResult1, true);
-            html += renderProgressCell(avgResult2, true);
+            html += renderProgressCell(avgResult2, true, avgResult1);
 
             html += `<td style="text-align: center;">
                 <span class="change-indicator ${avgChangeClass}">
@@ -2038,9 +2072,9 @@ $(document).ready(function() {
                 </td>`;
 
                 html += renderProgressCell(row.progress_1);
-                html += renderProgressCell(row.progress_2);
+                html += renderProgressCell(row.progress_2, false, row.progress_1);
                 html += renderProgressCell(row.result_1);
-                html += renderProgressCell(row.result_2);
+                html += renderProgressCell(row.result_2, false, row.result_1);
 
                 const change = row.change_avg;
                 const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
@@ -2071,9 +2105,9 @@ $(document).ready(function() {
             <tr class="witel-summary">
                 <td colspan="2"><strong>Rerata ${witelName}</strong></td>
                 ${renderProgressCell(avgProgress1)}
-                ${renderProgressCell(avgProgress2)}
+                ${renderProgressCell(avgProgress2, false, avgProgress1)}
                 ${renderProgressCell(avgResult1)}
-                ${renderProgressCell(avgResult2)}
+                ${renderProgressCell(avgResult2, false, avgResult1)}
                 <td style="text-align: center;">
                     <span class="change-indicator ${avgChange > 0 ? 'positive' : (avgChange < 0 ? 'negative' : 'neutral')}">
                         <i class="fas fa-${avgChange > 0 ? 'arrow-up' : (avgChange < 0 ? 'arrow-down' : 'minus')}"></i>
@@ -2086,27 +2120,50 @@ $(document).ready(function() {
 
     // Render progress cell with bar
     // Helper Function untuk Render Cell Progress
-    function renderProgressCell(value, isSummary = false) {
+    function renderProgressCell(value, isSummary = false, previousValue = null) {
         const percentage = typeof value === 'number' ? value : 0;
         
         // 1. Setting Style Background Cell (Optional: pakai var gray-50)
         const bgStyle = isSummary ? 'background-color: var(--gray-100);' : '';
         
-        // 2. Setting Style Text
-        // Font size SAMA (13px), tapi warna teks menyesuaikan bar (Abu gelap vs Merah)
-        const valueStyle = isSummary 
-            ? 'font-size: 13px; font-weight: 700; color: var(--telkom-red);' 
-            : 'font-size: 13px; font-weight: 600; color: var(--telkom-red);';
+        // Cek apakah ini data minggu 2 dan ada perubahan
+        const hasChange = previousValue !== null && percentage !== previousValue;
         
-        // 3. SETTING WARNA BAR (Pakai Variable CSS yang ada)
+        // 2. Setting Style Text
+        let valueStyle;
+        if (percentage === 0) {
+            // Abu-abu untuk 0%
+            valueStyle = isSummary 
+                ? 'font-size: 13px; font-weight: 700; color: #9ca3af;' 
+                : 'font-size: 13px; font-weight: 600; color: #9ca3af;';
+        } else if (hasChange) {
+            // Hijau untuk minggu 2 dengan perubahan
+            valueStyle = isSummary 
+                ? 'font-size: 13px; font-weight: 700; color: #10b981;' 
+                : 'font-size: 13px; font-weight: 600; color: #10b981;';
+        } else {
+            // Merah untuk minggu 1 atau minggu 2 tanpa perubahan
+            valueStyle = isSummary 
+                ? 'font-size: 13px; font-weight: 700; color: var(--telkom-red);' 
+                : 'font-size: 13px; font-weight: 600; color: var(--telkom-red);';
+        }
+        
+        // 3. SETTING WARNA BAR
         let barColor;
         
-        if (isSummary) {
-            // --- WARNA KHUSUS RATA-RATA (Abu-abu) ---
-            // Menggunakan var(--gray-600) ke var(--gray-800)
+        if (percentage === 0) {
+            // Abu-abu untuk 0%
+            barColor = '#9ca3af';
+        } else if (hasChange) {
+            // Hijau untuk minggu 2 dengan perubahan
+            barColor = isSummary 
+                ? '#10b981' 
+                : 'linear-gradient(90deg, #6ee7b7, #10b981)';
+        } else if (isSummary) {
+            // Merah untuk rata-rata
             barColor = 'var(--telkom-red)';
         } else {
-            // --- WARNA DEFAULT AM (Merah) ---
+            // Merah untuk minggu 1 atau minggu 2 tanpa perubahan
             barColor = 'linear-gradient(90deg, #ffb3b3ff, var(--telkom-red))';
         }
 
@@ -2147,9 +2204,9 @@ $(document).ready(function() {
 
             // Progress columns WITH PROGRESS BARS
             html += renderProgressCell(row.progress_1);
-            html += renderProgressCell(row.progress_2);
+            html += renderProgressCell(row.progress_2, false, row.progress_1);
             html += renderProgressCell(row.result_1);
-            html += renderProgressCell(row.result_2);
+            html += renderProgressCell(row.result_2, false, row.result_1);
 
             const change = row.change_avg;
             const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
@@ -2364,8 +2421,10 @@ $(document).ready(function() {
     });
 
     // ================================
-    // DOWNLOAD REPORT
+    // DOWNLOAD REPORT WITH WITEL SELECTION
     // ================================
+
+    let currentBenchmarkingData = null; // Store benchmarking data for Witel options
 
     $('#downloadReportAM, #downloadReportProduct').on('click', function() {
         if (!selectedSnapshot1 || !selectedSnapshot2) {
@@ -2373,8 +2432,36 @@ $(document).ready(function() {
             return;
         }
 
-        window.location.href = "{{ route('high-five.report.download') }}?snapshot_1_id=" + selectedSnapshot1 + "&snapshot_2_id=" + selectedSnapshot2;
+        // Populate Witel options from current benchmarking data
+        const witelSelect = $('#reportWitelSelect');
+        witelSelect.html('<option value="all">📊 Laporan Overall (Semua Witel)</option>');
+        
+        if (currentBenchmarkingData && currentBenchmarkingData.length > 0) {
+            const witels = [...new Set(currentBenchmarkingData.map(row => row.witel))].sort();
+            witels.forEach(witel => {
+                witelSelect.append(`<option value="${witel}">📍 ${witel}</option>`);
+            });
+        }
+
+        // Open modal
+        $('#reportWitelModal').fadeIn(300);
     });
+
+    window.closeReportWitelModal = function() {
+        $('#reportWitelModal').fadeOut(300);
+    };
+
+    window.downloadReportWithWitel = function() {
+        const selectedWitel = $('#reportWitelSelect').val();
+        let url = "{{ route('high-five.report.download') }}?snapshot_1_id=" + selectedSnapshot1 + "&snapshot_2_id=" + selectedSnapshot2;
+        
+        if (selectedWitel && selectedWitel !== 'all') {
+            url += "&witel=" + encodeURIComponent(selectedWitel);
+        }
+        
+        window.location.href = url;
+        closeReportWitelModal();
+    };
 
     // ================================
     // MODAL MANAGEMENT FOR SNAPSHOTS
