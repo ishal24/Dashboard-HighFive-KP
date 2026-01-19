@@ -70,18 +70,19 @@ class GoogleSheetService
      * @param string $range (optional, not used for CSV)
      * @return array
      */
+
+    /**
+ * Fetch data from Google Sheets (Published CSV only)
+ * Tanpa mekanisme Cache
+ */
     public function fetchSpreadsheetData($spreadsheetUrl, $range = 'Sheet1')
     {
         try {
-            $spreadsheetId = $this->extractSpreadsheetId($spreadsheetUrl);
+            // Kita tetap biarkan ekstraksi ID untuk validasi format URL
+            $this->extractSpreadsheetId($spreadsheetUrl);
 
-            // Cache key to avoid repeated fetches
-            $cacheKey = "spreadsheet_data_" . md5($spreadsheetUrl);
-
-            // Cache for 5 minutes
-            return Cache::remember($cacheKey, 300, function () use ($spreadsheetUrl) {
-                return $this->fetchPublishedSheet($spreadsheetUrl);
-            });
+            // Langsung panggil fungsi fetch tanpa membungkusnya dengan Cache::remember
+            return $this->fetchPublishedSheet($spreadsheetUrl);
 
         } catch (\Exception $e) {
             throw new \Exception('Gagal mengambil data dari Google Sheets: ' . $e->getMessage());

@@ -62,8 +62,7 @@ class HighFiveController extends Controller
                         'total_ams' => $snapshot->total_ams,
                         'total_customers' => $snapshot->total_customers,
                         'total_products' => $snapshot->total_products,
-                        'fetched_at' => $snapshot->fetched_at->locale('id')->isoFormat('DD MMM YYYY HH:mm'),
-                    ];
+                        'fetched_at' => $snapshot->fetched_at->translatedFormat('d M Y H:i') . ' WIB',                    ];
                 });
 
             return response()->json([
@@ -123,6 +122,7 @@ class HighFiveController extends Controller
                         'id' => $snapshots[0]->id,
                         'label' => $snapshots[0]->display_name,
                         'date' => $snapshots[0]->snapshot_date->format('Y-m-d'),
+                        'fetched_at' => $snapshots[0]->fetched_at->translatedFormat('d M Y H:i') . ' WIB', // Tambahkan ini
                     ],
                     'previous' => [
                         'id' => $snapshots[1]->id,

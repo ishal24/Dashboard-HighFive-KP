@@ -50,6 +50,7 @@
     input:checked + .slider:before {
         transform: translateX(20px);
     }
+    
     /* Kontainer utama grid */
     .highlight-grid-container {
         display: flex;
@@ -1977,9 +1978,7 @@ $(document).ready(function() {
         }
 
         const containerStyle = 'display: flex; gap: 6px; width: 100%; margin-top: 6px;';
-        // flex: 1 1 0px -> Kunci agar lebar selalu dibagi rata (25% per blok jika ada 4 blok)
         const badgeStyle = 'display: flex; flex: 1 1 0px; justify-content: center; align-items: center; padding: 4px 2px; border-radius: 4px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
-        const iconStyle = 'font-size: 9px; margin-right: 4px;';
         
         const grayBadge = 'background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;';
         const winBadge = 'background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 600;';
@@ -2009,10 +2008,10 @@ $(document).ready(function() {
             const avgChange = rows.reduce((a, b) => a + b.change_avg, 0) / rows.length;
             
             const avgChangeClass = avgChange > 0 ? 'positive' : (avgChange < 0 ? 'negative' : 'neutral');
-            const avgChangeIcon = avgChange > 0 ? 'fa-arrow-up' : (avgChange < 0 ? 'fa-arrow-down' : 'fa-minus');
+            const avgChangeIcon = avgChange > 0 ? 'fa-arrow-up' : (avgChange < 0 ? 'fa-arrow-down' : '');
 
             // --- 1. RENDER BARIS RATA-RATA ---
-            html += '<tr style="background-color: var(--gray-100); font-weight: 700;">'; // Pakai hex f8fafc agar aman/konsisten
+            html += '<tr style="background-color: var(--gray-100); font-weight: 700;">';
             
             html += `<td rowspan="${rows.length + 1}" style="vertical-align: top; padding-top: 14px; width: 200px; min-width: 200px;">
                 ${witel}
@@ -2031,8 +2030,8 @@ $(document).ready(function() {
 
             html += `<td style="text-align: center;">
                 <span class="change-indicator ${avgChangeClass}">
-                    <i class="fas ${avgChangeIcon}"></i>
-                    ${avgChange > 0 ? '+' : ''}${avgChange.toFixed(2)}%
+                    ${avgChangeIcon ? `<i class="fas ${avgChangeIcon}"></i>` : ''}
+                    ${avgChange.toFixed(2)}%
                 </span>
             </td>`;
             html += '</tr>';
@@ -2040,25 +2039,18 @@ $(document).ready(function() {
             // --- 2. RENDER BARIS AM ---
             rows.forEach(row => {
                 const s = row.stats || { offerings: 0, total_customers: 0, win: 0, lose: 0 };
-
-                // --- LOGIKA BADGE 4 BLOK RATA ---
                 let badges = [];
 
-                // Blok 1: CC Visited (Selalu ada)
                 badges.push(`<span style="${badgeStyle} ${grayBadge}" title="${s.visited}/${s.total_customers} Corporate Customers Visited">${s.visited}/${s.total_customers} CC visited</span>`);
 
-                // Blok 2 & 3: Win & Lose (Dinamis)
-                // Jika Win ada, masukkan.
                 if (s.win > 0) {
                     badges.push(`<span style="${badgeStyle} ${winBadge}" title="${s.win} Win">${s.win} Win</span>`);
                 }
                 
-                // Jika Lose ada, masukkan.
                 if (s.lose > 0) {
                     badges.push(`<span style="${badgeStyle} ${loseBadge}" title="${s.lose} Lose">${s.lose} Lose</span>`);
                 }
 
-                // Padding: Isi sisa slot dengan elemen kosong agar total tetap 3 blok (karena offerings dihapus)
                 while (badges.length < 3) {
                     badges.push(`<span style="flex: 1 1 0px;"></span>`);
                 }
@@ -2078,12 +2070,12 @@ $(document).ready(function() {
 
                 const change = row.change_avg;
                 const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
-                const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
+                const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : '');
                 
                 html += `<td style="text-align: center;">
                     <span class="change-indicator ${changeClass}">
-                        <i class="fas ${changeIcon}"></i>
-                        ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+                        ${changeIcon ? `<i class="fas ${changeIcon}"></i>` : ''}
+                        ${change.toFixed(2)}%
                     </span>
                 </td>`;
                 html += '</tr>';
@@ -2122,57 +2114,55 @@ $(document).ready(function() {
     // Helper Function untuk Render Cell Progress
     function renderProgressCell(value, isSummary = false, previousValue = null) {
         const percentage = typeof value === 'number' ? value : 0;
+        const prevPercentage = typeof previousValue === 'number' ? previousValue : null;
         
-        // 1. Setting Style Background Cell (Optional: pakai var gray-50)
         const bgStyle = isSummary ? 'background-color: var(--gray-100);' : '';
         
-        // Cek apakah ini data minggu 2 dan ada perubahan
-        const hasChange = previousValue !== null && percentage !== previousValue;
-        
-        // 2. Setting Style Text
-        let valueStyle;
-        if (percentage === 0) {
-            // Abu-abu untuk 0%
-            valueStyle = isSummary 
-                ? 'font-size: 13px; font-weight: 700; color: #9ca3af;' 
-                : 'font-size: 13px; font-weight: 600; color: #9ca3af;';
-        } else if (hasChange) {
-            // Hijau untuk minggu 2 dengan perubahan
-            valueStyle = isSummary 
-                ? 'font-size: 13px; font-weight: 700; color: #10b981;' 
-                : 'font-size: 13px; font-weight: 600; color: #10b981;';
-        } else {
-            // Merah untuk minggu 1 atau minggu 2 tanpa perubahan
-            valueStyle = isSummary 
-                ? 'font-size: 13px; font-weight: 700; color: var(--telkom-red);' 
-                : 'font-size: 13px; font-weight: 600; color: var(--telkom-red);';
-        }
-        
-        // 3. SETTING WARNA BAR
-        let barColor;
-        
-        if (percentage === 0) {
-            // Abu-abu untuk 0%
-            barColor = '#9ca3af';
-        } else if (hasChange) {
-            // Hijau untuk minggu 2 dengan perubahan
-            barColor = isSummary 
-                ? '#10b981' 
-                : 'linear-gradient(90deg, #6ee7b7, #10b981)';
-        } else if (isSummary) {
-            // Merah untuk rata-rata
-            barColor = 'var(--telkom-red)';
-        } else {
-            // Merah untuk minggu 1 atau minggu 2 tanpa perubahan
-            barColor = 'linear-gradient(90deg, #ffb3b3ff, var(--telkom-red))';
+        let statusColor;
+        let icon = '';
+
+        // 1. Cek jika tidak ada data pembanding (HANYA UNTUK SNAPSHOT 1)
+        if (prevPercentage === null) {
+            if (percentage === 0) {
+                statusColor = '#9ca3af'; // Abu-abu: Hanya untuk Snapshot 1 yang 0
+            } else {
+                statusColor = '#3b82f6'; // Biru: Default Snapshot 1 > 0
+            }
+        } 
+        // 2. Cek Perubahan Naik
+        else if (percentage > prevPercentage) {
+            statusColor = '#10b981'; // Hijau
+            icon = '<i class="fas fa-caret-up" style="margin-left: 4px;"></i>';
+        } 
+        // 3. Cek Perubahan Turun (Contoh: 17 ke 0 jadi Merah)
+        else if (percentage < prevPercentage) {
+            statusColor = '#ef4444'; // Merah
+            icon = '<i class="fas fa-caret-down" style="margin-left: 4px;"></i>';
+        } 
+        // 4. Status: STAGNANT (Sama dengan minggu lalu, TERMASUK 0 ke 0)
+        else {
+            // Jika data Snapshot 2 sama dengan Snapshot 1, maka dianggap Stagnan (Kuning)
+            statusColor = '#f59e0b'; // Kuning/Amber
+            icon = '<i class="fas fa-exclamation" style="margin-left: 4px; font-size: 13px;"></i>';
         }
 
+        const valueStyle = `font-size: 13px; font-weight: 700; color: ${statusColor};`;
+        
         return `
             <td style="text-align: center; ${bgStyle}">
                 <div class="progress-cell">
-                    <span style="${valueStyle}">${percentage.toFixed(2)}%</span>
-                    <div class="progress-bar-wrapper">
-                        <div class="progress-bar-fill" style="width: ${percentage}%; background: ${barColor};"></div>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <span style="${valueStyle}">${percentage.toFixed(2)}%</span>
+                        <span style="color: ${statusColor}">${icon}</span>
+                    </div>
+                    <div class="progress-bar-wrapper" style="background: #e2e8f0; height: 6px; border-radius: 10px; margin-top: 4px; overflow: hidden;">
+                        <div class="progress-bar-fill" 
+                            style="width: ${percentage}%; 
+                                    background: ${statusColor}; 
+                                    height: 100%; 
+                                    border-radius: 10px;
+                                    transition: width 0.5s ease-in-out;">
+                        </div>
                     </div>
                 </div>
             </td>
@@ -2210,11 +2200,13 @@ $(document).ready(function() {
 
             const change = row.change_avg;
             const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
-            const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
+            const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : '');
+
             html += `<td style="text-align: center;">
                 <span class="change-indicator ${changeClass}">
-                    <i class="fas ${changeIcon}"></i>
-                    ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+                    ${changeIcon ? `<i class="fas ${changeIcon}"></i>` : ''}
+                    
+                    ${change.toFixed(2)}%
                 </span>
             </td>`;
 
@@ -2279,11 +2271,13 @@ $(document).ready(function() {
 
             const change = row.change_avg;
             const changeClass = change > 0 ? 'positive' : (change < 0 ? 'negative' : 'neutral');
-            const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
+            const changeIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : '');
+
             html += `<td style="text-align: center;">
                 <span class="change-indicator ${changeClass}">
-                    <i class="fas ${changeIcon}"></i>
-                    ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+                    ${changeIcon ? `<i class="fas ${changeIcon}"></i>` : ''}
+                    
+                    ${change.toFixed(2)}%
                 </span>
             </td>`;
 
@@ -2576,7 +2570,9 @@ $(document).ready(function() {
                                         <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_customers} customers</span>
                                         <span style="padding: 4px 10px; background: var(--gray-100); border-radius: 6px; font-weight: 600;">${snapshot.total_products} products</span>
                                     </div>
-                                    <span class="snapshot-fetched" style="font-size: 10px; color: var(--gray-500); font-style: italic;">Fetched: ${snapshot.fetched_at}</span>
+                                    <span class="snapshot-fetched" style="font-size: 10px; color: var(--gray-500); font-style: italic;">
+                                        Fetched: ${snapshot.fetched_at}
+                                    </span>
                                 </div>
                                 <div class="snapshot-actions" style="display: flex; gap: 8px;">
                                     <button class="btn-snapshot-action btn-edit" onclick="editSnapshotDate(${snapshot.id}, '${snapshot.snapshot_date}', ${linkId})" title="Edit Tanggal">
