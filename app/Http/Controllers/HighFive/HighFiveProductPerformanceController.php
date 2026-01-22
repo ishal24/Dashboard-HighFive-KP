@@ -521,9 +521,9 @@ class HighFiveProductPerformanceController extends Controller
             </div>
             <div class='insight-narrative-box green-theme'>
                 <div class='insight-narrative-title'><i class='fas fa-chart-line'></i> Analisis Insight</div>
-                <p class='insight-narrative-text'>
-                    Total nilai dari offerings yang berhasil dimenangkan mencapai <strong>Rp " . number_format($stats['total_nilai_win'], 0, ',', '.') . "</strong> dari <strong>" . number_format($stats['count_win']) . "</strong> wins. Angka ini mencerminkan performa kemenangan tim dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah mencapai tahap keputusan akhir (Closed).
-                </p>
+                    <p class='insight-narrative-text'>
+                        Total nilai dari offerings yang berhasil dimenangkan mencapai <strong>Rp " . number_format($stats['total_nilai_win'], 0, ',', '.') . "</strong> melalui <strong>" . number_format($stats['count_win']) . " wins</strong>. Win Rate sebesar <strong>" . ($totalClosedDecision > 0 ? number_format(($stats['count_win'] / $totalClosedDecision) * 100, 1) : 0) . "%</strong> mencerminkan performa kemenangan tim dari total <strong>" . $totalClosedDecision . "</strong> offerings yang telah mencapai tahap keputusan akhir (Closed).
+                    </p>
             </div>";
 
 

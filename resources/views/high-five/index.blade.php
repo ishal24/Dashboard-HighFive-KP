@@ -949,7 +949,7 @@ $(document).ready(function() {
                                 <div class="link-info">
                                     <span class="link-divisi">${link.divisi_name || link.divisi || 'Unknown'}</span>
                                     <span class="link-url">${displayUrl}</span>
-                                    <span class="link-meta">${link.total_snapshots || 0} snapshots | Last: ${link.last_fetched || 'Never'}</span>
+                                    <span class="link-meta">${link.total_snapshots || 0} snapshots</span>
                                 </div>
                                 <div class="link-actions">
                                     <button class="btn-link-edit" onclick="editLink(${link.id}, '${linkUrl.replace(/'/g, "\\'")}')">
@@ -2498,7 +2498,7 @@ $(document).ready(function() {
                                     <div class="link-info" style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
                                         <span class="link-divisi" style="font-size: 15px; font-weight: 700; color: var(--telkom-red);">${link.divisi_name || 'Unknown'}</span>
                                         <span class="link-url" style="font-size: 12px; color: var(--gray-600); font-family: monospace;">${displayUrl}</span>
-                                        <span class="link-meta" style="font-size: 11px; color: var(--gray-500);">${link.total_snapshots || 0} snapshots | Last: ${link.last_fetched || 'Never'}</span>
+                                        <span class="link-meta" style="font-size: 11px; color: var(--gray-500);">${link.total_snapshots || 0} snapshots</span>
                                     </div>
                                     <div class="link-actions" style="display: flex; gap: 10px; align-items: center;">
                                         <button class="btn-action-icon btn-edit-link" onclick="editLink(${link.id}, '${linkUrl.replace(/'/g, "\\'")}')" title="Edit Link">
@@ -2749,8 +2749,12 @@ $(document).ready(function() {
                     
                     const count = response.results.length;
                     if (count > 0) {
-                        const successes = response.results.filter(r => r.status === 'success').length;
-                        const failures = response.results.filter(r => r.status === 'failed').length;
+                        // Logika baru: Anggap sukses jika statusnya 'success', true, atau properti success bernilai true
+                        // Cek apakah ada object 'result' dan di dalamnya ada property 'success' bernilai true
+                        const successes = response.results.filter(r => r.result && r.result.success === true).length;
+
+                        // Sisanya dianggap gagal (termasuk yang punya property 'error')
+                        const failures = count - successes;
                         
                         let msg = `Memproses ${count} link. Berhasil: ${successes}, Gagal: ${failures}.`;
                         if (failures > 0) {

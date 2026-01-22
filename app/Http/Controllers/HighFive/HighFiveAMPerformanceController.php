@@ -103,7 +103,20 @@ class HighFiveAMPerformanceController extends Controller
         };
 
         foreach (['ss1' => $data1, 'ss2' => $data2] as $key => $dataset) {
+            $uniqueInSnapshot = []; // Melacak keunikan per snapshot
+
             foreach ($dataset as $row) {
+                $am = trim($row['am'] ?? '');
+                $cust = trim($row['customer_name'] ?? '');
+                $prod = trim($row['product'] ?? '');
+                $uKey = $am . '|' . $cust . '|' . $prod;
+
+                // Lewati jika kombinasi penawaran ini sudah dihitung sebelumnya
+                if (isset($uniqueInSnapshot[$uKey])) {
+                    continue;
+                }
+                $uniqueInSnapshot[$uKey] = true;
+
                 $witel = trim($row['witel'] ?? 'Unknown');
                 $cat = $categorize($row);
                 
@@ -126,19 +139,26 @@ class HighFiveAMPerformanceController extends Controller
     private function calculateAMAverage($data)
     {
         $amGrouped = [];
+        // Array bantu untuk melacak kombinasi unik AM + Customer + Produk
+        $uniqueOfferings = []; 
 
         foreach ($data as $row) {
-            $am = trim($row['am']);
-            $witel = trim($row['witel']);
+            $am = trim($row['am'] ?? '');
+            $witel = trim($row['witel'] ?? '');
+            $customer = trim($row['customer_name'] ?? 'Unknown');
+            $product = trim($row['product'] ?? 'Unknown');
 
+            // Validasi data dasar
             if (empty($am) || empty($witel)) {
                 continue;
             }
 
-            $key = $am . '|' . $witel;
+            $amKey = $am . '|' . $witel;
+            // Membuat kunci unik untuk pengecekan deduplikasi
+            $offeringKey = $am . '|' . $customer . '|' . $product;
 
-            if (!isset($amGrouped[$key])) {
-                $amGrouped[$key] = [
+            if (!isset($amGrouped[$amKey])) {
+                $amGrouped[$amKey] = [
                     'am' => $am,
                     'witel' => $witel,
                     'total_progress' => 0,
@@ -150,59 +170,61 @@ class HighFiveAMPerformanceController extends Controller
                         'lose' => 0,
                         'cust_list' => [],
                         'visited_customers' => [],
-                        'total_nilai_win' => 0 // ✅ NEW: Track total NILAI from wins
+                        'total_nilai_win' => 0 
                     ]
                 ];
             }
 
-            $amGrouped[$key]['total_progress'] += $row['progress_percentage'];
-            $amGrouped[$key]['total_result'] += $row['result_percentage'];
-            $amGrouped[$key]['count']++;
+            // Logic: Hanya proses jika kombinasi AM + Customer + Produk ini unik
+            if (!isset($uniqueOfferings[$offeringKey])) {
+                $uniqueOfferings[$offeringKey] = true;
 
-            $stats = &$amGrouped[$key]['stats'];
-            $stats['offerings']++;
+                $amGrouped[$amKey]['total_progress'] += floatval($row['progress_percentage'] ?? 0);
+                $amGrouped[$amKey]['total_result'] += floatval($row['result_percentage'] ?? 0);
+                $amGrouped[$amKey]['count']++;
 
-            if (!empty($row['customer_name'])) {
-                $custName = $row['customer_name'];
-                $stats['cust_list'][$custName] = true;
-                
-                if (($row['progress_percentage'] ?? 0) > 0) {
-                    $stats['visited_customers'][$custName] = true;
+                $stats = &$amGrouped[$amKey]['stats'];
+                $stats['offerings']++;
+
+                if (!empty($row['customer_name'])) {
+                    $custName = $row['customer_name'];
+                    $stats['cust_list'][$custName] = true;
+                    
+                    if (floatval($row['progress_percentage'] ?? 0) > 0) {
+                        $stats['visited_customers'][$custName] = true;
+                    }
                 }
-            }
 
-            $resText = strtolower($row['result'] ?? '');
-            $resVal = $row['result_percentage'] ?? 0;
+                $resText = strtolower($row['result'] ?? '');
+                $resVal = floatval($row['result_percentage'] ?? 0);
 
-            if (strpos($resText, 'win') !== false || $resVal == 100) {
-                $stats['win']++;
-                $stats['total_nilai_win'] += floatval($row['nilai'] ?? 0); // ✅ Sum NILAI for wins
-            } elseif (strpos($resText, 'lose') !== false) {
-                $stats['lose']++;
+                if (strpos($resText, 'win') !== false || $resVal == 100) {
+                    $stats['win']++;
+                    $stats['total_nilai_win'] += floatval($row['nilai'] ?? 0); 
+                } elseif (strpos($resText, 'lose') !== false) {
+                    $stats['lose']++;
+                }
             }
         }
 
         $amAverage = [];
         foreach ($amGrouped as $key => $data) {
-            // ✅ FIX: No rounding here - keep full precision for accurate calculations
             $avgProgress = $data['count'] > 0 ? $data['total_progress'] / $data['count'] : 0;
             $avgResult = $data['count'] > 0 ? $data['total_result'] / $data['count'] : 0;
-
-            $finalStats = [
-                'offerings' => $data['stats']['offerings'],
-                'total_customers' => count($data['stats']['cust_list']),
-                'visited' => count($data['stats']['visited_customers']),
-                'win' => $data['stats']['win'],
-                'lose' => $data['stats']['lose'],
-                'total_nilai_win' => $data['stats']['total_nilai_win'] // ✅ Pass NILAI to final stats
-            ];
 
             $amAverage[$key] = [
                 'am' => $data['am'],
                 'witel' => $data['witel'],
                 'avg_progress' => $avgProgress,
                 'avg_result' => $avgResult,
-                'stats' => $finalStats
+                'stats' => [
+                    'offerings' => $data['stats']['offerings'],
+                    'total_customers' => count($data['stats']['cust_list']),
+                    'visited' => count($data['stats']['visited_customers']),
+                    'win' => $data['stats']['win'],
+                    'lose' => $data['stats']['lose'],
+                    'total_nilai_win' => $data['stats']['total_nilai_win']
+                ]
             ];
         }
 

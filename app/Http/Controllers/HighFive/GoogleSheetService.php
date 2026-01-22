@@ -97,43 +97,40 @@ class GoogleSheetService
      */
     private function fetchPublishedSheet($publishedUrl)
     {
-        // Ensure URL has output=csv parameter
+        // 1. Pastikan URL memiliki parameter output=csv
         if (strpos($publishedUrl, 'output=csv') === false) {
-            $publishedUrl .= (strpos($publishedUrl, '?') !== false ? '&' : '?') . 'output=csv';
+            // Cek apakah URL sudah memiliki query string (?)
+            $separator = (strpos($publishedUrl, '?') !== false) ? '&' : '?';
+            $publishedUrl .= $separator . 'output=csv';
         }
 
-        // Fetch CSV content
-        $csvData = @file_get_contents($publishedUrl);
+        // 2. SOLUSI FIX DATA TIDAK UPDATE:
+        // Tambahkan parameter waktu unik (_t) agar Google Server dipaksa generate data baru
+        // dan tidak mengirimkan data cache (CDN).
+        $separator = (strpos($publishedUrl, '?') !== false) ? '&' : '?';
+        $publishedUrl .= $separator . '_t=' . time();
 
-        if ($csvData === false) {
-            throw new \Exception('Tidak dapat mengakses published spreadsheet.');
+        // 3. Ambil konten CSV
+        // Menggunakan @ untuk menekan warning jika koneksi gagal/timeout
+        $csvContent = @file_get_contents($publishedUrl);
+
+        if ($csvContent === false) {
+            // Opsional: Log error jika diperlukan
+            // \Illuminate\Support\Facades\Log::error("Gagal mengambil data dari Google Sheet: " . $publishedUrl);
+            return [];
         }
 
-        // ✅ FIX: Parse CSV aman menggunakan temporary stream
-        // Ini mencegah error jika ada "Enter" (newline) di dalam isi cell Excel
-        $values = [];
-        $stream = fopen('php://memory', 'r+');
-        fwrite($stream, $csvData);
-        rewind($stream);
+        // 4. Parsing data CSV menjadi Array PHP
+        // Menggunakan str_getcsv untuk menangani escaping koma di dalam cell dengan benar
+        $rows = array_map('str_getcsv', explode("\n", $csvContent));
 
-        while (($row = fgetcsv($stream)) !== false) {
-            // Hapus karakter invisible BOM jika ada di awal file
-            if (empty($values) && isset($row[0])) {
-                $row[0] = preg_replace('/^\xEF\xBB\xBF/', '', $row[0]); 
-            }
-            
-            // Filter baris yang benar-benar kosong
-            if (!empty(array_filter($row, function($val) { return trim($val) !== ''; }))) {
-                $values[] = $row;
-            }
-        }
-        fclose($stream);
+        // Bersihkan baris kosong (jika ada)
+        $data = array_filter($rows, function($row) {
+            // Pastikan row tidak kosong dan cell pertama tidak kosong
+            return $row && isset($row[0]) && trim($row[0]) !== '';
+        });
 
-        if (empty($values)) {
-            throw new \Exception('Spreadsheet kosong atau tidak ada data');
-        }
-
-        return $this->parseSpreadsheetData($values);
+        return array_values($data); // Reset index array
     }
 
     /**
